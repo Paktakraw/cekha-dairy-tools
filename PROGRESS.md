@@ -5,7 +5,7 @@
 
 ## Current Status
 - **Current Phase:** Phase 8 — Calorie
-- **Status:** โค้ดเสร็จ (lint/build/test ผ่าน) — รอผู้ใช้รัน migration `20261110000200_calorie.sql` ทดสอบกับ Supabase จริงตาม `docs/testing.md` แล้วยืนยัน Phase 8
+- **Status:** เสร็จ — ผู้ใช้ยืนยัน Phase 8 แล้ว (2026-11-10); merge เข้า main แล้ว
 - **Last Updated:** 2026-11-10
 
 ## Phase Checklist
@@ -20,7 +20,7 @@
   - [x] Transactions
   - [x] Summary & Filters
 - [x] Phase 7: Refactoring, Testing & Documentation
-- [x] Phase 8: Feature — Calorie (`docs/features/calorie.md`) — โค้ดเสร็จ รอผู้ใช้ยืนยันหลังทดสอบ
+- [x] Phase 8: Feature — Calorie (`docs/features/calorie.md`) — เสร็จ ผู้ใช้ยืนยันแล้ว
   - [x] BMR / TDEE (dropdown ระดับกิจกรรม, บันทึกโปรไฟล์)
   - [x] รายการอาหาร (`foods` + ข้อมูลตั้งต้น 102 เมนู)
   - [x] บันทึกอาหารที่กินและคำนวณแคลอรี่
@@ -52,6 +52,7 @@
 - 2026-11-10 — ฟีเจอร์ใหม่ Calorie Calculator — ผู้ใช้ขอโมดูลแคลอรี่ 2 ฟังก์ชัน (1. คำนวณ BMR 2. คำนวณแคลอรี่จากอาหารที่กิน — ร่างแรกตีความข้อ 2 เป็น TDEE ผิด แก้แล้ว); ร่าง spec `docs/features/calorie.md` (id `calorie`, route `/calorie/*`, ตาราง `calorie_profiles` + `food_entries`, สูตร Mifflin-St Jeor) และเพิ่มใน Feature Index เป็น Phase 8 — รอผู้ใช้ยืนยัน spec ตาม CLAUDE.md ข้อ 2.2
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 7 ว่าทุกอย่างโอเค (ผมไม่ได้ตรวจสอบเองว่ารัน migration ภาษาไทยแล้วหรือยัง จึงคงสถานะ migration ไว้ตามเดิมด้านล่าง)
 - 2026-11-10 — Calorie: แหล่งข้อมูลอาหาร — ไม่ใช้ API ภายนอก (ไม่มี API อาหารไทยที่ฟรี+ใบอนุญาตชัดเจน; ThaiFCD และ HDmall ห้ามคัดลอกโดยไม่ได้รับอนุญาต) ใช้ตาราง `foods` ต่อผู้ใช้ + ข้อมูลตั้งต้น 102 เมนูจากไฟล์ที่ผู้ใช้ให้ (แก้สะกดและตัดรายการซ้ำแล้ว ที่ `docs/features/calorie-foods-seed.csv`, ค่าโดยประมาณ ยังไม่ตรวจกับแหล่งทางการ) seed ผ่าน RPC แบบเดียวกับ Finance; เพิ่ม TDEE (dropdown ระดับกิจกรรม); `food_entries` เก็บสำเนาชื่อ/แคลอรี่ตอนบันทึก — ตามคำขอผู้ใช้; อัปเดต spec แล้ว
+- 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 8 (แคลอรี่) เสร็จแล้ว
 - 2026-11-10 — การยืนยัน spec Calorie — ผู้ใช้ตอบ Open Questions: บันทึกโปรไฟล์ลง Supabase, ใช้ตัวคูณกิจกรรมมาตรฐาน, สูตร Mifflin-St Jeor อย่างเดียว, ดูย้อนหลังได้ทุกวัน + สรุปเทียบรายสัปดาห์/รายเดือน (เพิ่มจาก spec เดิม), ชื่อเมนู "แคลอรี่" และพิมพ์ "ยืนยัน spec"
 - 2026-11-10 — Calorie: รายละเอียดการออกแบบ — TDEE = BMR ที่ปัดแล้ว × ตัวคูณ (ผู้ใช้ตรวจสอบเองได้); แคลอรี่ต่อรายการปัดครั้งเดียวด้วยจำนวนเต็ม (`entryCalories`); สัปดาห์เริ่มวันจันทร์; ค่าเฉลี่ยต่อวันคิดเฉพาะวันที่มีบันทึก; สรุปช่วงคำนวณฝั่ง client (pure function) เหมือน Finance; seed อาหารผ่าน RPC `seed_default_foods()` ต่อผู้ใช้ (RLS ไม่ต้องมีตารางกลาง); `food_entries` เก็บสำเนาชื่อ/หน่วย/แคลอรี่ (`food_id` เป็น ON DELETE SET NULL); โปรไฟล์ใช้ upsert `onConflict: user_id`; เพิ่ม `formatMonth` ใน shared
 - 2026-11-10 — Design (มือถือ) — (1) Header มือถือเปลี่ยนจาก sticky เป็น `fixed` + spacer h-14 ใน MainLayout และ `overflow-x-clip` ที่ root กันหน้าเลื่อนซ้ายขวา (PageHeader ยัง sticky ที่ top-14); (2) ตารางรายการ Finance เหลือ 3 คอลัมน์ซ้อนสองบรรทัด (วันที่/ประเภท · รายละเอียด/หมวดหมู่ · จำนวนเงิน/ปุ่ม) ไม่ต้องเลื่อนซ้ายขวา ใช้ทุกขนาดจอ; (3) เมนูย่อยแคลอรี่: ปุ่มเล็กลง เรียง บันทึกอาหาร · สรุป · BMR/TDEE และย้าย "รายการอาหาร" ไปท้ายสุดแบบไม่มีกรอบสีจาง (มือถือเหลือไอคอน); (4) หน้าบันทึกอาหาร: มื้อเช้า/กลางวัน/เย็น/ของว่างใช้ `CollapsibleSection` ยุบไว้เป็นค่าเริ่มต้น แสดงจำนวนรายการและแคลอรี่รวมข้างชื่อ — ตามคำขอผู้ใช้
@@ -78,7 +79,7 @@
 - `20261109000300_randomizer.sql` — ผู้ใช้รันแล้ว
 - `20261109000400_finance.sql` — ผู้ใช้รันและทดสอบแล้ว (ผู้ใช้ยืนยัน Phase 6)
 - `20261110000100_finance_thai_categories.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase** (ผู้ใช้ยืนยัน Phase 7 แล้ว แต่ผมไม่ได้ตรวจว่ารันหรือยัง)
-- `20261110000200_calorie.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase** (Phase 8)
+- `20261110000200_calorie.sql` — ผู้ใช้รันบน Supabase แล้ว (ตรวจพบ 3 ตาราง / 12 policies / 1 function) และยืนยัน Phase 8
 
 ## Known Issues / TODO
 - ยังไม่ได้ตรวจ Responsive ด้วยตาจริงบนอุปกรณ์/เบราว์เซอร์ (ตรวจจากโค้ดเท่านั้น) และยังไม่ได้รันรายการตรวจด้วยมือใน `docs/testing.md` กับข้อมูลจริง (ผู้ใช้ต้องทำ)
@@ -89,5 +90,5 @@
 - Calorie: ยังไม่ได้ตรวจ Responsive ด้วยตาจริง
 
 ## Next Step
-- ผู้ใช้: รัน `20261110000200_calorie.sql` ใน SQL Editor (และ `20261110000100_finance_thai_categories.sql` ถ้ายังไม่ได้รัน) → ทดสอบตามหัวข้อ "แคลอรี่" ใน `docs/testing.md` → ยืนยัน Phase 8
+- Phase 8 ปิดแล้ว ยังไม่มี Phase ถัดไป รอผู้ใช้สั่ง (ผู้ใช้กำลังพิจารณาฟีเจอร์วิเคราะห์อารมณ์จากข้อความ → อีโมจิ ยังไม่ร่าง spec ตามที่ผู้ใช้สั่ง)
 - Login จริงดู `docs/future-login.md`; ฟีเจอร์ Subscription / Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
