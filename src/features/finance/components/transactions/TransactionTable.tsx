@@ -8,20 +8,19 @@ interface TransactionTableProps {
   onDelete: (transaction: Transaction) => void
 }
 
+/**
+ * ตาราง 3 คอลัมน์ที่ซ้อนข้อมูลสองบรรทัด ให้พอดีหน้าจอมือถือโดยไม่ต้องเลื่อนซ้ายขวา:
+ * วันที่ / ประเภท · รายละเอียด / หมวดหมู่ · จำนวนเงิน / ปุ่มจัดการ
+ */
 export function TransactionTable({ transactions, categoryById, onEdit, onDelete }: TransactionTableProps) {
   return (
-    <div className="overflow-x-auto rounded-md border border-gray-200 bg-white">
-      <table className="w-full min-w-[40rem] text-sm">
+    <div className="rounded-md border border-gray-200 bg-white">
+      <table className="w-full text-sm">
         <thead className="bg-gray-50 text-left text-xs text-gray-500">
           <tr>
-            <th className="px-3 py-2 font-medium">วันที่</th>
-            <th className="px-3 py-2 font-medium">ประเภท</th>
-            <th className="px-3 py-2 font-medium">หมวดหมู่</th>
-            <th className="px-3 py-2 font-medium">รายละเอียด</th>
+            <th className="px-3 py-2 font-medium">วันที่ / ประเภท</th>
+            <th className="px-3 py-2 font-medium">รายละเอียด / หมวดหมู่</th>
             <th className="px-3 py-2 text-right font-medium">จำนวนเงิน</th>
-            <th className="px-3 py-2">
-              <span className="sr-only">จัดการ</span>
-            </th>
           </tr>
         </thead>
         <tbody>

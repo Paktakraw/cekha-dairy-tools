@@ -41,7 +41,7 @@ export function MainLayout({ features }: { features: FeatureConfig[] }) {
   }
 
   return (
-    <div className="flex min-h-dvh bg-white text-gray-900">
+    <div className="flex min-h-dvh overflow-x-clip bg-white text-gray-900">
       <Sidebar
         features={features}
         open={menuOpen}
@@ -51,6 +51,8 @@ export function MainLayout({ features }: { features: FeatureConfig[] }) {
       />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header onMenuClick={() => setMenuOpen(true)} />
+        {/* Header มือถือเป็น fixed (ไม่อยู่ใน flow) จึงเว้นที่ความสูงเท่ากันไว้ */}
+        <div className="h-14 shrink-0 lg:hidden" aria-hidden="true" />
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <Suspense fallback={<Spinner />}>
             <Outlet />

@@ -29,3 +29,11 @@ export function todayISO(): string {
   const dd = String(now.getDate()).padStart(2, '0')
   return `${now.getFullYear()}-${mm}-${dd}`
 }
+
+const monthFormatter = new Intl.DateTimeFormat('th-TH', { month: 'long', year: 'numeric' })
+
+/** รับ "YYYY-MM-DD" (หรือวันใดก็ได้ในเดือน) คืนชื่อเดือนและปี เช่น พฤศจิกายน 2569 */
+export function formatMonth(date: string): string {
+  const [year, month] = date.split('-').map(Number)
+  return monthFormatter.format(new Date(year, month - 1, 1))
+}

@@ -4,8 +4,8 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 7 — Refactoring, Testing & Documentation
-- **Status:** งานเสร็จ — รอผู้ใช้รัน migration ภาษาไทย, ตรวจด้วยมือตาม `docs/testing.md` แล้วยืนยัน
+- **Current Phase:** Phase 8 — Calorie
+- **Status:** โค้ดเสร็จ (lint/build/test ผ่าน) — รอผู้ใช้รัน migration `20261110000200_calorie.sql` ทดสอบกับ Supabase จริงตาม `docs/testing.md` แล้วยืนยัน Phase 8
 - **Last Updated:** 2026-11-10
 
 ## Phase Checklist
@@ -20,6 +20,11 @@
   - [x] Transactions
   - [x] Summary & Filters
 - [x] Phase 7: Refactoring, Testing & Documentation
+- [x] Phase 8: Feature — Calorie (`docs/features/calorie.md`) — โค้ดเสร็จ รอผู้ใช้ยืนยันหลังทดสอบ
+  - [x] BMR / TDEE (dropdown ระดับกิจกรรม, บันทึกโปรไฟล์)
+  - [x] รายการอาหาร (`foods` + ข้อมูลตั้งต้น 102 เมนู)
+  - [x] บันทึกอาหารที่กินและคำนวณแคลอรี่
+  - [x] สรุปรายสัปดาห์/รายเดือน
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -44,6 +49,13 @@
 - 2026-11-10 — Refactor — รวมโค้ดซ้ำ: `serviceFail` (error ของ Service 4 ไฟล์), `ErrorState` (กล่อง error+ลองใหม่ 6 จุด), `FormActions` (ปุ่มยกเลิก/บันทึก 4 ฟอร์ม); ลบ `netBalance` ที่ไม่ใช้; ลบ .gitkeep
 - 2026-11-10 — Bundle — lazy load หน้าตามฟีเจอร์ (`lazyPages.ts`) + แยก vendor chunk (react / router / supabase) ผ่าน `manualChunks` ใน vite.config.ts: bundle หลักจาก 553 kB เหลือ 27 kB และคำเตือน chunk ใหญ่เกินหายไป
 - 2026-11-10 — เทสต์ — ใช้ `node:test` ของ Node (ไม่ติดตั้งไลบรารีเพิ่ม) เทสต์ pure functions 18 เคส ใน `tests/` รันด้วย `npm test`; ไม่ทำ UI/E2E test เพราะกฎโปรเจกต์ไม่ให้เพิ่มไลบรารีโดยไม่ยืนยัน
+- 2026-11-10 — ฟีเจอร์ใหม่ Calorie Calculator — ผู้ใช้ขอโมดูลแคลอรี่ 2 ฟังก์ชัน (1. คำนวณ BMR 2. คำนวณแคลอรี่จากอาหารที่กิน — ร่างแรกตีความข้อ 2 เป็น TDEE ผิด แก้แล้ว); ร่าง spec `docs/features/calorie.md` (id `calorie`, route `/calorie/*`, ตาราง `calorie_profiles` + `food_entries`, สูตร Mifflin-St Jeor) และเพิ่มใน Feature Index เป็น Phase 8 — รอผู้ใช้ยืนยัน spec ตาม CLAUDE.md ข้อ 2.2
+- 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 7 ว่าทุกอย่างโอเค (ผมไม่ได้ตรวจสอบเองว่ารัน migration ภาษาไทยแล้วหรือยัง จึงคงสถานะ migration ไว้ตามเดิมด้านล่าง)
+- 2026-11-10 — Calorie: แหล่งข้อมูลอาหาร — ไม่ใช้ API ภายนอก (ไม่มี API อาหารไทยที่ฟรี+ใบอนุญาตชัดเจน; ThaiFCD และ HDmall ห้ามคัดลอกโดยไม่ได้รับอนุญาต) ใช้ตาราง `foods` ต่อผู้ใช้ + ข้อมูลตั้งต้น 102 เมนูจากไฟล์ที่ผู้ใช้ให้ (แก้สะกดและตัดรายการซ้ำแล้ว ที่ `docs/features/calorie-foods-seed.csv`, ค่าโดยประมาณ ยังไม่ตรวจกับแหล่งทางการ) seed ผ่าน RPC แบบเดียวกับ Finance; เพิ่ม TDEE (dropdown ระดับกิจกรรม); `food_entries` เก็บสำเนาชื่อ/แคลอรี่ตอนบันทึก — ตามคำขอผู้ใช้; อัปเดต spec แล้ว
+- 2026-11-10 — การยืนยัน spec Calorie — ผู้ใช้ตอบ Open Questions: บันทึกโปรไฟล์ลง Supabase, ใช้ตัวคูณกิจกรรมมาตรฐาน, สูตร Mifflin-St Jeor อย่างเดียว, ดูย้อนหลังได้ทุกวัน + สรุปเทียบรายสัปดาห์/รายเดือน (เพิ่มจาก spec เดิม), ชื่อเมนู "แคลอรี่" และพิมพ์ "ยืนยัน spec"
+- 2026-11-10 — Calorie: รายละเอียดการออกแบบ — TDEE = BMR ที่ปัดแล้ว × ตัวคูณ (ผู้ใช้ตรวจสอบเองได้); แคลอรี่ต่อรายการปัดครั้งเดียวด้วยจำนวนเต็ม (`entryCalories`); สัปดาห์เริ่มวันจันทร์; ค่าเฉลี่ยต่อวันคิดเฉพาะวันที่มีบันทึก; สรุปช่วงคำนวณฝั่ง client (pure function) เหมือน Finance; seed อาหารผ่าน RPC `seed_default_foods()` ต่อผู้ใช้ (RLS ไม่ต้องมีตารางกลาง); `food_entries` เก็บสำเนาชื่อ/หน่วย/แคลอรี่ (`food_id` เป็น ON DELETE SET NULL); โปรไฟล์ใช้ upsert `onConflict: user_id`; เพิ่ม `formatMonth` ใน shared
+- 2026-11-10 — Design (มือถือ) — (1) Header มือถือเปลี่ยนจาก sticky เป็น `fixed` + spacer h-14 ใน MainLayout และ `overflow-x-clip` ที่ root กันหน้าเลื่อนซ้ายขวา (PageHeader ยัง sticky ที่ top-14); (2) ตารางรายการ Finance เหลือ 3 คอลัมน์ซ้อนสองบรรทัด (วันที่/ประเภท · รายละเอียด/หมวดหมู่ · จำนวนเงิน/ปุ่ม) ไม่ต้องเลื่อนซ้ายขวา ใช้ทุกขนาดจอ; (3) เมนูย่อยแคลอรี่: ปุ่มเล็กลง เรียง บันทึกอาหาร · สรุป · BMR/TDEE และย้าย "รายการอาหาร" ไปท้ายสุดแบบไม่มีกรอบสีจาง (มือถือเหลือไอคอน); (4) หน้าบันทึกอาหาร: มื้อเช้า/กลางวัน/เย็น/ของว่างใช้ `CollapsibleSection` ยุบไว้เป็นค่าเริ่มต้น แสดงจำนวนรายการและแคลอรี่รวมข้างชื่อ — ตามคำขอผู้ใช้
+- 2026-11-10 — Design แคลอรี่ หน้าบันทึกอาหาร — ปุ่ม "เพิ่มอาหาร" ย้ายไปชิดขวาในแถวเดียวกับหัวข้อวันที่เหนือการ์ดแคลอรี่รวม (ไม่ใช่แถวตัวเลือกวันที่) และลดขนาดปุ่ม: เพิ่ม prop `size` ('md' | 'sm') ให้ `Button` และ `IconButton` (shared) — ตามคำขอผู้ใช้ (เข้าใจผิดครั้งแรกว่าหมายถึงแถวตัวเลือกวันที่ แก้แล้ว)
 
 ## Completed Work
 - Phase 0: อ่าน spec, ตัดสิน Open Questions, อัปเดต spec ใน `docs/features/`
@@ -57,6 +69,7 @@
 - Phase 5: Randomizer เสร็จและผู้ใช้ยืนยันแล้ว (รวม animation สุ่ม ~1 วินาที และยุบ/ขยายกลุ่ม)
 - Phase 6 (โค้ด): migration `20261109000400_finance.sql` (categories, transactions, composite FK, RLS, RPC seed), types/constants, `categoryService`/`transactionService`, hooks (`useCategories`, `useTransactions`, `useTransactionFilters`), `utils/summary.ts` (pure, ทดสอบด้วย Node แล้วผ่าน), shared `formatCurrency`/`formatDate`, components (categories/transactions/summary), `FinanceLayout` + 3 หน้า (`/finance/transactions|summary|categories`); build/lint ผ่าน ยังไม่ได้ทดสอบกับ Supabase จริง
 - Phase 7: ภาษาไทยทั้งแอป, Refactor, lazy load + vendor chunks, เทสต์ 18 เคส (`npm test`), ตรวจ DB แบบอ่านอย่างเดียว (ครบ 5 ตาราง, คอลัมน์ใหม่มี, RLS ซ่อนข้อมูลจากผู้ใช้ที่ไม่ล็อกอิน, seed RPC ปฏิเสธ anon), เอกสาร: `README.md`, `docs/adding-a-feature.md`, `docs/future-login.md`, `docs/testing.md`; lint/build/test ผ่าน
+- Phase 8 (โค้ด): migration `20261110000200_calorie.sql` (3 ตาราง + RLS + trigger + RPC seed 102 เมนู จาก `docs/features/calorie-foods-seed.csv`), `types/calorie.ts`, `constants.ts`, utils (`bmr`, `summary`, `dates`, `format` — pure), services (`profileService`, `foodService`, `entryService`), hooks (`useBmrProfile`, `useFoods`, `useFoodEntries`), components (BmrForm, BmrResultCards, FoodPicker, FoodEntryForm, MealSection, DaySummaryCard, DateNavigator, CalorieBar, FoodForm), pages 4 หน้า (`/calorie/food|summary|foods|bmr`), ลงทะเบียนใน Registry; เทสต์ใหม่ 21 เคส (รวม 39); lint/build/test ผ่าน ยังไม่ได้ทดสอบกับ Supabase จริง
 
 ## Migrations Applied
 - `20261109000000_core.sql` — ต้องรันก่อน (ผู้ใช้เป็นผู้รัน)
@@ -64,13 +77,17 @@
 - `20261109000200_todo_status_unique_limits.sql` — ผู้ใช้รันแล้ว
 - `20261109000300_randomizer.sql` — ผู้ใช้รันแล้ว
 - `20261109000400_finance.sql` — ผู้ใช้รันและทดสอบแล้ว (ผู้ใช้ยืนยัน Phase 6)
-- `20261110000100_finance_thai_categories.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase**
+- `20261110000100_finance_thai_categories.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase** (ผู้ใช้ยืนยัน Phase 7 แล้ว แต่ผมไม่ได้ตรวจว่ารันหรือยัง)
+- `20261110000200_calorie.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase** (Phase 8)
 
 ## Known Issues / TODO
 - ยังไม่ได้ตรวจ Responsive ด้วยตาจริงบนอุปกรณ์/เบราว์เซอร์ (ตรวจจากโค้ดเท่านั้น) และยังไม่ได้รันรายการตรวจด้วยมือใน `docs/testing.md` กับข้อมูลจริง (ผู้ใช้ต้องทำ)
 - ไม่มีเทสต์ระดับ UI/E2E (ต้องเพิ่มไลบรารี เช่น Vitest + Testing Library หรือ Playwright — รอผู้ใช้ยืนยัน)
 - ผู้ใช้จะขอปรับเพิ่มเติมหลังเห็นหน้าซอฟต์แวร์จริง (หลัง Phase 2 เป็นต้นไป)
+- Calorie: ตัวเลขแคลอรี่ของอาหารตั้งต้น 102 เมนูเป็นค่าประมาณที่ไม่ทราบที่มา ยังไม่ได้ตรวจกับแหล่งทางการ (แอปแสดงป้าย "ค่าโดยประมาณ"); ตัวคูณกิจกรรมยังไม่ได้เทียบกับบทความ Petcharavej (เปิดไม่ได้)
+- Calorie: การ upsert โปรไฟล์ (`onConflict: user_id`) และ RPC seed ยังไม่ได้ทดสอบกับ Supabase จริง; ถ้าผู้ใช้ลบอาหารจนหมด ระบบ seed กลับมาให้ตอนเปิดหน้าครั้งถัดไป
+- Calorie: ยังไม่ได้ตรวจ Responsive ด้วยตาจริง
 
 ## Next Step
-- ผู้ใช้: รัน `20261110000100_finance_thai_categories.sql` ใน SQL Editor, ไล่ตรวจตาม `docs/testing.md`, ยืนยัน Phase 7
-- จากนั้นโปรเจกต์ครบทุก Phase ตามแผน: ฟีเจอร์ถัดไป (Subscription / Debtor / Appointment) ต้องเริ่มจากเขียน spec ตามข้อ 2.2 ใน CLAUDE.md และรอผู้ใช้ยืนยัน; Login จริงดู `docs/future-login.md`
+- ผู้ใช้: รัน `20261110000200_calorie.sql` ใน SQL Editor (และ `20261110000100_finance_thai_categories.sql` ถ้ายังไม่ได้รัน) → ทดสอบตามหัวข้อ "แคลอรี่" ใน `docs/testing.md` → ยืนยัน Phase 8
+- Login จริงดู `docs/future-login.md`; ฟีเจอร์ Subscription / Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2

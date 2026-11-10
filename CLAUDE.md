@@ -32,6 +32,7 @@
 | To-do List | In scope | `docs/features/todo.md` | `src/features/todo/` |
 | Randomizer | In scope | `docs/features/randomizer.md` | `src/features/randomizer/` |
 | Income & Expense Tracker | In scope | `docs/features/finance.md` | `src/features/finance/` |
+| Calorie (BMR/TDEE + แคลอรี่จากอาหาร) | In scope (Phase 8) | `docs/features/calorie.md` | `src/features/calorie/` |
 | Subscription Management | Future (ห้ามสร้าง) | - | - |
 | Debtor Management (คนที่ยืมเงิน) | Future (ห้ามสร้าง) | - | - |
 | Appointment Management | Future (ห้ามสร้าง) | - | - |
