@@ -1,7 +1,7 @@
-import { Plus, RefreshCw, Settings2, Shuffle, type LucideIcon } from 'lucide-react'
+import { Plus, Settings2, Shuffle, type LucideIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { PageHeader } from '../../../shared/components/layout/PageHeader'
-import { Button, ConfirmDialog, EmptyState, Modal, Spinner } from '../../../shared/components/ui'
+import { Button, ConfirmDialog, EmptyState, ErrorState, Modal, Spinner } from '../../../shared/components/ui'
 import { GroupForm } from '../components/GroupForm'
 import { GroupList } from '../components/GroupList'
 import { ItemForm } from '../components/ItemForm'
@@ -83,7 +83,7 @@ export default function RandomizerPage() {
     <>
       <PageHeader>
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-xl font-semibold text-gray-900">Randomizer</h1>
+          <h1 className="text-xl font-semibold text-gray-900">สุ่มเลือก</h1>
           <Button onClick={() => setFormState({ kind: 'group' })}>
             <Plus className="h-4 w-4" />
             เพิ่มกลุ่ม
@@ -114,16 +114,7 @@ export default function RandomizerPage() {
         {loading && <Spinner />}
 
         {!loading && error && (
-          <EmptyState
-            title="โหลดข้อมูลไม่สำเร็จ"
-            description={error}
-            action={
-              <Button variant="secondary" onClick={reload}>
-                <RefreshCw className="h-4 w-4" />
-                ลองใหม่
-              </Button>
-            }
-          />
+          <ErrorState title="โหลดข้อมูลไม่สำเร็จ" description={error} onRetry={reload} />
         )}
 
         {!loading && !error && groups.length === 0 && (

@@ -1,3 +1,4 @@
+import { serviceFail, PG_UNIQUE_VIOLATION } from '../../../shared/lib/serviceError'
 import { supabase } from '../../../shared/lib/supabase'
 import type { ServiceResult } from '../../../shared/types/result'
 import { DUPLICATE_GROUP_MESSAGE } from '../constants'
@@ -7,12 +8,9 @@ const GROUPS = 'random_groups'
 const ITEMS = 'random_items'
 const GROUP_COLUMNS = 'id, name, created_at, updated_at'
 const ITEM_COLUMNS = 'id, group_id, label, created_at, updated_at'
-const UNIQUE_VIOLATION = '23505'
 
 function fail<T>(action: string, cause: { message: string; code?: string }): ServiceResult<T> {
-  if (cause.code === UNIQUE_VIOLATION) return { data: null, error: DUPLICATE_GROUP_MESSAGE }
-  console.error(`[randomService] ${action}:`, cause.message)
-  return { data: null, error: `${action}ไม่สำเร็จ กรุณาลองใหม่` }
+  return serviceFail<T>('randomService', action, cause, { [PG_UNIQUE_VIOLATION]: DUPLICATE_GROUP_MESSAGE })
 }
 
 export const randomService = {

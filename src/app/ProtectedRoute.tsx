@@ -1,7 +1,6 @@
-import { RefreshCw } from 'lucide-react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../shared/hooks/useAuth'
-import { Button, EmptyState, Spinner } from '../shared/components/ui'
+import { ErrorState, Spinner } from '../shared/components/ui'
 
 /** ครอบ route ที่ต้องมี user — ตอนนี้ user มาจาก anonymous sign-in อัตโนมัติ */
 export function ProtectedRoute() {
@@ -12,16 +11,7 @@ export function ProtectedRoute() {
   if (error) {
     return (
       <div className="mx-auto max-w-md p-6">
-        <EmptyState
-          title="เริ่มต้นระบบไม่สำเร็จ"
-          description={error}
-          action={
-            <Button variant="secondary" onClick={retry}>
-              <RefreshCw className="h-4 w-4" />
-              ลองใหม่
-            </Button>
-          }
-        />
+        <ErrorState title="เริ่มต้นระบบไม่สำเร็จ" description={error} onRetry={retry} />
       </div>
     )
   }

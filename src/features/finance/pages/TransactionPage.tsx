@@ -1,7 +1,7 @@
-import { PlusCircle, RefreshCw, Tags } from 'lucide-react'
+import { PlusCircle, Tags } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, CollapsibleSection, EmptyState, Spinner } from '../../../shared/components/ui'
+import { CollapsibleSection, EmptyState, ErrorState, Spinner } from '../../../shared/components/ui'
 import { ManagedTransactionTable } from '../components/transactions/ManagedTransactionTable'
 import { TransactionForm } from '../components/transactions/TransactionForm'
 import { TransactionTypeFilter } from '../components/transactions/TransactionTypeFilter'
@@ -20,16 +20,7 @@ export default function TransactionPage() {
 
   if (cats.error) {
     return (
-      <EmptyState
-        title="โหลดหมวดหมู่ไม่สำเร็จ"
-        description={cats.error}
-        action={
-          <Button variant="secondary" onClick={cats.reload}>
-            <RefreshCw className="h-4 w-4" />
-            ลองใหม่
-          </Button>
-        }
-      />
+      <ErrorState title="โหลดหมวดหมู่ไม่สำเร็จ" description={cats.error} onRetry={cats.reload} />
     )
   }
 
@@ -62,16 +53,7 @@ export default function TransactionPage() {
         {tx.firstLoad && <Spinner />}
 
         {!tx.firstLoad && tx.error && (
-          <EmptyState
-            title="โหลดรายการไม่สำเร็จ"
-            description={tx.error}
-            action={
-              <Button variant="secondary" onClick={tx.reload}>
-                <RefreshCw className="h-4 w-4" />
-                ลองใหม่
-              </Button>
-            }
-          />
+          <ErrorState title="โหลดรายการไม่สำเร็จ" description={tx.error} onRetry={tx.reload} />
         )}
 
         {!tx.firstLoad && !tx.error && tx.transactions.length === 0 && (

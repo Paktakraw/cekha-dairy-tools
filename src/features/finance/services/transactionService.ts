@@ -1,3 +1,4 @@
+import { serviceFail } from '../../../shared/lib/serviceError'
 import { supabase } from '../../../shared/lib/supabase'
 import type { ServiceResult } from '../../../shared/types/result'
 import type { Transaction, TransactionFilters, TransactionInput } from '../types/finance'
@@ -7,9 +8,8 @@ const COLUMNS = 'id, transaction_date, type, category_id, amount, description, c
 /** PostgREST จำกัดผลลัพธ์ต่อคำขอ (ค่าเริ่มต้น 1000) จึงดึงเป็นก้อน ๆ */
 const CHUNK_SIZE = 1000
 
-function fail<T>(action: string, cause: { message: string }): ServiceResult<T> {
-  console.error(`[transactionService] ${action}:`, cause.message)
-  return { data: null, error: `${action}ไม่สำเร็จ กรุณาลองใหม่` }
+function fail<T>(action: string, cause: { message: string; code?: string }): ServiceResult<T> {
+  return serviceFail<T>('transactionService', action, cause, {})
 }
 
 function toRow(input: TransactionInput) {

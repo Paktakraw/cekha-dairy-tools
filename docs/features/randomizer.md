@@ -20,7 +20,7 @@
 - เลือกได้มากกว่า 1 กลุ่มพร้อมกัน (Checkbox หรือ Tag) แล้วรวมรายการทั้งหมดเป็น **Current Pool**
 - สุ่ม 1 รายการจาก Current Pool
 - รายการที่สุ่มได้ย้ายไป **Excluded Pool** และไม่ถูกสุ่มซ้ำจนกว่าจะ Reset
-- ปุ่ม **Reset Session** คืนรายการทั้งหมดจาก Excluded Pool กลับเข้า Current Pool
+- ปุ่ม **เริ่มสุ่มใหม่** (Reset Session) คืนรายการทั้งหมดจาก Excluded Pool กลับเข้า Current Pool
 - เมื่อ Current Pool ว่าง ให้แสดงข้อความแนะนำให้ Reset
 - แสดงผลการสุ่มล่าสุดให้เห็นชัด และแสดงรายการใน Excluded Pool
 

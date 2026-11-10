@@ -1,10 +1,11 @@
 import { ListChecks } from 'lucide-react'
 import type { FeatureConfig } from '../../shared/types/feature'
-import TodoPage from './pages/TodoPage'
+import { TodoPage } from './lazyPages'
+
 
 export const todoFeature: FeatureConfig = {
   id: 'todo',
-  name: 'To-do List',
+  name: 'รายการงาน',
   description: 'จัดการรายการงานที่ต้องทำ',
   icon: ListChecks,
   path: '/todo',

@@ -1,6 +1,5 @@
-import { Check, X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Button, Input, Select } from '../../../../shared/components/ui'
+import { FormActions, Input, Select } from '../../../../shared/components/ui'
 import { todayISO } from '../../../../shared/utils/formatDate'
 import { AMOUNT_MAX, TRANSACTION_DESCRIPTION_MAX_LENGTH, TYPE_LABELS } from '../../constants'
 import type { Category, Transaction, TransactionInput, TransactionType } from '../../types/finance'
@@ -139,18 +138,7 @@ export function TransactionForm({ categories, transaction, onSubmit, onCancel, r
           {formError}
         </p>
       )}
-      <div className="flex justify-end gap-2">
-        {onCancel && (
-          <Button variant="secondary" onClick={onCancel} disabled={saving}>
-            <X className="h-4 w-4" />
-            ยกเลิก
-          </Button>
-        )}
-        <Button type="submit" disabled={saving}>
-          <Check className="h-4 w-4" />
-          บันทึก
-        </Button>
-      </div>
+      <FormActions saving={saving} onCancel={onCancel} />
     </form>
   )
 }

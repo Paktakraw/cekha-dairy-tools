@@ -1,6 +1,5 @@
-import { RefreshCw } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { Button, EmptyState, Pagination, Spinner } from '../../../shared/components/ui'
+import { EmptyState, ErrorState, Pagination, Spinner } from '../../../shared/components/ui'
 import { CategorySummary } from '../components/summary/CategorySummary'
 import { SummaryCards } from '../components/summary/SummaryCards'
 import { TransactionFilters } from '../components/summary/TransactionFilters'
@@ -28,21 +27,13 @@ export default function SummaryPage() {
   const failure = cats.error ?? (tx.firstLoad ? null : tx.error)
   if (failure) {
     return (
-      <EmptyState
+      <ErrorState
         title="โหลดข้อมูลไม่สำเร็จ"
         description={failure}
-        action={
-          <Button
-            variant="secondary"
-            onClick={() => {
-              if (cats.error) void cats.reload()
-              else tx.reload()
-            }}
-          >
-            <RefreshCw className="h-4 w-4" />
-            ลองใหม่
-          </Button>
-        }
+        onRetry={() => {
+          if (cats.error) void cats.reload()
+          else tx.reload()
+        }}
       />
     )
   }
@@ -79,7 +70,7 @@ export default function SummaryPage() {
             <EmptyState
               title={f.isFiltered ? 'ไม่มีรายการที่ตรงกับตัวกรอง' : 'ยังไม่มีรายการ'}
               description={
-                f.isFiltered ? 'ลองปรับหรือกด Reset Filter' : 'ไปที่ “บันทึกรายการ” เพื่อเพิ่มรายการแรก'
+                f.isFiltered ? 'ลองปรับตัวกรอง หรือกด “ล้างตัวกรอง”' : 'ไปที่ “บันทึกรายการ” เพื่อเพิ่มรายการแรก'
               }
             />
           ) : (

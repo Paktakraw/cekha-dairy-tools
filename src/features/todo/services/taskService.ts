@@ -1,3 +1,4 @@
+import { serviceFail, PG_UNIQUE_VIOLATION } from '../../../shared/lib/serviceError'
 import { supabase } from '../../../shared/lib/supabase'
 import type { ServiceResult } from '../../../shared/types/result'
 import { DUPLICATE_TITLE_MESSAGE, PAGE_SIZE } from '../constants'
@@ -5,7 +6,6 @@ import type { Task, TaskInput, TaskPage, TaskStatus } from '../types/task'
 
 const TABLE = 'tasks'
 const COLUMNS = 'id, title, description, status, completed_at, created_at, updated_at'
-const UNIQUE_VIOLATION = '23505'
 
 function toPayload({ title, description }: TaskInput) {
   const trimmedDescription = description.trim()
@@ -13,9 +13,7 @@ function toPayload({ title, description }: TaskInput) {
 }
 
 function fail<T>(action: string, cause: { message: string; code?: string }): ServiceResult<T> {
-  if (cause.code === UNIQUE_VIOLATION) return { data: null, error: DUPLICATE_TITLE_MESSAGE }
-  console.error(`[taskService] ${action}:`, cause.message)
-  return { data: null, error: `${action}ไม่สำเร็จ กรุณาลองใหม่` }
+  return serviceFail<T>('taskService', action, cause, { [PG_UNIQUE_VIOLATION]: DUPLICATE_TITLE_MESSAGE })
 }
 
 export const taskService = {

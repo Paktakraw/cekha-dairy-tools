@@ -18,8 +18,9 @@
 - ห้ามลบหมวดหมู่ที่มี Transaction อ้างอิงอยู่ และแจ้งผู้ใช้ให้เข้าใจว่าทำไมลบไม่ได้
 - แก้ชื่อหมวดหมู่แล้ว Transaction เดิมต้องไม่หาย
 - หมวดหมู่เริ่มต้น:
-  - Income: Salary, Freelance, Investment, Other Income
-  - Expense: Food & Beverage, Transportation, Shopping, Utilities, Entertainment, Healthcare, Other Expense
+  - รายรับ: เงินเดือน, งานฟรีแลนซ์, การลงทุน, รายรับอื่น ๆ
+  - รายจ่าย: อาหารและเครื่องดื่ม, การเดินทาง, ช้อปปิ้ง, ค่าสาธารณูปโภค, ความบันเทิง, สุขภาพ, รายจ่ายอื่น ๆ
+  - (เดิมเป็นชื่ออังกฤษ ปรับเป็นภาษาไทยด้วย migration `20261110000100_finance_thai_categories.sql`)
 
 ### Transactions
 - ฟิลด์:
@@ -36,7 +37,7 @@
 ### Summary
 - **Summary Cards:** Total Income, Total Expense, Total Transactions (ไม่แสดง Net Balance ตามคำขอผู้ใช้)
 - **ตารางประวัติ:** Date, Type, Category, Description, Amount, Action (แก้ไข/ลบ) เรียงจากวันที่ล่าสุดก่อน
-- **Filter:** ช่วงวันที่, เดือน/ปี, ประเภท, หมวดหมู่, ค้นหาจาก Description, ปุ่ม Reset Filter
+- **Filter:** ช่วงวันที่, เดือน/ปี, ประเภท, หมวดหมู่, ค้นหาจาก Description, ปุ่ม "ล้างตัวกรอง" (Reset Filter)
 - Summary Cards คำนวณตาม Filter ที่เลือก
 - **Category Summary:** ยอดรวมแยกตามหมวดหมู่ ให้เห็นว่าหมวดไหนใช้จ่ายมากที่สุด
 - Empty State เมื่อไม่มีข้อมูลตรงกับ Filter

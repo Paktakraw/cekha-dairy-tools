@@ -5,8 +5,8 @@
 
 ## Current Status
 - **Current Phase:** Phase 7 — Refactoring, Testing & Documentation
-- **Status:** Not started (Phase 6 ผู้ใช้ยืนยันเสร็จแล้ว)
-- **Last Updated:** 2026-11-09
+- **Status:** งานเสร็จ — รอผู้ใช้รัน migration ภาษาไทย, ตรวจด้วยมือตาม `docs/testing.md` แล้วยืนยัน
+- **Last Updated:** 2026-11-10
 
 ## Phase Checklist
 - [x] Phase 0: Architecture Review (อ่าน spec ทุกไฟล์ใน `docs/features/` + ตอบ Open Questions)
@@ -19,7 +19,7 @@
   - [x] Categories
   - [x] Transactions
   - [x] Summary & Filters
-- [ ] Phase 7: Refactoring, Testing & Documentation
+- [x] Phase 7: Refactoring, Testing & Documentation
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -40,6 +40,10 @@
 - 2026-11-09 — Finance UI — section "เพิ่มรายการ" และ "ตัวกรอง" ตั้งค่าเริ่มต้นเป็นย่อไว้เสมอ (`defaultOpen={false}`, ไม่จำสถานะข้ามการเปิดหน้า) — ตามคำขอผู้ใช้
 - 2026-11-09 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 6 เสร็จแล้ว และสั่งให้ session ถัดไปเริ่ม Phase 7 ได้ทันทีโดยไม่ต้องรอยืนยันอีก — ผู้ใช้จบงานวันนี้ที่ Phase 6
 - 2026-11-09 — Deploy — เพิ่ม `vercel.json` (SPA rewrite ให้ React Router ทำงานเมื่อรีเฟรชที่ path ย่อย); Env บน Vercel: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+- 2026-11-10 — ภาษา — UI ทั้งแอปเป็นภาษาไทย: ชื่อแอป "เสขาประจำวัน" (เดิมใช้ "พอร์ทัลชีวิตประจำวัน" ผู้ใช้สั่งเปลี่ยนเมื่อ 2026-11-10), ฟีเจอร์ "รายการงาน" / "สุ่มเลือก" / "รายรับ-รายจ่าย", ปุ่ม "ล้างตัวกรอง" / "เริ่มสุ่มใหม่", ข้อความ Login/Auth, `<html lang="th">`, หมวดหมู่เริ่มต้นเป็นไทย (migration ใหม่ เปลี่ยนชื่อเฉพาะแถวที่เป็นชื่อเริ่มต้นเดิมเป๊ะ ๆ) — ตามคำขอผู้ใช้; เพิ่มกฎใน CLAUDE.md ข้อ 5
+- 2026-11-10 — Refactor — รวมโค้ดซ้ำ: `serviceFail` (error ของ Service 4 ไฟล์), `ErrorState` (กล่อง error+ลองใหม่ 6 จุด), `FormActions` (ปุ่มยกเลิก/บันทึก 4 ฟอร์ม); ลบ `netBalance` ที่ไม่ใช้; ลบ .gitkeep
+- 2026-11-10 — Bundle — lazy load หน้าตามฟีเจอร์ (`lazyPages.ts`) + แยก vendor chunk (react / router / supabase) ผ่าน `manualChunks` ใน vite.config.ts: bundle หลักจาก 553 kB เหลือ 27 kB และคำเตือน chunk ใหญ่เกินหายไป
+- 2026-11-10 — เทสต์ — ใช้ `node:test` ของ Node (ไม่ติดตั้งไลบรารีเพิ่ม) เทสต์ pure functions 18 เคส ใน `tests/` รันด้วย `npm test`; ไม่ทำ UI/E2E test เพราะกฎโปรเจกต์ไม่ให้เพิ่มไลบรารีโดยไม่ยืนยัน
 
 ## Completed Work
 - Phase 0: อ่าน spec, ตัดสิน Open Questions, อัปเดต spec ใน `docs/features/`
@@ -52,6 +56,7 @@
 - Phase 5 (โค้ด): migration `20261109000300_randomizer.sql`, `types/random.ts`, `utils/pool.ts` (pure: buildPool/splitPool/pickRandomItem — ทดสอบด้วย Node แล้วผ่าน), `randomService`, `useGroups` (CRUD), `useRandomSession` (derive pool จาก items+excludedIds ตาม Decisions Log), components (GroupSelector, RandomPicker, ExcludedList, GroupList, ItemList, GroupForm, ItemForm, NameForm), `RandomizerPage` 2 แท็บ; build/lint ผ่าน ยังไม่ได้ทดสอบกับ Supabase จริง
 - Phase 5: Randomizer เสร็จและผู้ใช้ยืนยันแล้ว (รวม animation สุ่ม ~1 วินาที และยุบ/ขยายกลุ่ม)
 - Phase 6 (โค้ด): migration `20261109000400_finance.sql` (categories, transactions, composite FK, RLS, RPC seed), types/constants, `categoryService`/`transactionService`, hooks (`useCategories`, `useTransactions`, `useTransactionFilters`), `utils/summary.ts` (pure, ทดสอบด้วย Node แล้วผ่าน), shared `formatCurrency`/`formatDate`, components (categories/transactions/summary), `FinanceLayout` + 3 หน้า (`/finance/transactions|summary|categories`); build/lint ผ่าน ยังไม่ได้ทดสอบกับ Supabase จริง
+- Phase 7: ภาษาไทยทั้งแอป, Refactor, lazy load + vendor chunks, เทสต์ 18 เคส (`npm test`), ตรวจ DB แบบอ่านอย่างเดียว (ครบ 5 ตาราง, คอลัมน์ใหม่มี, RLS ซ่อนข้อมูลจากผู้ใช้ที่ไม่ล็อกอิน, seed RPC ปฏิเสธ anon), เอกสาร: `README.md`, `docs/adding-a-feature.md`, `docs/future-login.md`, `docs/testing.md`; lint/build/test ผ่าน
 
 ## Migrations Applied
 - `20261109000000_core.sql` — ต้องรันก่อน (ผู้ใช้เป็นผู้รัน)
@@ -59,10 +64,13 @@
 - `20261109000200_todo_status_unique_limits.sql` — ผู้ใช้รันแล้ว
 - `20261109000300_randomizer.sql` — ผู้ใช้รันแล้ว
 - `20261109000400_finance.sql` — ผู้ใช้รันและทดสอบแล้ว (ผู้ใช้ยืนยัน Phase 6)
+- `20261110000100_finance_thai_categories.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase**
 
 ## Known Issues / TODO
+- ยังไม่ได้ตรวจ Responsive ด้วยตาจริงบนอุปกรณ์/เบราว์เซอร์ (ตรวจจากโค้ดเท่านั้น) และยังไม่ได้รันรายการตรวจด้วยมือใน `docs/testing.md` กับข้อมูลจริง (ผู้ใช้ต้องทำ)
+- ไม่มีเทสต์ระดับ UI/E2E (ต้องเพิ่มไลบรารี เช่น Vitest + Testing Library หรือ Playwright — รอผู้ใช้ยืนยัน)
 - ผู้ใช้จะขอปรับเพิ่มเติมหลังเห็นหน้าซอฟต์แวร์จริง (หลัง Phase 2 เป็นต้นไป)
 
 ## Next Step
-- เริ่ม Phase 7 ได้ทันที: ตรวจ Structure/Duplication/Error Handling/Responsive, ทดสอบ CRUD และ Edge Cases ทุกฟีเจอร์, เขียน `README.md`, `docs/adding-a-feature.md`, สรุปแนวทางเพิ่ม Login จริง
-- ผู้ใช้กำลังจะ push ขึ้น GitHub และ deploy บน Vercel (ดูขั้นตอนใน Decisions Log)
+- ผู้ใช้: รัน `20261110000100_finance_thai_categories.sql` ใน SQL Editor, ไล่ตรวจตาม `docs/testing.md`, ยืนยัน Phase 7
+- จากนั้นโปรเจกต์ครบทุก Phase ตามแผน: ฟีเจอร์ถัดไป (Subscription / Debtor / Appointment) ต้องเริ่มจากเขียน spec ตามข้อ 2.2 ใน CLAUDE.md และรอผู้ใช้ยืนยัน; Login จริงดู `docs/future-login.md`

@@ -1,10 +1,8 @@
 import { Wallet } from 'lucide-react'
 import { Navigate } from 'react-router-dom'
 import type { FeatureConfig } from '../../shared/types/feature'
-import CategoryPage from './pages/CategoryPage'
-import FinanceLayout from './pages/FinanceLayout'
-import SummaryPage from './pages/SummaryPage'
-import TransactionPage from './pages/TransactionPage'
+import { FinanceLayout, TransactionPage, SummaryPage, CategoryPage } from './lazyPages'
+
 
 export const financeFeature: FeatureConfig = {
   id: 'finance',

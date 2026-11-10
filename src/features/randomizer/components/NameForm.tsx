@@ -1,6 +1,5 @@
-import { Check, X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Button, Input } from '../../../shared/components/ui'
+import { FormActions, Input } from '../../../shared/components/ui'
 
 interface NameFormProps {
   label: string
@@ -45,16 +44,7 @@ export function NameForm({ label, initialValue = '', maxLength, emptyMessage, on
           setError(undefined)
         }}
       />
-      <div className="flex justify-end gap-2">
-        <Button variant="secondary" onClick={onCancel} disabled={saving}>
-          <X className="h-4 w-4" />
-          ยกเลิก
-        </Button>
-        <Button type="submit" disabled={saving}>
-          <Check className="h-4 w-4" />
-          บันทึก
-        </Button>
-      </div>
+      <FormActions saving={saving} onCancel={onCancel} />
     </form>
   )
 }

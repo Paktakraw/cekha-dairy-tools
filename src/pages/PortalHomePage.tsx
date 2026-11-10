@@ -5,7 +5,7 @@ import type { FeatureConfig } from '../shared/types/feature'
 export default function PortalHomePage({ features }: { features: FeatureConfig[] }) {
   return (
     <div>
-      <h1 className="text-xl font-semibold text-gray-900">Daily Life Portal</h1>
+      <h1 className="text-xl font-semibold text-gray-900">เสขาประจำวัน</h1>
       <p className="mt-1 text-sm text-gray-500">เลือกเครื่องมือที่ต้องการใช้งาน</p>
       <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
         {features.map(({ id, name, description, icon: Icon, path }) => (

@@ -1,6 +1,6 @@
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
-import { Button, ConfirmDialog, EmptyState, Modal, Spinner } from '../../../shared/components/ui'
+import { Button, ConfirmDialog, ErrorState, Modal, Spinner } from '../../../shared/components/ui'
 import { CategoryForm } from '../components/categories/CategoryForm'
 import { CategoryTable } from '../components/categories/CategoryTable'
 import { TYPE_LABELS } from '../constants'
@@ -40,16 +40,7 @@ export default function CategoryPage() {
         {loading && <Spinner />}
 
         {!loading && error && (
-          <EmptyState
-            title="โหลดหมวดหมู่ไม่สำเร็จ"
-            description={error}
-            action={
-              <Button variant="secondary" onClick={reload}>
-                <RefreshCw className="h-4 w-4" />
-                ลองใหม่
-              </Button>
-            }
-          />
+          <ErrorState title="โหลดหมวดหมู่ไม่สำเร็จ" description={error} onRetry={reload} />
         )}
 
         {!loading && !error && (

@@ -1,6 +1,5 @@
-import { Check, X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Button, Input, Select, Textarea } from '../../../../shared/components/ui'
+import { FormActions, Input, Select, Textarea } from '../../../../shared/components/ui'
 import { CATEGORY_DESCRIPTION_MAX_LENGTH, CATEGORY_NAME_MAX_LENGTH, DUPLICATE_CATEGORY_MESSAGE, TYPE_LABELS } from '../../constants'
 import type { Category, CategoryInput, TransactionType } from '../../types/finance'
 
@@ -72,16 +71,7 @@ export function CategoryForm({ category, defaultType = 'expense', onSubmit, onCa
           {formError}
         </p>
       )}
-      <div className="flex justify-end gap-2">
-        <Button variant="secondary" onClick={onCancel} disabled={saving}>
-          <X className="h-4 w-4" />
-          ยกเลิก
-        </Button>
-        <Button type="submit" disabled={saving}>
-          <Check className="h-4 w-4" />
-          บันทึก
-        </Button>
-      </div>
+      <FormActions saving={saving} onCancel={onCancel} />
     </form>
   )
 }

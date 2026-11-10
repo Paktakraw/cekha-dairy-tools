@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data: existing, error: sessionError } = await supabase.auth.getSession()
       if (cancelled) return
       if (sessionError) {
-        setError('ไม่สามารถตรวจสอบ session ได้ กรุณาลองใหม่')
+        setError('ไม่สามารถตรวจสอบเซสชันได้ กรุณาลองใหม่')
         setLoading(false)
         return
       }
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data: created, error: signInError } = await supabase.auth.signInAnonymously()
       if (cancelled) return
       if (signInError) {
-        setError('เข้าสู่ระบบแบบ anonymous ไม่สำเร็จ ตรวจสอบว่าเปิด Anonymous Sign-ins ใน Supabase แล้ว')
+        setError('เข้าสู่ระบบแบบไม่ระบุตัวตนไม่สำเร็จ ตรวจสอบว่าเปิด “Anonymous Sign-ins” ในหน้า Authentication ของ Supabase แล้ว')
       } else {
         setSession(created.session)
       }

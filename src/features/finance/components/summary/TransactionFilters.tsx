@@ -81,7 +81,7 @@ export function TransactionFilters({
       <div className="mt-3 flex justify-end">
         <Button variant="secondary" onClick={onReset} disabled={!isFiltered}>
           <RotateCcw className="h-4 w-4" />
-          Reset Filter
+          ล้างตัวกรอง
         </Button>
       </div>
     </CollapsibleSection>

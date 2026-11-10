@@ -77,7 +77,11 @@
 ### 4.3 Project Structure (ปรับได้หากมีเหตุผลทาง Technical)
 ```
 docs/
-└── features/            (spec ของแต่ละฟีเจอร์ + _template.md)
+├── features/            (spec ของแต่ละฟีเจอร์ + _template.md)
+├── adding-a-feature.md  (คู่มือเพิ่มฟีเจอร์)
+├── future-login.md      (แนวทางเพิ่ม Login จริง)
+└── testing.md           (เทสต์ + รายการตรวจด้วยมือ)
+tests/                   (เทสต์ของ pure functions รันด้วย `npm test` ใช้ node:test ไม่ต้องติดตั้งไลบรารี)
 src/
 ├── app/
 │   ├── App.tsx
@@ -113,6 +117,7 @@ supabase/
 ```
 
 ## 5. Design & UI/UX (ใช้ร่วมกันทุกฟีเจอร์)
+- **ภาษา: ข้อความที่ผู้ใช้เห็นทั้งหมดเป็นภาษาไทย** (ชื่อแอป ชื่อฟีเจอร์ ปุ่ม ข้อความ Error/Toast/Empty State, tooltip, aria-label, ข้อมูลเริ่มต้นในฐานข้อมูล เช่น หมวดหมู่) ยกเว้นชื่อเฉพาะของผลิตภัณฑ์ (เช่น Supabase) และคำศัพท์ทางเทคนิคที่ไม่มีคำไทยที่เข้าใจตรงกัน; ชื่อตัวแปร/ไฟล์/โค้ดยังเป็นภาษาอังกฤษ
 - Minimalist: ขาว ดำ เทา เป็นหลัก หลีกเลี่ยงสีฉูดฉาดและ Animation ที่ไม่จำเป็น
   (อนุญาตสีเขียว/แดงโทนหม่นเฉพาะตัวเลขรายรับ/รายจ่าย ถ้าช่วยให้อ่านง่ายขึ้น)
 - Layout เดียวกันทุกหน้า: Sidebar (Desktop) / เมนูแบบพับ (Mobile) + Main Content
@@ -147,6 +152,8 @@ supabase/
 - แต่ไม่แตก Component เล็กเกินไปโดยไม่มีเหตุผล
 - ตั้งชื่อให้สื่อความหมาย
 - ไม่ Hardcode Credentials ใช้ .env และมี .env.example ที่ไม่มีค่าจริง
+- logic ล้วน ๆ (คำนวณ สุ่ม จัดกลุ่ม) แยกเป็น pure function ใน `utils/` และมีเทสต์ใน `tests/`
+- ก่อนส่งงานรัน `npm run lint`, `npm run build`, `npm test` ให้ผ่านทั้งหมด
 
 ## 8. Development Phases
 Phase 0: Architecture Review

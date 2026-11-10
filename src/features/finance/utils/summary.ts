@@ -36,7 +36,6 @@ export function summarize(transactions: Transaction[], categories: Category[]): 
   return {
     totalIncome: incomeCents / 100,
     totalExpense: expenseCents / 100,
-    netBalance: (incomeCents - expenseCents) / 100,
     transactionCount: transactions.length,
     byCategory,
   }

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import type { FeatureConfig } from '../../types/feature'
+import { Spinner } from '../ui'
 import { Header } from './Header'
 import { Sidebar } from './Sidebar'
 
@@ -51,7 +52,9 @@ export function MainLayout({ features }: { features: FeatureConfig[] }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Header onMenuClick={() => setMenuOpen(true)} />
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <Outlet />
+          <Suspense fallback={<Spinner />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

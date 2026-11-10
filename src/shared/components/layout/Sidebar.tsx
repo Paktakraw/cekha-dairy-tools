@@ -40,7 +40,7 @@ export function Sidebar({ features, open, onClose, collapsed, onToggleCollapse }
           }`}
         >
           <span className={`font-semibold whitespace-nowrap text-gray-900 ${collapsed ? 'lg:hidden' : ''}`}>
-            Daily Life Portal
+            เสขาประจำวัน
           </span>
           <IconButton icon={X} label="ปิดเมนู" className="lg:hidden" onClick={onClose} />
           <div className="hidden lg:block">

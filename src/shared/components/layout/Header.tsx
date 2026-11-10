@@ -7,7 +7,7 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-gray-200 bg-white px-4 lg:hidden">
       <IconButton icon={Menu} label="เปิดเมนู" onClick={onMenuClick} />
-      <span className="font-semibold text-gray-900">Daily Life Portal</span>
+      <span className="font-semibold text-gray-900">เสขาประจำวัน</span>
       <Link
         to="/"
         title="หน้าหลัก"

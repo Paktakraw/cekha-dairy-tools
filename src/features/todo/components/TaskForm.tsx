@@ -1,6 +1,5 @@
-import { Check, X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Button, Input, Textarea } from '../../../shared/components/ui'
+import { FormActions, Input, Textarea } from '../../../shared/components/ui'
 import { DESCRIPTION_MAX_LENGTH, DUPLICATE_TITLE_MESSAGE, TITLE_MAX_LENGTH } from '../constants'
 import type { Task, TaskInput } from '../types/task'
 
@@ -64,16 +63,7 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
           {formError}
         </p>
       )}
-      <div className="flex justify-end gap-2">
-        <Button variant="secondary" onClick={onCancel} disabled={saving}>
-          <X className="h-4 w-4" />
-          ยกเลิก
-        </Button>
-        <Button type="submit" disabled={saving}>
-          <Check className="h-4 w-4" />
-          บันทึก
-        </Button>
-      </div>
+      <FormActions saving={saving} onCancel={onCancel} />
     </form>
   )
 }

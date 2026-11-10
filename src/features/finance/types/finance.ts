@@ -72,7 +72,6 @@ export interface CategoryTotal {
 export interface Summary {
   totalIncome: number
   totalExpense: number
-  netBalance: number
   transactionCount: number
   /** เรียงจากยอดมากไปน้อย */
   byCategory: CategoryTotal[]

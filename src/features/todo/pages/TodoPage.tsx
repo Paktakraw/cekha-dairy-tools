@@ -1,7 +1,7 @@
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { PageHeader } from '../../../shared/components/layout/PageHeader'
-import { Button, ConfirmDialog, EmptyState, Modal, Pagination, Spinner } from '../../../shared/components/ui'
+import { Button, ConfirmDialog, EmptyState, ErrorState, Modal, Pagination, Spinner } from '../../../shared/components/ui'
 import { TaskForm } from '../components/TaskForm'
 import { TaskList } from '../components/TaskList'
 import { TaskStatusFilter } from '../components/TaskStatusFilter'
@@ -51,7 +51,7 @@ export default function TodoPage() {
     <>
       <PageHeader>
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-xl font-semibold text-gray-900">To-do List</h1>
+          <h1 className="text-xl font-semibold text-gray-900">รายการงาน</h1>
           <Button onClick={() => setFormState('new')}>
             <Plus className="h-4 w-4" />
             เพิ่มงาน
@@ -68,16 +68,7 @@ export default function TodoPage() {
         {firstLoad && <Spinner />}
 
         {!firstLoad && error && (
-          <EmptyState
-            title="โหลดรายการงานไม่สำเร็จ"
-            description={error}
-            action={
-              <Button variant="secondary" onClick={reload}>
-                <RefreshCw className="h-4 w-4" />
-                ลองใหม่
-              </Button>
-            }
-          />
+          <ErrorState title="โหลดรายการงานไม่สำเร็จ" description={error} onRetry={reload} />
         )}
 
         {!firstLoad && !error && total === 0 && !loading && (

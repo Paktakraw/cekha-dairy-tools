@@ -21,7 +21,7 @@ interface RandomPickerProps {
 function statusMessage(hasSelection: boolean, poolCount: number, currentCount: number): string {
   if (!hasSelection) return 'เลือกอย่างน้อย 1 กลุ่มก่อนสุ่ม'
   if (poolCount === 0) return 'กลุ่มที่เลือกยังไม่มีรายการ ไปเพิ่มรายการที่แท็บ “จัดการกลุ่ม”'
-  if (currentCount === 0) return 'สุ่มครบทุกรายการแล้ว กด Reset Session เพื่อเริ่มสุ่มใหม่'
+  if (currentCount === 0) return 'สุ่มครบทุกรายการแล้ว กด “เริ่มสุ่มใหม่” เพื่อสุ่มอีกครั้ง'
   return `เหลือ ${currentCount} จาก ${poolCount} รายการที่ยังสุ่มได้`
 }
 
@@ -61,7 +61,7 @@ export function RandomPicker({
         </Button>
         <Button variant="secondary" onClick={onReset} disabled={spinning}>
           <RotateCcw className="h-4 w-4" />
-          Reset Session
+          เริ่มสุ่มใหม่
         </Button>
       </div>
       <p className="text-sm text-gray-500">{statusMessage(hasSelection, poolCount, currentCount)}</p>
