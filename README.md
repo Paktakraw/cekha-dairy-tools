@@ -97,6 +97,21 @@ tests/                   เทสต์ของ pure functions
 
 หมายเหตุ: ค่า `VITE_*` ถูกฝังตอน build ถ้าแก้ค่าบน Vercel ต้อง Redeploy ใหม่
 
+## การ release
+
+Release owner ของ repo ดูที่ [.github/CODEOWNERS](.github/CODEOWNERS)
+
+- **รูปแบบเวอร์ชัน:** tag เป็น `vMAJOR.MINOR.PATCH` (เช่น `v0.1.0`) — MAJOR เมื่อมี breaking change, MINOR เมื่อเพิ่มฟีเจอร์, PATCH เมื่อแก้บั๊ก/ปรับปรุงเล็กน้อย
+- **Label ของ Pull Request:** `breaking-change`, `feature`, `improvement`, `bug` (ใส่ 1 อัน) และ `ignore-for-release` สำหรับ PR ที่ไม่ต้องขึ้นใน release notes (เช่น แก้เอกสารภายใน) หมวดของ release notes ตั้งไว้ใน [.github/release.yml](.github/release.yml)
+
+ขั้นตอน (ทำโดย release owner):
+
+1. ตรวจว่า `main` ล่าสุดและ `npm run lint`, `npm run build`, `npm test` ผ่าน
+2. ตรวจว่า PR ที่ merge หลัง release ก่อนหน้ามี label ครบ
+3. บน GitHub: **Releases → Draft a new release** → สร้าง tag ใหม่ `vX.Y.Z` จาก `main`
+4. กด **Generate release notes** ตรวจข้อความ แล้ว **Publish release**
+5. อัปเดตเลขเวอร์ชันใน `package.json` ให้ตรงกับ tag (ถ้าต้องการ)
+
 ## เอกสารเพิ่มเติม
 
 - [docs/adding-a-feature.md](docs/adding-a-feature.md): เพิ่มฟีเจอร์ใหม่ทีละขั้น
