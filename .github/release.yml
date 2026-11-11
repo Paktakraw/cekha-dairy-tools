@@ -1,0 +1,22 @@
+# ตั้งค่า release notes อัตโนมัติของ GitHub (Generate release notes)
+# จัดกลุ่ม Pull Request ตาม label ตามลำดับด้านล่าง
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: Breaking changes
+      labels:
+        - breaking-change
+    - title: New features
+      labels:
+        - feature
+    - title: Improvements
+      labels:
+        - improvement
+    - title: Bug fixes
+      labels:
+        - bug
+    - title: Other changes
+      labels:
+        - "*"
