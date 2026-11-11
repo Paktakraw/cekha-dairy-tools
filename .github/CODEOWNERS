@@ -1,0 +1,10 @@
+# CODEOWNERS — ผู้รับผิดชอบ repo และ release
+#
+# Release owner: ผู้ที่มีหน้าที่สร้าง tag (vMAJOR.MINOR.PATCH) และ release ของ repo นี้
+# TODO: กรอกชื่อ GitHub username (ขึ้นต้นด้วย @) หรือทีม (@org/team) แล้วลบเครื่องหมาย # หน้าบรรทัดด้านล่าง
+#
+# * @ใส่ชื่อ-release-owner-ที่นี่
+#
+# ตัวอย่างการกำหนดเจ้าของเฉพาะส่วน (ไม่บังคับ):
+# /supabase/  @ชื่อ-ผู้ดูแล-database
+# /docs/      @ชื่อ-ผู้ดูแล-เอกสาร
