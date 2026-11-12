@@ -5,7 +5,7 @@
 
 ## Current Status
 - **Current Phase:** Phase 9 — Unit Price Comparator (ร่าง spec)
-- **Status:** ร่าง spec `docs/features/unit-price.md` แล้ว — รอผู้ใช้ตอบ Open Questions และยืนยัน spec ก่อนเขียนโค้ด (Phase 8 ปิดแล้ว)
+- **Status:** ร่าง spec `docs/features/unit-price.md` แล้ว — ตอบ Open Questions แล้ว รอผู้ใช้พิมพ์ "ยืนยัน spec" ก่อนเขียนโค้ด (Phase 8 ปิดแล้ว)
 - **Last Updated:** 2026-11-12
 
 ## Phase Checklist
@@ -54,6 +54,7 @@
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 7 ว่าทุกอย่างโอเค (ผมไม่ได้ตรวจสอบเองว่ารัน migration ภาษาไทยแล้วหรือยัง จึงคงสถานะ migration ไว้ตามเดิมด้านล่าง)
 - 2026-11-10 — Calorie: แหล่งข้อมูลอาหาร — ไม่ใช้ API ภายนอก (ไม่มี API อาหารไทยที่ฟรี+ใบอนุญาตชัดเจน; ThaiFCD และ HDmall ห้ามคัดลอกโดยไม่ได้รับอนุญาต) ใช้ตาราง `foods` ต่อผู้ใช้ + ข้อมูลตั้งต้น 102 เมนูจากไฟล์ที่ผู้ใช้ให้ (แก้สะกดและตัดรายการซ้ำแล้ว ที่ `docs/features/calorie-foods-seed.csv`, ค่าโดยประมาณ ยังไม่ตรวจกับแหล่งทางการ) seed ผ่าน RPC แบบเดียวกับ Finance; เพิ่ม TDEE (dropdown ระดับกิจกรรม); `food_entries` เก็บสำเนาชื่อ/แคลอรี่ตอนบันทึก — ตามคำขอผู้ใช้; อัปเดต spec แล้ว
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 8 (แคลอรี่) เสร็จแล้ว
+- 2026-11-12 — ตอบ Open Questions Unit Price — ไม่เก็บประวัติ (ไม่มี DB), สูงสุด 3 ตัวเลือก, ไม่มีช่องจำนวนแพ็ก, ผู้ใช้เลือกหน่วยผลลัพธ์เองได้, หน่วยนับ "ชิ้น" คำเดียว, ชื่อเมนู "เทียบราคาต่อหน่วย" `/unit-price`; อัปเดต spec แล้ว — ยังรอผู้ใช้พิมพ์ "ยืนยัน spec"
 - 2026-11-12 — ฟีเจอร์ใหม่ Unit Price Comparator — ผู้ใช้ขอโมดูลเทียบราคาต่อหน่วย (2–3 ตัวเลือก; กรัม/มก./กก., มล./ล., ชิ้น); ร่าง spec `docs/features/unit-price.md` (id `unit-price`, ไม่มี Database ใน v1, คำนวณฝั่ง Client เป็น pure function) และเพิ่มใน Feature Index เป็น Phase 9 — รอผู้ใช้ตอบ Open Questions และยืนยัน spec ตาม CLAUDE.md ข้อ 2.2
 - 2026-11-10 — การยืนยัน spec Calorie — ผู้ใช้ตอบ Open Questions: บันทึกโปรไฟล์ลง Supabase, ใช้ตัวคูณกิจกรรมมาตรฐาน, สูตร Mifflin-St Jeor อย่างเดียว, ดูย้อนหลังได้ทุกวัน + สรุปเทียบรายสัปดาห์/รายเดือน (เพิ่มจาก spec เดิม), ชื่อเมนู "แคลอรี่" และพิมพ์ "ยืนยัน spec"
 - 2026-11-10 — Calorie: รายละเอียดการออกแบบ — TDEE = BMR ที่ปัดแล้ว × ตัวคูณ (ผู้ใช้ตรวจสอบเองได้); แคลอรี่ต่อรายการปัดครั้งเดียวด้วยจำนวนเต็ม (`entryCalories`); สัปดาห์เริ่มวันจันทร์; ค่าเฉลี่ยต่อวันคิดเฉพาะวันที่มีบันทึก; สรุปช่วงคำนวณฝั่ง client (pure function) เหมือน Finance; seed อาหารผ่าน RPC `seed_default_foods()` ต่อผู้ใช้ (RLS ไม่ต้องมีตารางกลาง); `food_entries` เก็บสำเนาชื่อ/หน่วย/แคลอรี่ (`food_id` เป็น ON DELETE SET NULL); โปรไฟล์ใช้ upsert `onConflict: user_id`; เพิ่ม `formatMonth` ใน shared
@@ -92,5 +93,5 @@
 - Calorie: ยังไม่ได้ตรวจ Responsive ด้วยตาจริง
 
 ## Next Step
-- ผู้ใช้: ตอบ Open Questions ใน `docs/features/unit-price.md` และพิมพ์ "ยืนยัน spec" → จึงเริ่ม Phase 9 (ฟีเจอร์ใหม่ทำบน branch `feature/unit-price-comparator`)
+- ผู้ใช้: พิมพ์ "ยืนยัน spec" หลังตรวจ `docs/features/unit-price.md` (ตอบ Open Questions แล้ว) → จึงเริ่ม Phase 9 (ฟีเจอร์ใหม่ทำบน branch `feature/unit-price-comparator`)
 - Login จริงดู `docs/future-login.md`; ฟีเจอร์ Subscription / Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
