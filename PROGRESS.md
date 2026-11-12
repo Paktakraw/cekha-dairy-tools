@@ -4,8 +4,8 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 9 — Unit Price Comparator (ร่าง spec)
-- **Status:** ร่าง spec `docs/features/unit-price.md` แล้ว — ตอบ Open Questions แล้ว รอผู้ใช้พิมพ์ "ยืนยัน spec" ก่อนเขียนโค้ด (Phase 8 ปิดแล้ว)
+- **Current Phase:** Phase 9 — Unit Price Comparator
+- **Status:** โค้ดเสร็จ (lint/build/test ผ่าน 58 เทสต์) — spec ยืนยันแล้ว รอผู้ใช้ทดสอบตาม `docs/testing.md` แล้วยืนยัน Phase 9
 - **Last Updated:** 2026-11-12
 
 ## Phase Checklist
@@ -24,7 +24,7 @@
   - [x] BMR / TDEE (dropdown ระดับกิจกรรม, บันทึกโปรไฟล์)
   - [x] รายการอาหาร (`foods` + ข้อมูลตั้งต้น 102 เมนู)
   - [x] บันทึกอาหารที่กินและคำนวณแคลอรี่
-- [ ] Phase 9: Feature — Unit Price Comparator (`docs/features/unit-price.md`) — ร่าง spec รอยืนยัน ยังไม่เริ่มโค้ด
+- [x] Phase 9: Feature — Unit Price Comparator (`docs/features/unit-price.md`) — โค้ดเสร็จ รอผู้ใช้ยืนยันหลังทดสอบ
   - [x] สรุปรายสัปดาห์/รายเดือน
 
 ## Decisions Log
@@ -54,6 +54,8 @@
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 7 ว่าทุกอย่างโอเค (ผมไม่ได้ตรวจสอบเองว่ารัน migration ภาษาไทยแล้วหรือยัง จึงคงสถานะ migration ไว้ตามเดิมด้านล่าง)
 - 2026-11-10 — Calorie: แหล่งข้อมูลอาหาร — ไม่ใช้ API ภายนอก (ไม่มี API อาหารไทยที่ฟรี+ใบอนุญาตชัดเจน; ThaiFCD และ HDmall ห้ามคัดลอกโดยไม่ได้รับอนุญาต) ใช้ตาราง `foods` ต่อผู้ใช้ + ข้อมูลตั้งต้น 102 เมนูจากไฟล์ที่ผู้ใช้ให้ (แก้สะกดและตัดรายการซ้ำแล้ว ที่ `docs/features/calorie-foods-seed.csv`, ค่าโดยประมาณ ยังไม่ตรวจกับแหล่งทางการ) seed ผ่าน RPC แบบเดียวกับ Finance; เพิ่ม TDEE (dropdown ระดับกิจกรรม); `food_entries` เก็บสำเนาชื่อ/แคลอรี่ตอนบันทึก — ตามคำขอผู้ใช้; อัปเดต spec แล้ว
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 8 (แคลอรี่) เสร็จแล้ว
+- 2026-11-12 — การยืนยัน spec Unit Price — ผู้ใช้พิมพ์ "ยืนยัน spec" เริ่ม Phase 9; ตัวเลือกหน่วยผลลัพธ์ต่อกลุ่ม: น้ำหนัก 1 ก./100 ก./1 กก., ปริมาตร 1 มล./100 มล./1 ล. (ค่าเริ่มต้น 100), ชิ้น 1 ชิ้น
+- 2026-11-12 — Unit Price: รายละเอียดการออกแบบ — คำนวณฝั่ง Client ล้วน (`utils/unitPrice.ts`, `units.ts`, `format.ts`); ราคาเท่ากันตัดสินด้วย tolerance สัมพัทธ์ 1e-9; ตัวเลือกที่ไม่ถูกต้องถูกข้ามจากการเทียบ; ไม่มี Supabase/migration/service; เทสต์ใหม่ 19 เคส (รวม 58)
 - 2026-11-12 — ตอบ Open Questions Unit Price — ไม่เก็บประวัติ (ไม่มี DB), สูงสุด 3 ตัวเลือก, ไม่มีช่องจำนวนแพ็ก, ผู้ใช้เลือกหน่วยผลลัพธ์เองได้, หน่วยนับ "ชิ้น" คำเดียว, ชื่อเมนู "เทียบราคาต่อหน่วย" `/unit-price`; อัปเดต spec แล้ว — ยังรอผู้ใช้พิมพ์ "ยืนยัน spec"
 - 2026-11-12 — ฟีเจอร์ใหม่ Unit Price Comparator — ผู้ใช้ขอโมดูลเทียบราคาต่อหน่วย (2–3 ตัวเลือก; กรัม/มก./กก., มล./ล., ชิ้น); ร่าง spec `docs/features/unit-price.md` (id `unit-price`, ไม่มี Database ใน v1, คำนวณฝั่ง Client เป็น pure function) และเพิ่มใน Feature Index เป็น Phase 9 — รอผู้ใช้ตอบ Open Questions และยืนยัน spec ตาม CLAUDE.md ข้อ 2.2
 - 2026-11-10 — การยืนยัน spec Calorie — ผู้ใช้ตอบ Open Questions: บันทึกโปรไฟล์ลง Supabase, ใช้ตัวคูณกิจกรรมมาตรฐาน, สูตร Mifflin-St Jeor อย่างเดียว, ดูย้อนหลังได้ทุกวัน + สรุปเทียบรายสัปดาห์/รายเดือน (เพิ่มจาก spec เดิม), ชื่อเมนู "แคลอรี่" และพิมพ์ "ยืนยัน spec"
@@ -91,6 +93,7 @@
 - Calorie: ตัวเลขแคลอรี่ของอาหารตั้งต้น 102 เมนูเป็นค่าประมาณที่ไม่ทราบที่มา ยังไม่ได้ตรวจกับแหล่งทางการ (แอปแสดงป้าย "ค่าโดยประมาณ"); ตัวคูณกิจกรรมยังไม่ได้เทียบกับบทความ Petcharavej (เปิดไม่ได้)
 - Calorie: การ upsert โปรไฟล์ (`onConflict: user_id`) และ RPC seed ยังไม่ได้ทดสอบกับ Supabase จริง; ถ้าผู้ใช้ลบอาหารจนหมด ระบบ seed กลับมาให้ตอนเปิดหน้าครั้งถัดไป
 - Calorie: ยังไม่ได้ตรวจ Responsive ด้วยตาจริง
+- Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
 - ผู้ใช้: พิมพ์ "ยืนยัน spec" หลังตรวจ `docs/features/unit-price.md` (ตอบ Open Questions แล้ว) → จึงเริ่ม Phase 9 (ฟีเจอร์ใหม่ทำบน branch `feature/unit-price-comparator`)

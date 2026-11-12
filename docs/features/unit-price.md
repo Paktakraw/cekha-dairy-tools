@@ -3,7 +3,7 @@
 - **ID:** `unit-price`
 - **Route:** `/unit-price`
 - **Folder:** `src/features/unit-price/`
-- **Status:** In scope (Phase 9) — ตอบ Open Questions แล้ว (2026-11-12) รอผู้ใช้พิมพ์ "ยืนยัน spec"
+- **Status:** In scope (Phase 9) — spec ยืนยันแล้ว (2026-11-12)
 
 ## Overview
 เครื่องมือช่วยตัดสินใจตอนช้อปปิ้ง ผู้ใช้กรอกราคาและปริมาณของสินค้า 2–3 ตัวเลือก
