@@ -96,5 +96,5 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- ผู้ใช้: พิมพ์ "ยืนยัน spec" หลังตรวจ `docs/features/unit-price.md` (ตอบ Open Questions แล้ว) → จึงเริ่ม Phase 9 (ฟีเจอร์ใหม่ทำบน branch `feature/unit-price-comparator`)
+- ผู้ใช้: ทดสอบ `/unit-price` ตามหัวข้อ "เทียบราคาต่อหน่วย" ใน `docs/testing.md` → ยืนยัน Phase 9 (เปิด PR จาก `feature/unit-price-comparator` ใส่ label `feature`)
 - Login จริงดู `docs/future-login.md`; ฟีเจอร์ Subscription / Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
