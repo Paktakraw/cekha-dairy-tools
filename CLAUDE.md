@@ -33,6 +33,7 @@
 | Randomizer | In scope | `docs/features/randomizer.md` | `src/features/randomizer/` |
 | Income & Expense Tracker | In scope | `docs/features/finance.md` | `src/features/finance/` |
 | Calorie (BMR/TDEE + แคลอรี่จากอาหาร) | In scope (Phase 8) | `docs/features/calorie.md` | `src/features/calorie/` |
+| Unit Price Comparator (เทียบราคาต่อหน่วย) | In scope (Phase 9, รอยืนยัน spec) | `docs/features/unit-price.md` | `src/features/unit-price/` |
 | Subscription Management | Future (ห้ามสร้าง) | - | - |
 | Debtor Management (คนที่ยืมเงิน) | Future (ห้ามสร้าง) | - | - |
 | Appointment Management | Future (ห้ามสร้าง) | - | - |
