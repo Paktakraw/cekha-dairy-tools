@@ -6,13 +6,19 @@ import { pricePerResultUnit } from '../utils/unitPrice'
 import { findResultUnit, RESULT_UNITS } from '../utils/units'
 
 interface ResultSummaryProps {
-  result: ComparisonResult
+  result: ComparisonResult | null
   options: OptionInput[]
   resultUnitIds: Record<UnitGroup, string>
   onResultUnitChange: (group: UnitGroup, unitId: string) => void
 }
 
 export function ResultSummary({ result, options, resultUnitIds, onResultUnitChange }: ResultSummaryProps) {
+  if (result === null) {
+    return (
+      <EmptyState title="กรอกข้อมูลแล้วกด “เปรียบเทียบ”" description="ผลจะแสดงที่นี่ว่าตัวเลือกไหนคุ้มที่สุด" />
+    )
+  }
+
   if (result.status === 'not-enough') {
     return (
       <EmptyState
@@ -72,7 +78,7 @@ export function ResultSummary({ result, options, resultUnitIds, onResultUnitChan
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-gray-900">{nameOf(item.id)}</p>
               {item.isCheapest && !allEqual && (
-                <span className="mt-1 inline-block rounded bg-gray-900 px-2 py-0.5 text-xs font-medium text-white">คุ้มที่สุด</span>
+                <span className="mt-1 inline-block rounded bg-green-700 px-2 py-0.5 text-xs font-medium text-white">คุ้มที่สุด</span>
               )}
               {!item.isCheapest && <p className="mt-0.5 text-xs text-gray-500">แพงกว่า {formatPercent(item.percentMore)}%</p>}
             </div>

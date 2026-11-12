@@ -16,22 +16,20 @@ interface OptionCardProps {
 export function OptionCard({ option, index, validation, canRemove, onChange, onRemove }: OptionCardProps) {
   const { errors } = validation
   return (
-    <section className="rounded-lg border border-gray-200 bg-gray-50 p-4" aria-label={`ตัวเลือกที่ ${index + 1}`}>
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-gray-900">ตัวเลือกที่ {index + 1}</h2>
-        {canRemove && <IconButton icon={Trash2} label={`ลบตัวเลือกที่ ${index + 1}`} tone="danger" onClick={onRemove} />}
+    <section className="min-w-0 rounded-lg border border-gray-200 bg-gray-50 p-2 sm:p-4" aria-label={`ตัวเลือกที่ ${index + 1}`}>
+      <div className="mb-2 flex min-h-8 items-center justify-between gap-1 sm:mb-3">
+        <h2 className="text-xs font-semibold text-gray-900 sm:text-sm">ตัวเลือกที่ {index + 1}</h2>
+        {canRemove && <IconButton icon={Trash2} size="sm" label={`ลบตัวเลือกที่ ${index + 1}`} tone="danger" onClick={onRemove} />}
       </div>
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="sm:col-span-3">
+      <div className="flex flex-col gap-3">
           <Input
-            label="ชื่อ (ไม่บังคับ)"
-            placeholder="เช่น ยี่ห้อ A"
+            label="ชื่อ"
+            placeholder="ยี่ห้อ A"
             maxLength={NAME_MAX_LENGTH}
             value={option.name}
             error={errors.name}
             onChange={(e) => onChange({ name: e.target.value })}
           />
-        </div>
         <Input
           label="ราคา (บาท)"
           inputMode="decimal"
@@ -53,7 +51,7 @@ export function OptionCard({ option, index, validation, canRemove, onChange, onR
             <optgroup key={group} label={GROUP_LABELS[group]}>
               {unitsOfGroup(group).map((unitId) => (
                 <option key={unitId} value={unitId}>
-                  {UNITS[unitId].label}
+                  {UNITS[unitId].short}
                 </option>
               ))}
             </optgroup>

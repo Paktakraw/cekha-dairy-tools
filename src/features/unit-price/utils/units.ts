@@ -1,19 +1,22 @@
 import type { ResultUnit, UnitGroup, UnitId } from '../types/unitPrice'
 
 interface UnitDefinition {
+  /** ชื่อเต็ม */
   label: string
+  /** ชื่อย่อ (ใช้ใน dropdown ที่พื้นที่แคบ) */
+  short: string
   group: UnitGroup
   /** 1 หน่วยนี้ = กี่หน่วยฐาน (กรัม / มิลลิลิตร / ชิ้น) */
   toBase: number
 }
 
 export const UNITS: Record<UnitId, UnitDefinition> = {
-  mg: { label: 'มิลลิกรัม (มก.)', group: 'weight', toBase: 0.001 },
-  g: { label: 'กรัม (ก.)', group: 'weight', toBase: 1 },
-  kg: { label: 'กิโลกรัม (กก.)', group: 'weight', toBase: 1000 },
-  ml: { label: 'มิลลิลิตร (มล.)', group: 'volume', toBase: 1 },
-  l: { label: 'ลิตร (ล.)', group: 'volume', toBase: 1000 },
-  piece: { label: 'ชิ้น', group: 'count', toBase: 1 },
+  mg: { label: 'มิลลิกรัม (มก.)', short: 'มก.', group: 'weight', toBase: 0.001 },
+  g: { label: 'กรัม (ก.)', short: 'ก.', group: 'weight', toBase: 1 },
+  kg: { label: 'กิโลกรัม (กก.)', short: 'กก.', group: 'weight', toBase: 1000 },
+  ml: { label: 'มิลลิลิตร (มล.)', short: 'มล.', group: 'volume', toBase: 1 },
+  l: { label: 'ลิตร (ล.)', short: 'ล.', group: 'volume', toBase: 1000 },
+  piece: { label: 'ชิ้น', short: 'ชิ้น', group: 'count', toBase: 1 },
 }
 
 export const UNIT_GROUP_ORDER: UnitGroup[] = ['weight', 'volume', 'count']

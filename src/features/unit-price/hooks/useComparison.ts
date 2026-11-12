@@ -13,25 +13,33 @@ function createOption(): OptionInput {
 
 export function useComparison() {
   const [options, setOptions] = useState<OptionInput[]>(() => Array.from({ length: MIN_OPTIONS }, createOption))
+  // ผลการเทียบ: มีเมื่อกดปุ่ม "เปรียบเทียบ" และถูกล้างทันทีที่แก้ข้อมูล เพื่อไม่ให้ผลไม่ตรงกับที่กรอก
+  const [result, setResult] = useState<ComparisonResult | null>(null)
   const [resultUnitIds, setResultUnitIds] = useState<Record<UnitGroup, string>>(DEFAULT_RESULT_UNIT_ID)
 
   const validations = useMemo<Record<string, OptionValidation>>(
     () => Object.fromEntries(options.map((o) => [o.id, validateOption(o)])),
     [options],
   )
-  const result = useMemo<ComparisonResult>(() => compareOptions(options), [options])
 
   const updateOption = useCallback((id: string, patch: Partial<Omit<OptionInput, 'id'>>) => {
     setOptions((prev) => prev.map((o) => (o.id === id ? { ...o, ...patch } : o)))
+    setResult(null)
   }, [])
 
   const addOption = useCallback(() => {
     setOptions((prev) => (prev.length >= MAX_OPTIONS ? prev : [...prev, createOption()]))
+    setResult(null)
   }, [])
 
   const removeOption = useCallback((id: string) => {
     setOptions((prev) => (prev.length <= MIN_OPTIONS ? prev : prev.filter((o) => o.id !== id)))
+    setResult(null)
   }, [])
+
+  const compare = useCallback(() => {
+    setResult(compareOptions(options))
+  }, [options])
 
   const setResultUnit = useCallback((group: UnitGroup, unitId: string) => {
     setResultUnitIds((prev) => ({ ...prev, [group]: unitId }))
@@ -47,6 +55,7 @@ export function useComparison() {
     updateOption,
     addOption,
     removeOption,
+    compare,
     setResultUnit,
   }
 }
