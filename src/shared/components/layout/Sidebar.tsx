@@ -2,6 +2,7 @@ import { Home, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import type { FeatureConfig } from '../../types/feature'
 import { IconButton } from '../ui'
+import { ThemeToggle } from './ThemeToggle'
 
 interface SidebarProps {
   features: FeatureConfig[]
@@ -64,6 +65,10 @@ export function Sidebar({ features, open, onClose, collapsed, onToggleCollapse }
             </NavLink>
           ))}
         </nav>
+        {/* ตอนย่อ (แถบกว้าง 64px) วางปุ่มเรียงแนวตั้ง */}
+        <div className={`flex shrink-0 justify-start border-t border-gray-200 p-3 ${collapsed ? 'lg:justify-center' : ''}`}>
+          <ThemeToggle className={collapsed ? 'lg:flex-col' : ''} />
+        </div>
       </aside>
     </>
   )

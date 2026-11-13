@@ -1,1 +1,45 @@
 @import "tailwindcss";
+
+/*
+ * ธีมมืด: คอมโพเนนต์ใช้สี gray/white/เขียว/แดงของ Tailwind ตามเดิม แล้วสลับค่าสีกลางที่นี่ที่เดียว
+ * (กลับด้านโทนเทา: gray-900 = สว่าง, white = พื้นหลังมืด จึงทำให้ "ปุ่มพื้นเข้ม ตัวอักษรขาว" กลายเป็น
+ * "ปุ่มพื้นสว่าง ตัวอักษรมืด" อัตโนมัติ) สีเขียว/แดง/เหลืองใช้โทนสว่างขึ้นเพื่อให้อ่านบนพื้นมืด
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-white: #0f1115;
+  --color-gray-50: #16181d;
+  --color-gray-100: #1c1f26;
+  --color-gray-200: #2a2e37;
+  --color-gray-300: #3a3f4a;
+  --color-gray-400: #7b8190;
+  --color-gray-500: #9ca3af;
+  --color-gray-600: #a8afbb;
+  --color-gray-700: #c9ced8;
+  --color-gray-800: #dde1e8;
+  --color-gray-900: #f3f4f6;
+
+  --color-red-50: #2a1717;
+  --color-red-300: #7a3a3a;
+  --color-red-600: #f08a8a;
+  --color-red-700: #ef8a8a;
+  --color-red-800: #e57373;
+
+  --color-emerald-50: #10241b;
+  --color-emerald-300: #2f6b4d;
+  --color-emerald-600: #4fbf8a;
+  --color-emerald-700: #5fcf9a;
+  --color-emerald-800: #86dfb3;
+
+  --color-green-700: #5fcf9a;
+
+  --color-amber-50: #2a2112;
+  --color-amber-300: #7a5f1f;
+  --color-amber-600: #e0b04a;
+  --color-amber-800: #f0c866;
+}
+
+html {
+  background-color: var(--color-white);
+}
