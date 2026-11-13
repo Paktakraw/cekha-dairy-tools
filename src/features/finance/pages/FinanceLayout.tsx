@@ -13,8 +13,8 @@ export default function FinanceLayout() {
   return (
     <>
       <PageHeader maxWidth="max-w-4xl">
-        <h1 className="text-xl font-semibold text-gray-900">รายรับ-รายจ่าย</h1>
-        <nav className="mt-2 flex gap-2 overflow-x-auto" aria-label="เมนูย่อยรายรับ-รายจ่าย">
+        <h1 className="text-xl font-semibold text-gray-900">เงินฉันไปไหน</h1>
+        <nav className="mt-2 flex gap-2 overflow-x-auto" aria-label="เมนูย่อยเงินฉันไปไหน">
           {TABS.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}

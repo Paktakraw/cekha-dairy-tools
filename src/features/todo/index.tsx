@@ -5,7 +5,7 @@ import { TodoPage } from './lazyPages'
 
 export const todoFeature: FeatureConfig = {
   id: 'todo',
-  name: 'รายการงาน',
+  name: 'วันนี้ทำอะไรดี',
   description: 'จัดการรายการงานที่ต้องทำ',
   icon: ListChecks,
   path: '/todo',

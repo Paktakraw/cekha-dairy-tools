@@ -6,7 +6,7 @@ import { FinanceLayout, TransactionPage, SummaryPage, CategoryPage } from './laz
 
 export const financeFeature: FeatureConfig = {
   id: 'finance',
-  name: 'รายรับ-รายจ่าย',
+  name: 'เงินฉันไปไหน',
   description: 'บันทึกรายรับ รายจ่าย และดูสรุปภาพรวม',
   icon: Wallet,
   path: '/finance',

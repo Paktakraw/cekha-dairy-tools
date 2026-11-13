@@ -51,7 +51,7 @@ export default function TodoPage() {
     <>
       <PageHeader>
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-xl font-semibold text-gray-900">รายการงาน</h1>
+          <h1 className="text-xl font-semibold text-gray-900">วันนี้ทำอะไรดี</h1>
           <Button onClick={() => setFormState('new')}>
             <Plus className="h-4 w-4" />
             เพิ่มงาน

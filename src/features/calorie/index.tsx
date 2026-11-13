@@ -5,7 +5,7 @@ import { BmrPage, CalorieLayout, FoodListPage, FoodPage, SummaryPage } from './l
 
 export const calorieFeature: FeatureConfig = {
   id: 'calorie',
-  name: 'แคลอรี่',
+  name: 'ผอมไปด้วยกัน',
   description: 'คำนวณ BMR/TDEE และบันทึกแคลอรี่จากอาหารที่กิน',
   icon: Flame,
   path: '/calorie',
