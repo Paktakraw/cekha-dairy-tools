@@ -4,8 +4,8 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 9 — Unit Price Comparator
-- **Status:** โค้ดเสร็จ (lint/build/test ผ่าน 58 เทสต์) — spec ยืนยันแล้ว รอผู้ใช้ทดสอบตาม `docs/testing.md` แล้วยืนยัน Phase 9
+- **Current Phase:** Phase 10 — Theme สว่าง/มืด
+- **Status:** โค้ดเสร็จ (lint/build/test ผ่าน 61 เทสต์) — Phase 9 ผู้ใช้ยืนยันแล้ว; Phase 10 รอผู้ใช้รัน migration `20261113000100_user_preferences.sql` ทดสอบตาม `docs/testing.md` แล้วยืนยัน
 - **Last Updated:** 2026-11-13
 
 ## Phase Checklist
@@ -24,8 +24,8 @@
   - [x] BMR / TDEE (dropdown ระดับกิจกรรม, บันทึกโปรไฟล์)
   - [x] รายการอาหาร (`foods` + ข้อมูลตั้งต้น 102 เมนู)
   - [x] บันทึกอาหารที่กินและคำนวณแคลอรี่
-- [x] Phase 9: Feature — Unit Price Comparator (`docs/features/unit-price.md`) — โค้ดเสร็จ รอผู้ใช้ยืนยันหลังทดสอบ
-- [ ] Phase 10: Theme โหมดสว่าง/มืด (`docs/features/theme.md`) — ร่าง spec รอยืนยัน ยังไม่เริ่มโค้ด
+- [x] Phase 9: Feature — Unit Price Comparator (`docs/features/unit-price.md`) — เสร็จ ผู้ใช้ยืนยันแล้ว
+- [x] Phase 10: Theme โหมดสว่าง/มืด (`docs/features/theme.md`) — โค้ดเสร็จ รอผู้ใช้ยืนยันหลังทดสอบ
   - [x] สรุปรายสัปดาห์/รายเดือน
 
 ## Decisions Log
@@ -55,6 +55,8 @@
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 7 ว่าทุกอย่างโอเค (ผมไม่ได้ตรวจสอบเองว่ารัน migration ภาษาไทยแล้วหรือยัง จึงคงสถานะ migration ไว้ตามเดิมด้านล่าง)
 - 2026-11-10 — Calorie: แหล่งข้อมูลอาหาร — ไม่ใช้ API ภายนอก (ไม่มี API อาหารไทยที่ฟรี+ใบอนุญาตชัดเจน; ThaiFCD และ HDmall ห้ามคัดลอกโดยไม่ได้รับอนุญาต) ใช้ตาราง `foods` ต่อผู้ใช้ + ข้อมูลตั้งต้น 102 เมนูจากไฟล์ที่ผู้ใช้ให้ (แก้สะกดและตัดรายการซ้ำแล้ว ที่ `docs/features/calorie-foods-seed.csv`, ค่าโดยประมาณ ยังไม่ตรวจกับแหล่งทางการ) seed ผ่าน RPC แบบเดียวกับ Finance; เพิ่ม TDEE (dropdown ระดับกิจกรรม); `food_entries` เก็บสำเนาชื่อ/แคลอรี่ตอนบันทึก — ตามคำขอผู้ใช้; อัปเดต spec แล้ว
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 8 (แคลอรี่) เสร็จแล้ว
+- 2026-11-13 — การยืนยัน — ผู้ใช้ยืนยัน Phase 9 และยืนยัน spec Theme; ตอบ Open Questions: ปุ่มอยู่ทั้งแถบบนมือถือและ Sidebar, ใช้แคช localStorage กันหน้าจอวาบ (Supabase เป็นค่าหลัก), ยอมรับข้อจำกัดของผู้ใช้ Anonymous
+- 2026-11-13 — Theme: รายละเอียดการออกแบบ — สลับสีกลางของ Tailwind (`--color-white`, `gray-*`, red/emerald/amber/green) ที่ `src/styles/index.css` เมื่อ `<html data-theme="dark">` โดยไม่ต้องใส่ `dark:` ในคอมโพเนนต์ (กลับด้านโทนเทา ปุ่มพื้นเข้ม/ตัวอักษรขาวจึงกลายเป็นพื้นสว่าง/ตัวอักษรมืดเอง); `ThemeProvider` ใน `src/app/providers/` (อยู่ใน AuthProvider), `preferenceService` ใน `src/shared/services/`, ตาราง `user_preferences` + migration; โหลดค่าจาก Supabase แล้วทับแคช ถ้าผู้ใช้กดเองก่อนโหลดเสร็จใช้ค่าที่กด; บันทึกเบื้องหลังโดยส่งเฉพาะค่าล่าสุด; คอมไม่มีแถบบน ปุ่มบนคอมจึงอยู่ที่ Sidebar; `IconButton` เพิ่ม prop `active`; เทสต์ใหม่ 3 เคส (รวม 61)
 - 2026-11-13 — ฟีเจอร์ใหม่ Theme สว่าง/มืด — ผู้ใช้ตอบ: เริ่มต้นสว่างเสมอ แล้วเป็นไปตามค่าที่ผู้ใช้เลือก; บันทึกกับบัญชีใน Supabase (ตาราง `user_preferences`); ปุ่ม 2 ปุ่มเป็นไอคอนอย่างเดียว (พระอาทิตย์/พระจันทร์); ร่าง spec `docs/features/theme.md` เป็น Phase 10 — รอผู้ใช้ยืนยัน spec ตามข้อ 2.2 (หมายเหตุ: ยังไม่ได้รับการยืนยัน Phase 9)
 - 2026-11-12 — การยืนยัน spec Unit Price — ผู้ใช้พิมพ์ "ยืนยัน spec" เริ่ม Phase 9; ตัวเลือกหน่วยผลลัพธ์ต่อกลุ่ม: น้ำหนัก 1 ก./100 ก./1 กก., ปริมาตร 1 มล./100 มล./1 ล. (ค่าเริ่มต้น 100), ชิ้น 1 ชิ้น
 - 2026-11-12 — Design Unit Price (ผู้ใช้ขอหลังเห็นงาน) — (1) ผลแสดงเมื่อกดปุ่ม "เปรียบเทียบ" เท่านั้น และถูกล้างเมื่อแก้ข้อมูล (แทนการอัปเดตทันทีใน spec เดิม; อัปเดต spec แล้ว); (2) ตัวเลือกวางเป็นคอลัมน์เคียงข้างกันทุกขนาดจอ (2–3 คอลัมน์) dropdown หน่วยใช้ชื่อย่อ; (3) ป้าย "คุ้มที่สุด" เป็นสีเขียว (ขยายข้อยกเว้นสีเขียวจาก CLAUDE.md ข้อ 5 ตามที่ผู้ใช้ขอ)
@@ -96,9 +98,9 @@
 - Calorie: ตัวเลขแคลอรี่ของอาหารตั้งต้น 102 เมนูเป็นค่าประมาณที่ไม่ทราบที่มา ยังไม่ได้ตรวจกับแหล่งทางการ (แอปแสดงป้าย "ค่าโดยประมาณ"); ตัวคูณกิจกรรมยังไม่ได้เทียบกับบทความ Petcharavej (เปิดไม่ได้)
 - Calorie: การ upsert โปรไฟล์ (`onConflict: user_id`) และ RPC seed ยังไม่ได้ทดสอบกับ Supabase จริง; ถ้าผู้ใช้ลบอาหารจนหมด ระบบ seed กลับมาให้ตอนเปิดหน้าครั้งถัดไป
 - Calorie: ยังไม่ได้ตรวจ Responsive ด้วยตาจริง
+- Theme: ยังไม่ได้ตรวจคอนทราสต์โหมดมืดด้วยตาทุกหน้า (ตรวจเฉพาะว่า CSS สลับค่าสีถูกต้อง); upsert `user_preferences` ยังไม่ได้ทดสอบกับ Supabase จริง และ migration ยังไม่ได้รัน
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- ผู้ใช้: (1) ยืนยัน Phase 9 หลังทดสอบ `/unit-price` (2) ตรวจ `docs/features/theme.md` แล้วพิมพ์ "ยืนยัน spec" → เริ่ม Phase 10 บน branch `feature/theme-toggle`
-
+- ผู้ใช้: รัน `20261113000100_user_preferences.sql` ใน SQL Editor → ทดสอบตามหัวข้อ "ธีมสว่าง/มืด" ใน `docs/testing.md` (โดยเฉพาะตรวจสีโหมดมืดทุกหน้า) → ยืนยัน Phase 10 (เปิด PR จาก `feature/theme-toggle` ใส่ label `feature`)
 - Login จริงดู `docs/future-login.md`; ฟีเจอร์ Subscription / Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
