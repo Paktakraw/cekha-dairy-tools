@@ -6,7 +6,7 @@
 ## Current Status
 - **Current Phase:** Phase 9 — Unit Price Comparator
 - **Status:** โค้ดเสร็จ (lint/build/test ผ่าน 58 เทสต์) — spec ยืนยันแล้ว รอผู้ใช้ทดสอบตาม `docs/testing.md` แล้วยืนยัน Phase 9
-- **Last Updated:** 2026-11-12
+- **Last Updated:** 2026-11-13
 
 ## Phase Checklist
 - [x] Phase 0: Architecture Review (อ่าน spec ทุกไฟล์ใน `docs/features/` + ตอบ Open Questions)
@@ -25,6 +25,7 @@
   - [x] รายการอาหาร (`foods` + ข้อมูลตั้งต้น 102 เมนู)
   - [x] บันทึกอาหารที่กินและคำนวณแคลอรี่
 - [x] Phase 9: Feature — Unit Price Comparator (`docs/features/unit-price.md`) — โค้ดเสร็จ รอผู้ใช้ยืนยันหลังทดสอบ
+- [ ] Phase 10: Theme โหมดสว่าง/มืด (`docs/features/theme.md`) — ร่าง spec รอยืนยัน ยังไม่เริ่มโค้ด
   - [x] สรุปรายสัปดาห์/รายเดือน
 
 ## Decisions Log
@@ -54,6 +55,7 @@
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 7 ว่าทุกอย่างโอเค (ผมไม่ได้ตรวจสอบเองว่ารัน migration ภาษาไทยแล้วหรือยัง จึงคงสถานะ migration ไว้ตามเดิมด้านล่าง)
 - 2026-11-10 — Calorie: แหล่งข้อมูลอาหาร — ไม่ใช้ API ภายนอก (ไม่มี API อาหารไทยที่ฟรี+ใบอนุญาตชัดเจน; ThaiFCD และ HDmall ห้ามคัดลอกโดยไม่ได้รับอนุญาต) ใช้ตาราง `foods` ต่อผู้ใช้ + ข้อมูลตั้งต้น 102 เมนูจากไฟล์ที่ผู้ใช้ให้ (แก้สะกดและตัดรายการซ้ำแล้ว ที่ `docs/features/calorie-foods-seed.csv`, ค่าโดยประมาณ ยังไม่ตรวจกับแหล่งทางการ) seed ผ่าน RPC แบบเดียวกับ Finance; เพิ่ม TDEE (dropdown ระดับกิจกรรม); `food_entries` เก็บสำเนาชื่อ/แคลอรี่ตอนบันทึก — ตามคำขอผู้ใช้; อัปเดต spec แล้ว
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 8 (แคลอรี่) เสร็จแล้ว
+- 2026-11-13 — ฟีเจอร์ใหม่ Theme สว่าง/มืด — ผู้ใช้ตอบ: เริ่มต้นสว่างเสมอ แล้วเป็นไปตามค่าที่ผู้ใช้เลือก; บันทึกกับบัญชีใน Supabase (ตาราง `user_preferences`); ปุ่ม 2 ปุ่มเป็นไอคอนอย่างเดียว (พระอาทิตย์/พระจันทร์); ร่าง spec `docs/features/theme.md` เป็น Phase 10 — รอผู้ใช้ยืนยัน spec ตามข้อ 2.2 (หมายเหตุ: ยังไม่ได้รับการยืนยัน Phase 9)
 - 2026-11-12 — การยืนยัน spec Unit Price — ผู้ใช้พิมพ์ "ยืนยัน spec" เริ่ม Phase 9; ตัวเลือกหน่วยผลลัพธ์ต่อกลุ่ม: น้ำหนัก 1 ก./100 ก./1 กก., ปริมาตร 1 มล./100 มล./1 ล. (ค่าเริ่มต้น 100), ชิ้น 1 ชิ้น
 - 2026-11-12 — Design Unit Price (ผู้ใช้ขอหลังเห็นงาน) — (1) ผลแสดงเมื่อกดปุ่ม "เปรียบเทียบ" เท่านั้น และถูกล้างเมื่อแก้ข้อมูล (แทนการอัปเดตทันทีใน spec เดิม; อัปเดต spec แล้ว); (2) ตัวเลือกวางเป็นคอลัมน์เคียงข้างกันทุกขนาดจอ (2–3 คอลัมน์) dropdown หน่วยใช้ชื่อย่อ; (3) ป้าย "คุ้มที่สุด" เป็นสีเขียว (ขยายข้อยกเว้นสีเขียวจาก CLAUDE.md ข้อ 5 ตามที่ผู้ใช้ขอ)
 - 2026-11-12 — Unit Price: รายละเอียดการออกแบบ — คำนวณฝั่ง Client ล้วน (`utils/unitPrice.ts`, `units.ts`, `format.ts`); ราคาเท่ากันตัดสินด้วย tolerance สัมพัทธ์ 1e-9; ตัวเลือกที่ไม่ถูกต้องถูกข้ามจากการเทียบ; ไม่มี Supabase/migration/service; เทสต์ใหม่ 19 เคส (รวม 58)
@@ -97,5 +99,6 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- ผู้ใช้: ทดสอบ `/unit-price` ตามหัวข้อ "เทียบราคาต่อหน่วย" ใน `docs/testing.md` → ยืนยัน Phase 9 (เปิด PR จาก `feature/unit-price-comparator` ใส่ label `feature`)
+- ผู้ใช้: (1) ยืนยัน Phase 9 หลังทดสอบ `/unit-price` (2) ตรวจ `docs/features/theme.md` แล้วพิมพ์ "ยืนยัน spec" → เริ่ม Phase 10 บน branch `feature/theme-toggle`
+
 - Login จริงดู `docs/future-login.md`; ฟีเจอร์ Subscription / Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
