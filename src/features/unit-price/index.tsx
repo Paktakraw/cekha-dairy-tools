@@ -4,7 +4,7 @@ import { UnitPricePage } from './lazyPages'
 
 export const unitPriceFeature: FeatureConfig = {
   id: 'unit-price',
-  name: 'อันไหนถูกกว่า บอกฉันมา',
+  name: 'อันไหนถูกกว่า บอกมา',
   description: 'เทียบความคุ้มค่าต่อกรัม มิลลิลิตร หรือชิ้น',
   icon: Scale,
   path: '/unit-price',

@@ -13,7 +13,7 @@ export default function UnitPricePage() {
     <>
       <PageHeader>
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-xl font-semibold text-gray-900">อันไหนถูกกว่า บอกฉันมา</h1>
+          <h1 className="text-xl font-semibold text-gray-900">อันไหนถูกกว่า บอกมา</h1>
           <Button onClick={addOption} disabled={!canAdd} title={canAdd ? undefined : 'เพิ่มได้สูงสุด 3 ตัวเลือก'}>
             <Plus className="h-4 w-4" />
             เพิ่มตัวเลือก
