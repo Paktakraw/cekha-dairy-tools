@@ -65,7 +65,7 @@
 - Utils: `units.ts` (กลุ่มหน่วย ตัวคูณ และหน่วยผลลัพธ์ที่เลือกได้), `unitPrice.ts` (คำนวณ/จัดอันดับ)
 - Services: ไม่มี
 - Pages: `UnitPricePage`
-- Registry: id `unit-price`, ชื่อ "เทียบราคาต่อหน่วย", icon `Scale` (lucide)
+- Registry: id `unit-price`, ชื่อ "อันไหนถูกกว่า บอกฉันมา" (เปลี่ยนจาก "เทียบราคาต่อหน่วย" เมื่อ 2026-11-13), icon `Scale` (lucide)
 
 ## Decisions (ผู้ใช้ตอบ Open Questions เมื่อ 2026-11-12)
 1. ไม่เก็บประวัติลง Supabase ใน v1 (ไม่มีตาราง/migration)

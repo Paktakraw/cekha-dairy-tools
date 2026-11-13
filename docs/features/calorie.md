@@ -100,7 +100,7 @@ RLS: `auth.uid() = user_id` ทั้ง 4 คำสั่งทุกตาร�
 - Hooks: `useBmrProfile`, `useFoods`, `useFoodEntries` (ตามวัน)
 - Services: `profileService`, `foodService`, `entryService` (คืน `ServiceResult` ผ่าน `serviceFail`; 23505 → "ชื่ออาหารนี้มีอยู่แล้ว")
 - Pages: `CalorieLayout` (เมนูย่อย บันทึกอาหาร / สรุป / รายการอาหาร / BMR-TDEE, index redirect → food), `FoodPage`, `SummaryPage`, `FoodListPage`, `BmrPage`
-- `index.tsx` export FeatureConfig (ชื่อ "แคลอรี่", icon `Flame`), `lazyPages.ts`
+- `index.tsx` export FeatureConfig (ชื่อ "ผอมไปด้วยกัน" เปลี่ยนจาก "แคลอรี่" เมื่อ 2026-11-13, icon `Flame`), `lazyPages.ts`
 
 ## Decisions (2026-11-10)
 1. เลือกอาหารจากรายการแล้วระบบแสดงแคลอรี่ให้ (ผู้ใช้ไม่ต้องกรอกเอง) — ไม่ใช้ API ภายนอก เพราะไม่มี API อาหารไทยที่ฟรี ครอบคลุม และมีใบอนุญาตชัดเจน (Open Food Facts เน้นสินค้าบรรจุหีบห่อและจำกัด 10 ครั้ง/นาที, ThaiFCD ไม่มี API และสงวนลิขสิทธิ์, USDA เป็นอาหารอเมริกัน)

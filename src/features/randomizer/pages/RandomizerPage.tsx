@@ -83,7 +83,7 @@ export default function RandomizerPage() {
     <>
       <PageHeader>
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-xl font-semibold text-gray-900">สุ่มเลือก</h1>
+          <h1 className="text-xl font-semibold text-gray-900">สับสนช่วยหน่อย</h1>
           <Button onClick={() => setFormState({ kind: 'group' })}>
             <Plus className="h-4 w-4" />
             เพิ่มกลุ่ม

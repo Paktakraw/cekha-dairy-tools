@@ -14,8 +14,8 @@ export default function CalorieLayout() {
   return (
     <>
       <PageHeader maxWidth="max-w-4xl">
-        <h1 className="text-xl font-semibold text-gray-900">แคลอรี่</h1>
-        <nav className="mt-2 flex items-center gap-1.5" aria-label="เมนูย่อยแคลอรี่">
+        <h1 className="text-xl font-semibold text-gray-900">ผอมไปด้วยกัน</h1>
+        <nav className="mt-2 flex items-center gap-1.5" aria-label="เมนูย่อยผอมไปด้วยกัน">
           {MAIN_TABS.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}

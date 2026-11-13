@@ -5,7 +5,7 @@ import { RandomizerPage } from './lazyPages'
 
 export const randomizerFeature: FeatureConfig = {
   id: 'randomizer',
-  name: 'สุ่มเลือก',
+  name: 'สับสนช่วยหน่อย',
   description: 'สุ่มรายการจากหลายกลุ่มโดยไม่ซ้ำ',
   icon: Shuffle,
   path: '/randomizer',
