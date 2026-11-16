@@ -1,0 +1,12 @@
+/**
+ * ระดับเตือนที่ "ถึงเกณฑ์แล้ว" และแคบที่สุด (ระดับที่น้อยที่สุดที่ยังมากกว่าหรือเท่ากับจำนวนวันที่เหลือ)
+ * ไม่ถึงเกณฑ์ (หรือไม่ได้ตั้งเตือน) = null; เลยกำหนดแล้วนับว่าถึงเกณฑ์ทุกระดับ
+ */
+export function reminderStage(daysLeft: number, remindBeforeDays: number[]): number | null {
+  const reached = remindBeforeDays.filter((level) => level >= daysLeft)
+  return reached.length === 0 ? null : Math.min(...reached)
+}
+
+export function isReminding(daysLeft: number, remindBeforeDays: number[]): boolean {
+  return reminderStage(daysLeft, remindBeforeDays) !== null
+}
