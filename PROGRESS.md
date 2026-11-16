@@ -27,6 +27,7 @@
 - [x] Phase 9: Feature — Unit Price Comparator (`docs/features/unit-price.md`) — เสร็จ ผู้ใช้ยืนยันแล้ว
 - [x] Phase 10: Theme โหมดสว่าง/มืด (`docs/features/theme.md`) — เสร็จ ผู้ใช้ยืนยันแล้ว
   - [x] สรุปรายสัปดาห์/รายเดือน
+- [ ] Phase 11: Feature — Expiry & Maintenance Tracker (`docs/features/expiry-tracker.md`) — ร่าง spec แล้ว รอผู้ใช้ตอบ Open Questions และยืนยัน spec (ยังไม่เริ่มโค้ด)
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -55,6 +56,7 @@
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 7 ว่าทุกอย่างโอเค (ผมไม่ได้ตรวจสอบเองว่ารัน migration ภาษาไทยแล้วหรือยัง จึงคงสถานะ migration ไว้ตามเดิมด้านล่าง)
 - 2026-11-10 — Calorie: แหล่งข้อมูลอาหาร — ไม่ใช้ API ภายนอก (ไม่มี API อาหารไทยที่ฟรี+ใบอนุญาตชัดเจน; ThaiFCD และ HDmall ห้ามคัดลอกโดยไม่ได้รับอนุญาต) ใช้ตาราง `foods` ต่อผู้ใช้ + ข้อมูลตั้งต้น 102 เมนูจากไฟล์ที่ผู้ใช้ให้ (แก้สะกดและตัดรายการซ้ำแล้ว ที่ `docs/features/calorie-foods-seed.csv`, ค่าโดยประมาณ ยังไม่ตรวจกับแหล่งทางการ) seed ผ่าน RPC แบบเดียวกับ Finance; เพิ่ม TDEE (dropdown ระดับกิจกรรม); `food_entries` เก็บสำเนาชื่อ/แคลอรี่ตอนบันทึก — ตามคำขอผู้ใช้; อัปเดต spec แล้ว
 - 2026-11-10 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 8 (แคลอรี่) เสร็จแล้ว
+- 2026-11-16 — ฟีเจอร์ใหม่ Expiry & Maintenance Tracker — ผู้ใช้ขอระบบเตือนเอกสารหมดอายุ/ซ่อมบำรุง/ค่าสมาชิก; ร่าง spec `docs/features/expiry-tracker.md` เป็น Phase 11 แบ่งเป็นรอบ: v1 = หมวดหมู่ รอบทำซ้ำ ตามระยะทาง สีไฟจราจร สรุปเดือนหน้า ประวัติ เตือนในแอป; แนบไฟล์ (Storage) รอตัดสินใจ, เตือนนอกแอปและล็อกชีวมิติเลื่อนเฟส เพราะเกิน Stack ปัจจุบัน; รวมหมวด Subscription เข้ากับฟีเจอร์นี้ ไม่สร้างโมดูลแยก — รอผู้ใช้ตอบ Open Questions และยืนยัน spec ตามข้อ 2.2
 - 2026-11-13 — การยืนยัน Phase — ผู้ใช้ยืนยัน Phase 10 (Theme) เสร็จแล้ว
 - 2026-11-13 — การยืนยัน — ผู้ใช้ยืนยัน Phase 9 และยืนยัน spec Theme; ตอบ Open Questions: ปุ่มอยู่ทั้งแถบบนมือถือและ Sidebar, ใช้แคช localStorage กันหน้าจอวาบ (Supabase เป็นค่าหลัก), ยอมรับข้อจำกัดของผู้ใช้ Anonymous
 - 2026-11-13 — Theme: รายละเอียดการออกแบบ — สลับสีกลางของ Tailwind (`--color-white`, `gray-*`, red/emerald/amber/green) ที่ `src/styles/index.css` เมื่อ `<html data-theme="dark">` โดยไม่ต้องใส่ `dark:` ในคอมโพเนนต์ (กลับด้านโทนเทา ปุ่มพื้นเข้ม/ตัวอักษรขาวจึงกลายเป็นพื้นสว่าง/ตัวอักษรมืดเอง); `ThemeProvider` ใน `src/app/providers/` (อยู่ใน AuthProvider), `preferenceService` ใน `src/shared/services/`, ตาราง `user_preferences` + migration; โหลดค่าจาก Supabase แล้วทับแคช ถ้าผู้ใช้กดเองก่อนโหลดเสร็จใช้ค่าที่กด; บันทึกเบื้องหลังโดยส่งเฉพาะค่าล่าสุด; คอมไม่มีแถบบน ปุ่มบนคอมจึงอยู่ที่ Sidebar; `IconButton` เพิ่ม prop `active`; เทสต์ใหม่ 3 เคส (รวม 61)
@@ -104,5 +106,5 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- ผู้ใช้: เปิดและ merge PR จาก `feature/theme-toggle` (label `feature`) แล้วจึงเริ่มงานใหม่ (ต้องร่าง spec และรอยืนยันตามข้อ 2.2)
-- Login จริงดู `docs/future-login.md`; ฟีเจอร์ Subscription / Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
+- ผู้ใช้: ตอบ Open Questions ใน `docs/features/expiry-tracker.md` แล้วพิมพ์ "ยืนยัน spec" จึงเริ่ม Phase 11 (ยังไม่เริ่มโค้ด)
+- Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
