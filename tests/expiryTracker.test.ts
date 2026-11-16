@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
+import { CATEGORIES, REMIND_PRESETS, categoryFields } from '../src/features/expiry-tracker/constants.ts'
 import type { CompleteFormInput, ItemFormInput, ReminderItem } from '../src/features/expiry-tracker/types/reminder.ts'
 import { addDays, addMonths, daysBetween, isValidISODate, nextMonthRange } from '../src/features/expiry-tracker/utils/dates.ts'
 import { summarizeNextMonth } from '../src/features/expiry-tracker/utils/costSummary.ts'
@@ -49,6 +50,20 @@ const form = (patch: Partial<ItemFormInput> = {}): ItemFormInput => ({
   usageLastDone: '',
   usageCurrent: '',
   ...patch,
+})
+
+describe('categories', () => {
+  it('มีหมวดรักษาพยาบาล และทุกหมวดมีชุดเตือนสำเร็จรูป', () => {
+    assert.ok(CATEGORIES.some((c) => c.id === 'medical' && c.label === 'รักษาพยาบาล'))
+    for (const c of CATEGORIES) assert.ok(REMIND_PRESETS[c.id].length > 0, c.id)
+  })
+
+  it('ช่องเฉพาะหมวด: รักษาพยาบาลมีช่องแพทย์แต่ไม่มีตามระยะ', () => {
+    assert.deepEqual(categoryFields('medical'), { usage: false, provider: true })
+    assert.deepEqual(categoryFields('vehicle'), { usage: true, provider: true })
+    assert.deepEqual(categoryFields('document'), { usage: false, provider: false })
+    assert.deepEqual(categoryFields('subscription'), { usage: false, provider: false })
+  })
 })
 
 describe('dates', () => {

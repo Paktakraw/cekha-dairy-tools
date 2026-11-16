@@ -1,16 +1,15 @@
 import { useState } from 'react'
-import { CalendarClock, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { PageHeader } from '../../../shared/components/layout/PageHeader'
-import { Button, ConfirmDialog, EmptyState, ErrorState, Modal, Select, Spinner } from '../../../shared/components/ui'
+import { Button, ConfirmDialog, EmptyState, ErrorState, Modal, Spinner } from '../../../shared/components/ui'
 import { todayISO } from '../../../shared/utils/formatDate'
 import { CompleteForm } from '../components/CompleteForm'
 import { HistoryList } from '../components/HistoryList'
 import { ItemCard } from '../components/ItemCard'
 import { ItemForm } from '../components/ItemForm'
 import { SummaryBar } from '../components/SummaryBar'
-import { CATEGORIES } from '../constants'
 import { useReminderItems } from '../hooks/useReminderItems'
-import type { ReminderCategory, ReminderItem } from '../types/reminder'
+import type { ReminderItem } from '../types/reminder'
 import { summarizeNextMonth } from '../utils/costSummary'
 import { isReminding } from '../utils/reminders'
 import { compareItems } from '../utils/sort'
@@ -23,7 +22,6 @@ type FormState = { mode: 'create' } | { mode: 'edit'; item: ReminderItem } | nul
 export default function ExpiryTrackerPage() {
   const { items, loading, firstLoad, error, reload, addItem, editItem, removeItem, completeItem } = useReminderItems()
   const [tab, setTab] = useState<Tab>('active')
-  const [category, setCategory] = useState<ReminderCategory | ''>('')
   const [form, setForm] = useState<FormState>(null)
   const [completing, setCompleting] = useState<ReminderItem | null>(null)
   const [historyOf, setHistoryOf] = useState<ReminderItem | null>(null)
@@ -39,9 +37,7 @@ export default function ExpiryTrackerPage() {
   const cost = summarizeNextMonth(items, today)
 
   const source = tab === 'active' ? active : archived
-  const visible = source
-    .filter((i) => category === '' || i.category === category)
-    .sort(tab === 'active' ? compareItems : (a, b) => (b.archived_at ?? '').localeCompare(a.archived_at ?? ''))
+  const visible = [...source].sort(tab === 'active' ? compareItems : (a, b) => (b.archived_at ?? '').localeCompare(a.archived_at ?? ''))
 
   const confirmDelete = async () => {
     if (!deleting) return
@@ -78,38 +74,16 @@ export default function ExpiryTrackerPage() {
           <>
             <SummaryBar overdueCount={overdueCount} remindingCount={remindingCount} cost={cost} />
 
-            <div className="flex flex-wrap items-end justify-between gap-2">
-              <div className="flex gap-2">
-                {tabButton('active', 'ใช้งานอยู่', active.length)}
-                {tabButton('archived', 'เก็บถาวร', archived.length)}
-              </div>
-              <div className="w-48">
-                <Select label="หมวดหมู่" value={category} onChange={(e) => setCategory(e.target.value as ReminderCategory | '')}>
-                  <option value="">ทุกหมวด</option>
-                  {CATEGORIES.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.label}
-                    </option>
-                  ))}
-                </Select>
-              </div>
+            <div className="flex gap-2">
+              {tabButton('active', 'ใช้งานอยู่', active.length)}
+              {tabButton('archived', 'เก็บถาวร', archived.length)}
             </div>
 
             {visible.length === 0 ? (
               <EmptyState
-                title={source.length === 0 ? (tab === 'active' ? 'ยังไม่มีรายการ' : 'ยังไม่มีรายการที่เก็บถาวร') : 'ไม่พบรายการในหมวดนี้'}
+                title={tab === 'active' ? 'ยังไม่มีรายการ' : 'ยังไม่มีรายการที่เก็บถาวร'}
                 description={
-                  source.length === 0 && tab === 'active'
-                    ? 'เพิ่มเอกสาร ของใช้ หรือค่าสมาชิกที่ไม่อยากลืม แล้วระบบจะคำนวณวันครบกำหนดให้'
-                    : undefined
-                }
-                action={
-                  source.length === 0 && tab === 'active' ? (
-                    <Button onClick={() => setForm({ mode: 'create' })}>
-                      <CalendarClock className="h-4 w-4" />
-                      เพิ่มรายการแรก
-                    </Button>
-                  ) : undefined
+                  tab === 'active' ? 'กดปุ่ม “เพิ่มรายการ” ด้านบน เพื่อเพิ่มเอกสาร ของใช้ หรือค่าสมาชิกที่ไม่อยากลืม' : undefined
                 }
               />
             ) : (

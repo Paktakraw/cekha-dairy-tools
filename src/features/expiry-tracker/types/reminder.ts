@@ -1,4 +1,4 @@
-export type ReminderCategory = 'document' | 'vehicle' | 'home' | 'subscription' | 'other'
+export type ReminderCategory = 'document' | 'vehicle' | 'home' | 'medical' | 'subscription' | 'other'
 
 export type RepeatUnit = 'day' | 'month' | 'year'
 

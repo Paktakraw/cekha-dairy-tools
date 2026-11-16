@@ -19,6 +19,7 @@ export const CATEGORIES: { id: ReminderCategory; label: string; examples: string
   { id: 'document', label: 'เอกสารราชการ', examples: 'บัตรประชาชน พาสปอร์ต ใบขับขี่' },
   { id: 'vehicle', label: 'ยานพาหนะ', examples: 'พรบ. ประกัน ถ่ายน้ำมันเครื่อง' },
   { id: 'home', label: 'ของใช้ในบ้าน', examples: 'ล้างแอร์ ไส้กรองน้ำ ยาสามัญ' },
+  { id: 'medical', label: 'รักษาพยาบาล', examples: 'นัดหมอ วัคซีน ตรวจสุขภาพ ประกันสุขภาพ' },
   { id: 'subscription', label: 'สมาชิก/ค่าบริการ', examples: 'แอปสตรีมมิง คลาวด์' },
   { id: 'other', label: 'อื่น ๆ', examples: '' },
 ]
@@ -32,6 +33,7 @@ export const REMIND_PRESETS: Record<ReminderCategory, number[]> = {
   document: [180, 90, 30],
   vehicle: [30, 7],
   home: [7, 1],
+  medical: [30, 7, 1],
   subscription: [3, 1],
   other: [7, 1],
 }
@@ -44,6 +46,8 @@ export const REPEAT_UNIT_LABELS: Record<RepeatUnit, string> = {
 
 /** ช่องเฉพาะหมวด: ช่องตามระยะทาง/การใช้งาน และช่องช่าง/ผู้ให้บริการ */
 export function categoryFields(category: ReminderCategory): { usage: boolean; provider: boolean } {
-  const physical = category === 'vehicle' || category === 'home' || category === 'other'
-  return { usage: physical, provider: physical }
+  // ช่าง/ผู้ให้บริการ (รวมโรงพยาบาล/แพทย์) ใช้กับทุกหมวดที่มีผู้ให้บริการ; ตามระยะใช้เฉพาะของที่นับการใช้งานได้
+  const usage = category === 'vehicle' || category === 'home' || category === 'other'
+  const provider = usage || category === 'medical'
+  return { usage, provider }
 }

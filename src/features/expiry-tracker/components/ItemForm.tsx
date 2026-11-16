@@ -164,7 +164,7 @@ export function ItemForm({ item, onSubmit, onCancel }: ItemFormProps) {
       {fields.provider && (
         <div className="grid gap-3 sm:grid-cols-2">
           <Input
-            label="ช่าง/ผู้ให้บริการ"
+            label={input.category === 'medical' ? 'โรงพยาบาล/แพทย์' : 'ช่าง/ผู้ให้บริการ'}
             value={input.providerName}
             error={errors.providerName}
             maxLength={PROVIDER_NAME_MAX_LENGTH}

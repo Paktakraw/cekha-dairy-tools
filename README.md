@@ -54,6 +54,7 @@ npm run dev              # เปิด http://localhost:5173
    | 7 | `20261110000200_calorie.sql` | ตาราง `calorie_profiles`, `foods`, `food_entries` + RLS + ฟังก์ชัน seed รายการอาหารตั้งต้น 102 เมนู |
    | 8 | `20261113000100_user_preferences.sql` | ตาราง `user_preferences` (ธีมสว่าง/มืดของผู้ใช้) + RLS |
    | 9 | `20261116000100_expiry_tracker.sql` | ตาราง `reminder_items`, `reminder_logs` + RLS + ฟังก์ชัน `complete_reminder()` |
+   | 10 | `20261116000200_expiry_tracker_medical.sql` | เพิ่มหมวด "รักษาพยาบาล" ให้ `reminder_items` |
 
    ไฟล์ที่ 6 จะเปลี่ยนชื่อหมวดหมู่เริ่มต้นเดิมที่เป็นภาษาอังกฤษ (เช่น Salary) ให้เป็นภาษาไทย โดยแตะเฉพาะชื่อที่ตรงกับค่าเริ่มต้นเดิมเท่านั้น หมวดหมู่ที่ผู้ใช้สร้างเองและรายการรายรับ-รายจ่ายเดิมไม่ได้รับผลกระทบ
 
