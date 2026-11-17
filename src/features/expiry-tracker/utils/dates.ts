@@ -43,6 +43,20 @@ export function daysBetween(from: string, to: string): number {
   return Math.round((Date.UTC(b.year, b.month - 1, b.day) - Date.UTC(a.year, a.month - 1, a.day)) / 86_400_000)
 }
 
+/** วันครบกำหนดจาก "อีกกี่วัน" ที่ผู้ใช้พิมพ์ (นับจากวันนี้ ศูนย์ = วันนี้) ค่าไม่ถูกต้อง/ว่าง = null */
+export function dueDateFromDaysAhead(today: string, raw: string, max: number): string | null {
+  const text = raw.trim()
+  if (!/^\d+$/.test(text) || Number(text) > max) return null
+  return addDays(today, Number(text))
+}
+
+/** จำนวนวันจากวันนี้ถึงวันครบกำหนด ถ้าวันที่ไม่ถูกต้องหรืออยู่ในอดีต = null (ใช้เติมช่อง "อีกกี่วัน") */
+export function daysAheadOf(today: string, dueDate: string): number | null {
+  if (!isValidISODate(dueDate)) return null
+  const days = daysBetween(today, dueDate)
+  return days >= 0 ? days : null
+}
+
 /** เดือนปฏิทินถัดจากเดือนของวันที่ที่ระบุ: วันที่ 1 ถึงวันสุดท้าย */
 export function nextMonthRange(date: string): { from: string; to: string } {
   const { year, month } = parse(date)

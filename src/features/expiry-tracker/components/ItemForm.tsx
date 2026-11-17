@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { FormActions, Input, Select, Textarea } from '../../../shared/components/ui'
+import { formatDateLong, todayISO } from '../../../shared/utils/formatDate'
 import {
   CATEGORIES,
+  DAYS_AHEAD_MAX,
   NAME_MAX_LENGTH,
   NOTE_MAX_LENGTH,
   PROVIDER_NAME_MAX_LENGTH,
@@ -12,6 +14,7 @@ import {
   categoryFields,
 } from '../constants'
 import type { ItemFieldErrors, ItemFormInput, ItemValues, ReminderCategory, ReminderItem, RepeatUnit } from '../types/reminder'
+import { daysAheadOf, dueDateFromDaysAhead } from '../utils/dates'
 import { validateItem } from '../utils/validation'
 import { RemindDaysField } from './RemindDaysField'
 
@@ -67,12 +70,42 @@ function initialInput(item?: ReminderItem): ItemFormInput {
 export function ItemForm({ item, onSubmit, onCancel }: ItemFormProps) {
   const [input, setInput] = useState<ItemFormInput>(() => initialInput(item))
   const [remindTouched, setRemindTouched] = useState(item !== undefined)
+  const today = todayISO()
+  const [daysAhead, setDaysAhead] = useState(() => {
+    const days = daysAheadOf(today, item?.due_date ?? '')
+    return days === null ? '' : String(days)
+  })
+  const [daysAheadError, setDaysAheadError] = useState<string>()
   const [errors, setErrors] = useState<ItemFieldErrors>({})
   const [formError, setFormError] = useState<string>()
   const [saving, setSaving] = useState(false)
 
   const fields = categoryFields(input.category)
   const patch = (changes: Partial<ItemFormInput>) => setInput((prev) => ({ ...prev, ...changes }))
+
+  // พิมพ์ "อีกกี่วัน" -> เติมวันครบกำหนดให้
+  const changeDaysAhead = (raw: string) => {
+    setDaysAhead(raw)
+    if (raw.trim() === '') {
+      setDaysAheadError(undefined)
+      return
+    }
+    const due = dueDateFromDaysAhead(today, raw, DAYS_AHEAD_MAX)
+    if (due === null) {
+      setDaysAheadError(`กรอกจำนวนวันเป็นจำนวนเต็ม 0–${DAYS_AHEAD_MAX.toLocaleString('th-TH')}`)
+      return
+    }
+    setDaysAheadError(undefined)
+    patch({ dueDate: due })
+  }
+
+  // เลือกวันจากปฏิทินเอง -> เติมช่อง "อีกกี่วัน" ให้ตรงกัน (วันที่ผ่านมาแล้ว = เว้นว่าง)
+  const changeDueDate = (dueDate: string) => {
+    patch({ dueDate })
+    setDaysAheadError(undefined)
+    const days = daysAheadOf(today, dueDate)
+    setDaysAhead(days === null ? '' : String(days))
+  }
 
   const changeCategory = (category: ReminderCategory) => {
     // ยังไม่เคยแก้ระดับเตือนเอง = เปลี่ยนตามชุดสำเร็จรูปของหมวดใหม่
@@ -122,7 +155,20 @@ export function ItemForm({ item, onSubmit, onCancel }: ItemFormProps) {
         autoFocus
         onChange={(e) => patch({ name: e.target.value })}
       />
-      <Input label="วันครบกำหนด" type="date" value={input.dueDate} error={errors.dueDate} onChange={(e) => patch({ dueDate: e.target.value })} />
+      <div className="flex flex-col gap-1">
+        <div className="grid grid-cols-2 gap-3">
+          <Input label="วันครบกำหนด" type="date" value={input.dueDate} error={errors.dueDate} onChange={(e) => changeDueDate(e.target.value)} />
+          <Input
+            label={'หรือพิมพ์ “อีกกี่วัน”'}
+            inputMode="numeric"
+            placeholder="เช่น 90"
+            value={daysAhead}
+            error={daysAheadError}
+            onChange={(e) => changeDaysAhead(e.target.value)}
+          />
+        </div>
+        {input.dueDate !== '' && <p className="text-xs text-gray-600">ตรงกับวันที่ {formatDateLong(input.dueDate)}</p>}
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         <Input

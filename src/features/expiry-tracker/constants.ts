@@ -10,6 +10,8 @@ export const COST_MAX = 100_000_000
 export const USAGE_MAX = 99_999_999
 export const REMIND_DAYS_MAX = 730
 export const REMIND_LEVELS_MAX = 10
+/** "อีกกี่วัน" ที่พิมพ์เติมวันครบกำหนดได้สูงสุด (100 ปี) */
+export const DAYS_AHEAD_MAX = 36500
 
 /** ขอบเขตสถานะสี: เหลือน้อยกว่า RED_BELOW_DAYS = แดง, ไม่เกิน YELLOW_UP_TO_DAYS = เหลือง, เกินกว่านั้น = เขียว */
 export const RED_BELOW_DAYS = 7

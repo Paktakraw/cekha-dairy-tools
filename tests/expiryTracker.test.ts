@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import { CATEGORIES, REMIND_PRESETS, categoryFields } from '../src/features/expiry-tracker/constants.ts'
 import type { CompleteFormInput, ItemFormInput, ReminderItem } from '../src/features/expiry-tracker/types/reminder.ts'
-import { addDays, addMonths, daysBetween, isValidISODate, nextMonthRange } from '../src/features/expiry-tracker/utils/dates.ts'
+import { addDays, addMonths, daysAheadOf, daysBetween, dueDateFromDaysAhead, isValidISODate, nextMonthRange } from '../src/features/expiry-tracker/utils/dates.ts'
 import { summarizeNextMonth } from '../src/features/expiry-tracker/utils/costSummary.ts'
 import { isReminding, reminderDate, reminderStage } from '../src/features/expiry-tracker/utils/reminders.ts'
 import { addCycle, countOccurrencesInRange, nextDueAfterDone } from '../src/features/expiry-tracker/utils/schedule.ts'
@@ -99,6 +99,29 @@ describe('dates', () => {
     assert.deepEqual(nextMonthRange('2026-11-16'), { from: '2026-12-01', to: '2026-12-31' })
     assert.deepEqual(nextMonthRange('2026-12-31'), { from: '2027-01-01', to: '2027-01-31' })
     assert.deepEqual(nextMonthRange('2027-01-05'), { from: '2027-02-01', to: '2027-02-28' })
+  })
+})
+
+describe('อีกกี่วัน', () => {
+  it('dueDateFromDaysAhead: วันนี้ + N วัน (ข้ามเดือน/ปี)', () => {
+    assert.equal(dueDateFromDaysAhead('2026-11-17', '0', 36500), '2026-11-17')
+    assert.equal(dueDateFromDaysAhead('2026-11-17', '90', 36500), '2027-02-15')
+    assert.equal(dueDateFromDaysAhead('2026-12-31', ' 1 ', 36500), '2027-01-01')
+  })
+
+  it('dueDateFromDaysAhead: ปฏิเสธว่าง ติดลบ ทศนิยม ตัวอักษร และเกินขีดจำกัด', () => {
+    for (const bad of ['', '  ', '-1', '1.5', 'abc', '1e3', '36501']) {
+      assert.equal(dueDateFromDaysAhead('2026-11-17', bad, 36500), null, bad)
+    }
+    assert.equal(dueDateFromDaysAhead('2026-11-17', '36500', 36500), addDays('2026-11-17', 36500))
+  })
+
+  it('daysAheadOf: จำนวนวันจากวันนี้ ถ้าอดีต/ไม่ถูกต้อง = null และไปกลับตรงกับ dueDateFromDaysAhead', () => {
+    assert.equal(daysAheadOf('2026-11-17', '2026-11-17'), 0)
+    assert.equal(daysAheadOf('2026-11-17', '2027-02-15'), 90)
+    assert.equal(daysAheadOf('2026-11-17', '2026-11-16'), null)
+    assert.equal(daysAheadOf('2026-11-17', ''), null)
+    assert.equal(dueDateFromDaysAhead('2026-11-17', String(daysAheadOf('2026-11-17', '2027-06-01')), 36500), '2027-06-01')
   })
 })
 

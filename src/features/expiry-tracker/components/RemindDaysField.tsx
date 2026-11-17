@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { IconButton } from '../../../shared/components/ui'
 import { formatDateLong, todayISO } from '../../../shared/utils/formatDate'
-import { REMIND_DAYS_MAX, REMIND_LEVELS_MAX, REMIND_PRESETS } from '../constants'
+import { REMIND_DAYS_MAX, REMIND_PRESETS } from '../constants'
 import type { ReminderCategory } from '../types/reminder'
 import { reminderDate } from '../utils/reminders'
 import { normalizeRemindDays } from '../utils/validation'
@@ -23,8 +23,9 @@ export function RemindDaysField({ category, value, dueDate, error, onChange }: R
 
   const options = normalizeRemindDays([...REMIND_PRESETS[category], ...value])
 
+  // เลือกได้ระดับเดียว: กดอันใหม่ = แทนที่ กดอันที่เลือกอยู่ซ้ำ = ไม่ตั้งเตือน
   const toggle = (day: number) => {
-    onChange(value.includes(day) ? value.filter((d) => d !== day) : normalizeRemindDays([...value, day]))
+    onChange(value.length === 1 && value[0] === day ? [] : [day])
   }
 
   const today = todayISO()
@@ -42,18 +43,14 @@ export function RemindDaysField({ category, value, dueDate, error, onChange }: R
       setCustomError(`กรอกจำนวนวันเป็นจำนวนเต็ม 0–${REMIND_DAYS_MAX}`)
       return
     }
-    if (!value.includes(Number(text)) && value.length >= REMIND_LEVELS_MAX) {
-      setCustomError(`ตั้งเตือนได้ไม่เกิน ${REMIND_LEVELS_MAX} ระดับ`)
-      return
-    }
     setCustomError(undefined)
-    onChange(normalizeRemindDays([...value, Number(text)]))
+    onChange([Number(text)])
     setCustom('')
   }
 
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="text-sm font-medium text-gray-700">เตือนล่วงหน้า (วัน)</legend>
+      <legend className="text-sm font-medium text-gray-700">เตือนล่วงหน้า (เลือกได้ 1 ระดับ)</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((day) => {
           const selected = value.includes(day)
@@ -87,7 +84,7 @@ export function RemindDaysField({ category, value, dueDate, error, onChange }: R
           }}
           className="w-40 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none"
         />
-        <IconButton icon={Plus} label="เพิ่มระดับเตือน" onClick={addCustom} />
+        <IconButton icon={Plus} label="ใช้จำนวนวันนี้เตือน" onClick={addCustom} />
       </div>
       {customPreview && <p className="text-xs text-gray-600">เตือนก่อน {customDays} วัน จะตรงกับวันที่ {customPreview}</p>}
       {(customError || error) && <p className="text-xs text-red-700">{customError ?? error}</p>}
