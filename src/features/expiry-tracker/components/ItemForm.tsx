@@ -145,6 +145,7 @@ export function ItemForm({ item, onSubmit, onCancel }: ItemFormProps) {
       <RemindDaysField
         category={input.category}
         value={input.remindBeforeDays}
+        dueDate={input.dueDate}
         error={errors.remindBeforeDays}
         onChange={(days) => {
           setRemindTouched(true)

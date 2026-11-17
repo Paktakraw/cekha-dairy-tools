@@ -30,6 +30,14 @@ export function todayISO(): string {
   return `${now.getFullYear()}-${mm}-${dd}`
 }
 
+const longDateFormatter = new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })
+
+/** รับ "YYYY-MM-DD" คืนวันที่แบบเต็ม เช่น 10 พฤศจิกายน 2569 */
+export function formatDateLong(date: string): string {
+  const [year, month, day] = date.split('-').map(Number)
+  return longDateFormatter.format(new Date(year, month - 1, day))
+}
+
 const monthFormatter = new Intl.DateTimeFormat('th-TH', { month: 'long', year: 'numeric' })
 
 /** รับ "YYYY-MM-DD" (หรือวันใดก็ได้ในเดือน) คืนชื่อเดือนและปี เช่น พฤศจิกายน 2569 */

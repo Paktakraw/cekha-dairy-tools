@@ -4,7 +4,7 @@ import { CATEGORIES, REMIND_PRESETS, categoryFields } from '../src/features/expi
 import type { CompleteFormInput, ItemFormInput, ReminderItem } from '../src/features/expiry-tracker/types/reminder.ts'
 import { addDays, addMonths, daysBetween, isValidISODate, nextMonthRange } from '../src/features/expiry-tracker/utils/dates.ts'
 import { summarizeNextMonth } from '../src/features/expiry-tracker/utils/costSummary.ts'
-import { isReminding, reminderStage } from '../src/features/expiry-tracker/utils/reminders.ts'
+import { isReminding, reminderDate, reminderStage } from '../src/features/expiry-tracker/utils/reminders.ts'
 import { addCycle, countOccurrencesInRange, nextDueAfterDone } from '../src/features/expiry-tracker/utils/schedule.ts'
 import { compareItems } from '../src/features/expiry-tracker/utils/sort.ts'
 import { daysLeft, daysLeftLabel, getUrgency } from '../src/features/expiry-tracker/utils/urgency.ts'
@@ -192,6 +192,20 @@ describe('reminders', () => {
     assert.equal(isReminding(1, []), false)
     assert.equal(isReminding(3, [3, 1]), true)
     assert.equal(isReminding(4, [3, 1]), false)
+  })
+})
+
+describe('reminderDate', () => {
+  it('คำนวณวันที่เตือน = วันครบกำหนด − N วัน (ข้ามเดือน/ปีได้)', () => {
+    assert.equal(reminderDate('2026-12-10', 30), '2026-11-10')
+    assert.equal(reminderDate('2027-01-05', 10), '2026-12-26')
+    assert.equal(reminderDate('2026-12-10', 0), '2026-12-10')
+    assert.equal(reminderDate('2026-03-01', 1), '2026-02-28')
+  })
+
+  it('วันครบกำหนดยังไม่ถูกต้อง/ว่าง = null', () => {
+    assert.equal(reminderDate('', 7), null)
+    assert.equal(reminderDate('2026-02-30', 7), null)
   })
 })
 
