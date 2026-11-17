@@ -4,9 +4,9 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 11 — Expiry & Maintenance Tracker (อย่าลืมฉัน)
-- **Status:** Phase 11 โค้ดเสร็จ (lint/build ผ่าน, เทสต์ 93 เคส) — รอผู้ใช้รัน migration `20261116000100_expiry_tracker.sql` ทดสอบตาม `docs/testing.md` แล้วยืนยัน; Phase 10 ปิดแล้ว (merge แล้ว)
-- **Last Updated:** 2026-11-16
+- **Current Phase:** Phase 11 ปิดแล้ว — ยังไม่เริ่ม Phase ถัดไป (รอผู้ใช้สั่ง)
+- **Status:** Phase 11 (อย่าลืมฉัน) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-17 — รอเปิด PR จาก `feature/expiry-tracker`; Phase 10 ปิดแล้ว (merge แล้ว)
+- **Last Updated:** 2026-11-17
 
 ## Phase Checklist
 - [x] Phase 0: Architecture Review (อ่าน spec ทุกไฟล์ใน `docs/features/` + ตอบ Open Questions)
@@ -27,7 +27,7 @@
 - [x] Phase 9: Feature — Unit Price Comparator (`docs/features/unit-price.md`) — เสร็จ ผู้ใช้ยืนยันแล้ว
 - [x] Phase 10: Theme โหมดสว่าง/มืด (`docs/features/theme.md`) — เสร็จ ผู้ใช้ยืนยันแล้ว
   - [x] สรุปรายสัปดาห์/รายเดือน
-- [ ] Phase 11: Feature — Expiry & Maintenance Tracker (`docs/features/expiry-tracker.md`) — spec ยืนยันแล้ว โค้ดเสร็จ รอผู้ใช้ทดสอบและยืนยัน
+- [x] Phase 11: Feature — Expiry & Maintenance Tracker (`docs/features/expiry-tracker.md`) — spec ยืนยันแล้ว โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-17)
   - [x] Migration → Types → Service → Hook → UI
   - [x] Pure utils + เทสต์ (วันที่/รอบ/สถานะสี/ตามระยะ/เตือน/สรุปเดือนหน้า/validation)
 
@@ -117,6 +117,6 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- ผู้ใช้: รัน `20261116000100_expiry_tracker.sql` แล้วตามด้วย `20261116000200_expiry_tracker_medical.sql` ใน SQL Editor → ทดสอบตามหัวข้อ "อย่าลืมฉัน" ใน `docs/testing.md` → ยืนยัน Phase 11 → เปิด PR จาก `feature/expiry-tracker` (label `feature`)
-- ผู้ใช้: ยืนยันว่าการตีความ "แนบไฟล์ = เตรียมโครงสร้างไว้ ไม่ทำช่องอัปโหลดใน v1" ถูกต้องหรือไม่
-- Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
+- ผู้ใช้: เปิด PR จาก `feature/expiry-tracker` (label `feature`) แล้ว merge; หลัง merge แนะนำ tag `v0.3.0` และปรับ `package.json` ให้ตรงกัน
+- ผู้ใช้: ถ้ายังไม่ได้รัน ให้รัน `20261116000100_expiry_tracker.sql` แล้วตามด้วย `20261116000200_expiry_tracker_medical.sql` ใน SQL Editor
+- ยังไม่เริ่ม Phase ถัดไป จนกว่าผู้ใช้สั่ง; Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
