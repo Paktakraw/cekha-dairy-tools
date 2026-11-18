@@ -30,7 +30,7 @@
 - [x] Phase 11: Feature — Expiry & Maintenance Tracker (`docs/features/expiry-tracker.md`) — spec ยืนยันแล้ว โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-17)
   - [x] Migration → Types → Service → Hook → UI
   - [x] Pure utils + เทสต์ (วันที่/รอบ/สถานะสี/ตามระยะ/เตือน/สรุปเดือนหน้า/validation)
-- [ ] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — ตอบ Open Questions แล้ว รอผู้ใช้ยืนยัน spec ยังไม่เริ่มโค้ด
+- [ ] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) กำลังทำบน `feature/size-converter`
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
