@@ -159,6 +159,7 @@ supabase/
 - ไม่ Hardcode Credentials ใช้ .env และมี .env.example ที่ไม่มีค่าจริง
 - logic ล้วน ๆ (คำนวณ สุ่ม จัดกลุ่ม) แยกเป็น pure function ใน `utils/` และมีเทสต์ใน `tests/`
 - ก่อนส่งงานรัน `npm run lint`, `npm run build`, `npm test` ให้ผ่านทั้งหมด
+- **ก่อน commit ทุกครั้งต้องรีวิวโค้ดด้วย OpenCodeReview แบบ delegate** (ดูข้อ 10.10 และ `docs/testing.md` หัวข้อ "รีวิวโค้ดก่อน commit")
 
 ## 8. Development Phases
 Phase 0: Architecture Review
@@ -210,3 +211,10 @@ Phase 7: Refactoring, Testing & Documentation
 7. ถ้ามีหลายวิธี ให้เลือกวิธีที่เรียบง่ายและเหมาะกับโปรเจคขนาดนี้
 8. ถ้าเกิด Error ให้แก้ให้เสร็จก่อนไปต่อ
 9. อัปเดต `PROGRESS.md` ทุกครั้งที่จบ Phase
+10. **รีวิวโค้ดก่อน commit เสมอ** ลำดับคือ
+    1. รัน `ocr delegate preview` (แก้ไฟล์ที่ยังไม่ commit) แล้ว `ocr delegate rule <ไฟล์ที่ได้>` เพื่อดูไฟล์และกฎที่ต้องตรวจ
+    2. รีวิวโค้ดตามกฎนั้น แล้ว**สรุปผลรีวิวแจ้งผู้ใช้** (ระบุไฟล์/บรรทัด ความสำคัญ และข้อที่ไม่ได้แก้พร้อมเหตุผล)
+    3. **หยุดรอผู้ใช้ตอบ** ว่าจะให้แก้ตามผลรีวิวข้อไหน ห้าม commit หรือ push ก่อนผู้ใช้ตอบ
+    4. แก้ตามที่ผู้ใช้สั่ง รัน `npm run lint`, `npm run build`, `npm test` ให้ผ่าน แล้วจึง commit และ push ได้
+    - ถ้า `ocr delegate preview` ไม่มีไฟล์ให้รีวิว (เช่น แก้เฉพาะเอกสาร `.md`) ให้แจ้งผู้ใช้ว่าไม่มีไฟล์ให้รีวิวแล้วไปต่อได้ ไม่ต้องรอ
+    - ถ้ารีวิวหลัง commit แล้ว (เช่น ตรวจทั้ง branch) ใช้ `ocr delegate preview --from <base> --to HEAD`

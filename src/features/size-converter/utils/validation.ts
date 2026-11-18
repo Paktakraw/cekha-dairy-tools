@@ -9,7 +9,6 @@ import {
 import type {
   MeasureErrors,
   MeasureInput,
-  MeasureKey,
   Measurements,
   NoteFieldErrors,
   NoteFormInput,
@@ -103,10 +102,6 @@ export function validateProfile(input: ProfileFormInput): { errors: ProfileField
   if (Object.keys(errors).length > 0 || parsed.values === null) return { errors, values: null }
 
   return { errors, values: { name, demographic: input.demographic, unit_pref: input.unit, ...parsed.values } }
-}
-
-export function isMeasureKey(key: string): key is MeasureKey {
-  return MEASURE_FIELDS.some((f) => f.key === key)
 }
 
 export function validateNote(input: NoteFormInput, profileId: string): { errors: NoteFieldErrors; values: NoteValues | null } {
