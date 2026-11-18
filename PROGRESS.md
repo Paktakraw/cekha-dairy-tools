@@ -4,8 +4,8 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 12 — Global Size Converter (ไซส์ไหนคือฉัน)
-- **Status:** Phase 12 โค้ดเสร็จ (lint/build ผ่าน, เทสต์ 128 เคส) — รอผู้ใช้รัน migration `20261118000100_size_converter.sql` ทดสอบตาม `docs/testing.md` แล้วยืนยัน; Phase 11 ปิดแล้ว (merge แล้ว)
+- **Current Phase:** Phase 12 ปิดแล้ว — ยังไม่เริ่ม Phase ถัดไป (รอผู้ใช้สั่ง)
+- **Status:** Phase 12 (ไซส์ไหนคือฉัน) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-18 — รอ merge PR จาก `feature/size-converter` แล้ว tag `v0.4.0` (เลขใน package.json ปรับเป็น 0.4.0 แล้ว); Phase 11 ปิดแล้ว (merge แล้ว)
 - **Last Updated:** 2026-11-18
 
 ## Phase Checklist
@@ -30,7 +30,7 @@
 - [x] Phase 11: Feature — Expiry & Maintenance Tracker (`docs/features/expiry-tracker.md`) — spec ยืนยันแล้ว โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-17)
   - [x] Migration → Types → Service → Hook → UI
   - [x] Pure utils + เทสต์ (วันที่/รอบ/สถานะสี/ตามระยะ/เตือน/สรุปเดือนหน้า/validation)
-- [ ] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) โค้ดเสร็จบน `feature/size-converter` รอผู้ใช้รัน migration ทดสอบ และยืนยัน
+- [x] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-18)
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -121,5 +121,5 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- ผู้ใช้: รัน `20261118000100_size_converter.sql` ใน SQL Editor → ทดสอบตามหัวข้อ "ไซส์ไหนคือฉัน" ใน `docs/testing.md` → ยืนยัน Phase 12 → เปิด PR จาก `feature/size-converter` (label `feature`) แล้ว tag `v0.4.0` หลัง merge
+- ผู้ใช้: merge PR จาก `feature/size-converter` (label `feature`) → สร้าง tag/release `v0.4.0` จาก `main` (เลขใน `package.json` เป็น 0.4.0 แล้ว) → รัน `20261118000100_size_converter.sql` ใน SQL Editor ถ้ายังไม่ได้รัน
 - ยังไม่เริ่ม Phase ถัดไป จนกว่าผู้ใช้สั่ง; Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
