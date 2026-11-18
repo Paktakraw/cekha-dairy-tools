@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { createPortal } from 'react-dom'
 import { Button, ConfirmDialog, EmptyState, IconButton, Modal } from '../../../shared/components/ui'
 import { ProfileForm } from '../components/ProfileForm'
 import { DEMOGRAPHIC_LABELS, MEASURE_FIELDS } from '../constants'
@@ -21,7 +22,7 @@ function summary(profile: SizeProfile): string {
 }
 
 export default function ProfilesPage() {
-  const { profiles, addProfile, editProfile, removeProfile } = useSizeContext()
+  const { profiles, addProfile, editProfile, removeProfile, actionSlot } = useSizeContext()
   const [form, setForm] = useState<FormState>(null)
   const [deleting, setDeleting] = useState<SizeProfile | null>(null)
   const [deletingBusy, setDeletingBusy] = useState(false)
@@ -36,12 +37,14 @@ export default function ProfilesPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <Button onClick={() => setForm({ mode: 'create' })}>
-          <Plus className="h-4 w-4" />
-          เพิ่มโปรไฟล์
-        </Button>
-      </div>
+      {actionSlot &&
+        createPortal(
+          <Button size="sm" onClick={() => setForm({ mode: 'create' })}>
+            <Plus className="h-4 w-4" />
+            เพิ่มโปรไฟล์
+          </Button>,
+          actionSlot,
+        )}
 
       {profiles.length === 0 ? (
         <EmptyState title="ยังไม่มีโปรไฟล์" description="กดปุ่ม “เพิ่มโปรไฟล์” ด้านบน เพื่อบันทึกสัดส่วนของตัวเองหรือคนรอบตัว" />

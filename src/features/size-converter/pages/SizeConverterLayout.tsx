@@ -16,31 +16,36 @@ const TABS = [
 export default function SizeConverterLayout() {
   const state = useSizeProfiles()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  // ช่องว่างขวาสุดของแถวเมนูย่อย ให้หน้าย่อยวางปุ่มของตัวเอง (ผ่าน portal)
+  const [actionSlot, setActionSlot] = useState<HTMLElement | null>(null)
 
   // เลือกอยู่ที่ถูกลบไปแล้ว/ยังไม่เลือก -> โปรไฟล์ "ฉัน" หรืออันแรก
   const selected = state.profiles.find((p) => p.id === selectedId) ?? state.profiles.find((p) => p.is_self) ?? state.profiles[0] ?? null
-  const context: SizeContext = { ...state, selected, selectProfile: setSelectedId }
+  const context: SizeContext = { ...state, selected, selectProfile: setSelectedId, actionSlot }
 
   return (
     <>
       <PageHeader maxWidth="max-w-4xl">
         <h1 className="text-xl font-semibold text-gray-900">ไซส์ไหนคือฉัน</h1>
-        <nav className="mt-2 flex gap-2 overflow-x-auto" aria-label="เมนูย่อยไซส์ไหนคือฉัน">
-          {TABS.map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm whitespace-nowrap transition-colors ${
-                  isActive ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
-                }`
-              }
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <nav className="flex min-w-0 gap-2 overflow-x-auto" aria-label="เมนูย่อยไซส์ไหนคือฉัน">
+            {TABS.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm whitespace-nowrap transition-colors ${
+                    isActive ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
+                  }`
+                }
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+          <div ref={setActionSlot} className="shrink-0 empty:hidden" />
+        </div>
       </PageHeader>
       <div className="mx-auto mt-4 max-w-4xl">
         {state.firstLoad && state.loading ? (

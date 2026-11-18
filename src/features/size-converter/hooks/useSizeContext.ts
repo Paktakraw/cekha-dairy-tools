@@ -7,6 +7,8 @@ export interface SizeContext extends ReturnType<typeof useSizeProfiles> {
   /** โปรไฟล์ที่เลือกอยู่ (null = ยังไม่มีโปรไฟล์) */
   selected: SizeProfile | null
   selectProfile: (id: string) => void
+  /** ที่วางปุ่มของหน้าย่อยในแถวเมนูย่อย (ชิดขวา) null = ยังไม่พร้อม */
+  actionSlot: HTMLElement | null
 }
 
 export function useSizeContext(): SizeContext {
