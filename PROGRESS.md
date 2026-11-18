@@ -4,8 +4,8 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 11 ปิดแล้ว — ยังไม่เริ่ม Phase ถัดไป (รอผู้ใช้สั่ง)
-- **Status:** Phase 11 (อย่าลืมฉัน) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-17 — รอเปิด PR จาก `feature/expiry-tracker`; Phase 10 ปิดแล้ว (merge แล้ว)
+- **Current Phase:** Phase 12 — Global Size Converter (ไซส์ไหนคือฉัน)
+- **Status:** Phase 12 โค้ดเสร็จ (lint/build ผ่าน, เทสต์ 128 เคส) — รอผู้ใช้รัน migration `20261118000100_size_converter.sql` ทดสอบตาม `docs/testing.md` แล้วยืนยัน; Phase 11 ปิดแล้ว (merge แล้ว)
 - **Last Updated:** 2026-11-18
 
 ## Phase Checklist
@@ -30,7 +30,7 @@
 - [x] Phase 11: Feature — Expiry & Maintenance Tracker (`docs/features/expiry-tracker.md`) — spec ยืนยันแล้ว โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-17)
   - [x] Migration → Types → Service → Hook → UI
   - [x] Pure utils + เทสต์ (วันที่/รอบ/สถานะสี/ตามระยะ/เตือน/สรุปเดือนหน้า/validation)
-- [ ] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) กำลังทำบน `feature/size-converter`
+- [ ] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) โค้ดเสร็จบน `feature/size-converter` รอผู้ใช้รัน migration ทดสอบ และยืนยัน
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -80,6 +80,7 @@
 - 2026-11-10 — Design แคลอรี่ หน้าบันทึกอาหาร — ปุ่ม "เพิ่มอาหาร" ย้ายไปชิดขวาในแถวเดียวกับหัวข้อวันที่เหนือการ์ดแคลอรี่รวม (ไม่ใช่แถวตัวเลือกวันที่) และลดขนาดปุ่ม: เพิ่ม prop `size` ('md' | 'sm') ให้ `Button` และ `IconButton` (shared) — ตามคำขอผู้ใช้ (เข้าใจผิดครั้งแรกว่าหมายถึงแถวตัวเลือกวันที่ แก้แล้ว)
 - 2026-11-13 — เปลี่ยนชื่อโมดูลที่แสดงในแอป (ผู้ใช้ขอ) — รายการงาน → วันนี้ทำอะไรดี, สุ่มเลือก → สับสนช่วยหน่อย, รายรับ-รายจ่าย → เงินฉันไปไหน, แคลอรี่ → ผอมไปด้วยกัน, เทียบราคาต่อหน่วย → อันไหนถูกกว่า บอกมา; เปลี่ยนเฉพาะ `name` ใน `index.tsx` ของแต่ละฟีเจอร์ หัวข้อหน้า (h1) และ aria-label เมนูย่อย ส่วน id/path/โฟลเดอร์/ข้อความอื่นไม่เปลี่ยน (Sidebar, หน้าหลัก, Router อ่านจาก Registry อัตโนมัติ); spec เดิมที่อ้างชื่อเก่าในประวัติการตัดสินใจจึงไม่แก้
 - 2026-11-18 — ฟีเจอร์ใหม่ Global Size Converter — ผู้ใช้ขอโมดูล "ไซส์ไหนคือฉัน" (โปรไฟล์สัดส่วนหลายคน ตัวแปลงรองเท้า/เสื้อ/กางเกง/แหวน/หมวก คำแนะนำเผื่อไซส์ จดไซส์ที่เคยใส่); ตรวจสูตรที่ผู้ใช้ให้มาแล้วปรับ 3 จุดใน spec: US หญิง = US ชาย + 1.5, ใช้ส่วนเผื่อหัวรองเท้า 1.7 cm ค่าเดียว, เบอร์แหวน EU แสดงทั้งแบบ ISO (รอบวง−40) และรอบวงตรง ๆ ไม่แสดงมาตรฐานแหวน "ไทย" เพราะไม่มีแหล่งยืนยัน; ร่าง spec `docs/features/size-converter.md` เป็น Phase 12 บน branch `docs/size-converter-spec` — ผู้ใช้ตอบ Open Questions ครบ 7 ข้อแล้ว (ไม่ทำฐานข้อมูลแบรนด์/หมวดเด็ก/widget/คู่มือภาพ เน้นผู้ใช้วัยรุ่น) — รอผู้ใช้ยืนยัน spec ตามข้อ 2.2
+- 2026-11-18 — Phase 12 ระหว่างทำ — เสื้อผ้ามีตัวเลือกแค่ พอดีตัว/Oversize (+1 ไซส์), รองเท้า ปกติ/หน้าเท้ากว้าง (+0.5 cm), ตัดกระโปรงออกจาก v1 (ไม่มีแหล่งอ้างอิง), ตารางเสื้อผ้าเป็นค่าประมาณจากหลายแหล่ง; โปรไฟล์ "ฉัน" ตั้งอัตโนมัติ ยังไม่มีปุ่มย้าย
 
 ## Completed Work
 - Phase 0: อ่าน spec, ตัดสิน Open Questions, อัปเดต spec ใน `docs/features/`
@@ -116,9 +117,9 @@
 - Calorie: ยังไม่ได้ตรวจ Responsive ด้วยตาจริง
 - Theme: ผู้ใช้รัน migration และทดสอบผ่านแล้ว (ตามที่ผู้ใช้แจ้ง ผมไม่ได้ตรวจเอง)
 - Expiry Tracker: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive/โหมดมืดด้วยตา และยังไม่ได้ทดสอบกับ Supabase จริง (ทดสอบเฉพาะ pure function และ SQL บน Postgres ชั่วคราว); เตือนได้เฉพาะตอนเปิดแอป ไม่มีการเตือนนอกแอป
+- Size Converter: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive/โหมดมืดด้วยตา และยังไม่ได้ทดสอบกับ Supabase จริง; ตารางเสื้อผ้าเป็นค่าประมาณจากหลายแหล่งที่ไม่ตรงกัน (JP ยืนยันไม่ได้แน่ชัด); ยังไม่มีปุ่มย้ายป้าย "ฉัน"
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- ผู้ใช้: เปิด PR จาก `feature/expiry-tracker` (label `feature`) แล้ว merge; หลัง merge แนะนำ tag `v0.3.0` และปรับ `package.json` ให้ตรงกัน
-- ผู้ใช้: ถ้ายังไม่ได้รัน ให้รัน `20261116000100_expiry_tracker.sql` แล้วตามด้วย `20261116000200_expiry_tracker_medical.sql` ใน SQL Editor
+- ผู้ใช้: รัน `20261118000100_size_converter.sql` ใน SQL Editor → ทดสอบตามหัวข้อ "ไซส์ไหนคือฉัน" ใน `docs/testing.md` → ยืนยัน Phase 12 → เปิด PR จาก `feature/size-converter` (label `feature`) แล้ว tag `v0.4.0` หลัง merge
 - ยังไม่เริ่ม Phase ถัดไป จนกว่าผู้ใช้สั่ง; Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
