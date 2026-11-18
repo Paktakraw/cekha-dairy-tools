@@ -36,6 +36,7 @@
 | Unit Price Comparator (เทียบราคาต่อหน่วย) | In scope (Phase 9, รอยืนยัน spec) | `docs/features/unit-price.md` | `src/features/unit-price/` |
 | Theme (โหมดสว่าง/มืด) | In scope (Phase 10, รอยืนยัน spec) | `docs/features/theme.md` | `src/app/providers/`, `src/shared/` |
 | Expiry & Maintenance Tracker (เอกสารหมดอายุ/ซ่อมบำรุง/ค่าสมาชิก) | In scope (Phase 11, รอยืนยัน spec) | `docs/features/expiry-tracker.md` | `src/features/expiry-tracker/` |
+| Global Size Converter (ไซส์ไหนคือฉัน — แปลงไซส์เสื้อผ้า/รองเท้าจากสัดส่วนจริง) | In scope (Phase 12, รอยืนยัน spec) | `docs/features/size-converter.md` | `src/features/size-converter/` |
 | Subscription Management | รวมเข้ากับ Expiry Tracker (หมวด `subscription`) ห้ามสร้างแยก | - | - |
 | Debtor Management (คนที่ยืมเงิน) | Future (ห้ามสร้าง) | - | - |
 | Appointment Management | Future (ห้ามสร้าง) | - | - |
