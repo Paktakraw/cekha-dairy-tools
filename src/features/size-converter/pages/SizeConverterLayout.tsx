@@ -29,8 +29,8 @@ export default function SizeConverterLayout() {
     <>
       <PageHeader maxWidth="max-w-4xl">
         <h1 className="text-xl font-semibold text-gray-900">ไซส์ไหนคือฉัน</h1>
-        {/* หน้าโปรไฟล์ (มีปุ่มเพิ่มในแถวเมนู): จอแคบเรียงเป็นตาราง 2 คอลัมน์ 2 แถว ย่อจอแล้วลดแค่ความกว้าง; จอ sm ขึ้นไปและหน้าอื่นเป็นแถวเดียว (หน้าอื่นตกบรรทัดเมื่อแคบ) */}
-        <div className={compactTabs ? 'mt-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between' : 'mt-2 flex items-center justify-between gap-2'}>
+        {/* หน้าโปรไฟล์ (มีปุ่มเพิ่มในแถวเมนู): จอแคบเรียง 2 แถว (บน = 3 ปุ่มแท็บ, ล่าง = ปุ่มเพิ่ม) ย่อจอแล้วลดแค่ความกว้าง; จอ sm ขึ้นไปและหน้าอื่นเป็นแถวเดียว (หน้าอื่นตกบรรทัดเมื่อแคบ) */}
+        <div className={compactTabs ? 'mt-2 grid grid-cols-3 gap-2 sm:flex sm:items-center sm:justify-between' : 'mt-2 flex items-center justify-between gap-2'}>
           <nav
             className={compactTabs ? 'contents sm:flex sm:min-w-0 sm:flex-wrap sm:gap-2' : 'flex min-w-0 flex-wrap gap-2'}
             aria-label="เมนูย่อยไซส์ไหนคือฉัน"
@@ -50,7 +50,7 @@ export default function SizeConverterLayout() {
               </NavLink>
             ))}
           </nav>
-          <div ref={setActionSlot} className="flex empty:hidden sm:shrink-0" />
+          <div ref={setActionSlot} className="col-span-3 flex empty:hidden sm:col-auto sm:shrink-0" />
         </div>
       </PageHeader>
       <div className="mx-auto mt-4 max-w-4xl">
