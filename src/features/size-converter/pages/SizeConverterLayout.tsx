@@ -3,6 +3,7 @@ import { ArrowLeftRight, NotebookPen, Users } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { PageHeader } from '../../../shared/components/layout/PageHeader'
 import { ErrorState, Spinner } from '../../../shared/components/ui'
+import { TabMenu } from '../components/TabMenu'
 import type { SizeContext } from '../hooks/useSizeContext'
 import { useSizeProfiles } from '../hooks/useSizeProfiles'
 
@@ -28,7 +29,11 @@ export default function SizeConverterLayout() {
       <PageHeader maxWidth="max-w-4xl">
         <h1 className="text-xl font-semibold text-gray-900">ไซส์ไหนคือฉัน</h1>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <nav className="flex min-w-0 gap-2 overflow-x-auto" aria-label="เมนูย่อยไซส์ไหนคือฉัน">
+          <div className="sm:hidden">
+            <TabMenu tabs={TABS} label="เมนูย่อยไซส์ไหนคือฉัน" />
+          </div>
+          {/* จอ sm ขึ้นไป: แสดงปุ่มแยกทุกหน้า; จอแคบใช้ TabMenu รวมปุ่มเดียว */}
+          <nav className="hidden min-w-0 gap-2 overflow-x-auto sm:flex" aria-label="เมนูย่อยไซส์ไหนคือฉัน">
             {TABS.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
