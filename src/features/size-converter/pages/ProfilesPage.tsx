@@ -39,10 +39,9 @@ export default function ProfilesPage() {
     <div className="flex flex-col gap-4">
       {actionSlot &&
         createPortal(
-          // มือถือ: แสดงเฉพาะไอคอน (แถวเมนูแคบ) จอ sm ขึ้นไปแสดงข้อความด้วย
-          <Button size="sm" title="เพิ่มโปรไฟล์" aria-label="เพิ่มโปรไฟล์" onClick={() => setForm({ mode: 'create' })}>
+          <Button size="sm" className="w-full sm:w-auto" onClick={() => setForm({ mode: 'create' })}>
             <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">เพิ่มโปรไฟล์</span>
+            เพิ่มโปรไฟล์
           </Button>,
           actionSlot,
         )}

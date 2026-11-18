@@ -3,7 +3,6 @@ import { ArrowLeftRight, NotebookPen, Users } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { PageHeader } from '../../../shared/components/layout/PageHeader'
 import { ErrorState, Spinner } from '../../../shared/components/ui'
-import { TabMenu } from '../components/TabMenu'
 import type { SizeContext } from '../hooks/useSizeContext'
 import { useSizeProfiles } from '../hooks/useSizeProfiles'
 
@@ -30,29 +29,28 @@ export default function SizeConverterLayout() {
     <>
       <PageHeader maxWidth="max-w-4xl">
         <h1 className="text-xl font-semibold text-gray-900">ไซส์ไหนคือฉัน</h1>
-        <div className="mt-2 flex items-center justify-between gap-2">
-          {compactTabs && (
-            <div className="sm:hidden">
-              <TabMenu tabs={TABS} label="เมนูย่อยไซส์ไหนคือฉัน" />
-            </div>
-          )}
-          <nav className={`min-w-0 flex-wrap gap-2 ${compactTabs ? 'hidden sm:flex' : 'flex'}`} aria-label="เมนูย่อยไซส์ไหนคือฉัน">
+        {/* หน้าโปรไฟล์ (มีปุ่มเพิ่มในแถวเมนู): จอแคบเรียงเป็นตาราง 2 คอลัมน์ 2 แถว ย่อจอแล้วลดแค่ความกว้าง; จอ sm ขึ้นไปและหน้าอื่นเป็นแถวเดียว (หน้าอื่นตกบรรทัดเมื่อแคบ) */}
+        <div className={compactTabs ? 'mt-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between' : 'mt-2 flex items-center justify-between gap-2'}>
+          <nav
+            className={compactTabs ? 'contents sm:flex sm:min-w-0 sm:flex-wrap sm:gap-2' : 'flex min-w-0 flex-wrap gap-2'}
+            aria-label="เมนูย่อยไซส์ไหนคือฉัน"
+          >
             {TABS.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
                 className={({ isActive }) =>
                   `inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm whitespace-nowrap transition-colors ${
-                    isActive ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
-                  }`
+                    compactTabs ? 'min-w-0 justify-center sm:justify-start' : ''
+                  } ${isActive ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'}`
                 }
               >
-                <Icon className="h-4 w-4" />
-                {label}
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{label}</span>
               </NavLink>
             ))}
           </nav>
-          <div ref={setActionSlot} className="shrink-0 empty:hidden" />
+          <div ref={setActionSlot} className="flex empty:hidden sm:shrink-0" />
         </div>
       </PageHeader>
       <div className="mx-auto mt-4 max-w-4xl">
