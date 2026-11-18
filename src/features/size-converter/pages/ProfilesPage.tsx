@@ -52,7 +52,6 @@ export default function ProfilesPage() {
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900">
                   {profile.name}
-                  {profile.is_self && <span className="ml-2 rounded border border-gray-300 px-1.5 py-0.5 text-xs text-gray-600">ฉัน</span>}
                   <span className="ml-2 text-xs font-normal text-gray-500">ตารางไซส์{DEMOGRAPHIC_LABELS[profile.demographic]}</span>
                 </p>
                 <p className="mt-1 text-xs text-gray-600">{summary(profile)}</p>

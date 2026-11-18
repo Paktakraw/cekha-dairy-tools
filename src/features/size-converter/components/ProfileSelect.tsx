@@ -17,7 +17,6 @@ export function ProfileSelect({ profiles, value, onChange, allowManual = false }
       {profiles.map((p) => (
         <option key={p.id} value={p.id}>
           {p.name}
-          {p.is_self ? ' (ฉัน)' : ''}
         </option>
       ))}
       {allowManual && <option value={MANUAL_VALUE}>กรอกเอง (ไม่บันทึก)</option>}
