@@ -13,7 +13,8 @@ import { EMPTY_MEASURE_INPUT, EMPTY_MEASUREMENTS, parseMeasures } from '../utils
 export default function ConverterPage() {
   const { profiles, selected, selectProfile } = useSizeContext()
   const [category, setCategory] = useState<ConverterCategory>('shoes')
-  const [manual, setManual] = useState(false)
+  // เปิดหน้าครั้งแรกเป็น "กรอกเอง" เสมอ (เลือกโปรไฟล์ได้จาก dropdown)
+  const [manual, setManual] = useState(true)
   const [manualDemographic, setManualDemographic] = useState<Demographic>('men')
   const [manualUnit, setManualUnit] = useState<UnitPref>('cm')
   const [manualInput, setManualInput] = useState<MeasureInput>({ ...EMPTY_MEASURE_INPUT })
