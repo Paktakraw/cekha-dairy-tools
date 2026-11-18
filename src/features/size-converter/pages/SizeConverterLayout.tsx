@@ -36,7 +36,7 @@ export default function SizeConverterLayout() {
               <TabMenu tabs={TABS} label="เมนูย่อยไซส์ไหนคือฉัน" />
             </div>
           )}
-          <nav className={`min-w-0 gap-2 overflow-x-auto ${compactTabs ? 'hidden sm:flex' : 'flex'}`} aria-label="เมนูย่อยไซส์ไหนคือฉัน">
+          <nav className={`min-w-0 flex-wrap gap-2 ${compactTabs ? 'hidden sm:flex' : 'flex'}`} aria-label="เมนูย่อยไซส์ไหนคือฉัน">
             {TABS.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
