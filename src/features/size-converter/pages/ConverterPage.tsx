@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button, Select } from '../../../shared/components/ui'
+import { CATEGORY_ICONS } from '../components/categoryIcons'
 import { ConversionTable } from '../components/ConversionTable'
 import { MeasureFields } from '../components/MeasureFields'
 import { MANUAL_VALUE, ProfileSelect } from '../components/ProfileSelect'
@@ -83,11 +84,15 @@ export default function ConverterPage() {
       </section>
 
       <div className="flex flex-wrap gap-2" role="group" aria-label="หมวดสินค้า">
-        {CATEGORIES.map((c) => (
-          <Button key={c.id} variant={category === c.id ? 'primary' : 'secondary'} size="sm" aria-pressed={category === c.id} onClick={() => setCategory(c.id)}>
-            {c.label}
-          </Button>
-        ))}
+        {CATEGORIES.map((c) => {
+          const Icon = CATEGORY_ICONS[c.id]
+          return (
+            <Button key={c.id} variant={category === c.id ? 'primary' : 'secondary'} size="sm" aria-pressed={category === c.id} onClick={() => setCategory(c.id)}>
+              <Icon className="h-4 w-4" />
+              {c.label}
+            </Button>
+          )
+        })}
       </div>
 
       {showFit && (
