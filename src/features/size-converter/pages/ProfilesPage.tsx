@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { createPortal } from 'react-dom'
-import { Button, ConfirmDialog, EmptyState, IconButton, Modal } from '../../../shared/components/ui'
+import { ConfirmDialog, EmptyState, IconButton, Modal } from '../../../shared/components/ui'
 import { ProfileForm } from '../components/ProfileForm'
 import { DEMOGRAPHIC_LABELS, MEASURE_FIELDS } from '../constants'
 import { useSizeContext } from '../hooks/useSizeContext'
@@ -39,10 +39,15 @@ export default function ProfilesPage() {
     <div className="flex flex-col gap-4">
       {actionSlot &&
         createPortal(
-          <Button size="sm" className="w-full sm:w-auto" onClick={() => setForm({ mode: 'create' })}>
-            <Plus className="h-4 w-4" />
-            เพิ่มโปรไฟล์
-          </Button>,
+          // สไตล์เดียวกับปุ่มแท็บ (ตัวแปลง/โปรไฟล์/จดไซส์) ที่ไม่ได้เลือก
+          <button
+            type="button"
+            onClick={() => setForm({ mode: 'create' })}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm whitespace-nowrap text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-gray-900 sm:w-auto"
+          >
+            <Plus className="h-4 w-4 shrink-0" />
+            <span className="truncate">เพิ่มโปรไฟล์</span>
+          </button>,
           actionSlot,
         )}
 
