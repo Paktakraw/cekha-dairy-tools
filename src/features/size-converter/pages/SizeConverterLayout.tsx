@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ArrowLeftRight, NotebookPen, Users } from 'lucide-react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { PageHeader } from '../../../shared/components/layout/PageHeader'
 import { ErrorState, Spinner } from '../../../shared/components/ui'
 import { TabMenu } from '../components/TabMenu'
@@ -16,6 +16,8 @@ const TABS = [
 /** โครงของฟีเจอร์: Header + เมนูย่อย แล้วแสดงหน้าย่อยด้วย Outlet โหลดโปรไฟล์ครั้งเดียวและแชร์ให้ทุกหน้า */
 export default function SizeConverterLayout() {
   const state = useSizeProfiles()
+  // หน้าที่มีปุ่มเพิ่มในแถวเมนู (โปรไฟล์) จอแคบรวมแท็บเป็นเมนูเดียว หน้าอื่นใช้ปุ่มแยกเหมือนเดิม
+  const compactTabs = useLocation().pathname.endsWith('/profiles')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   // ช่องว่างขวาสุดของแถวเมนูย่อย ให้หน้าย่อยวางปุ่มของตัวเอง (ผ่าน portal)
   const [actionSlot, setActionSlot] = useState<HTMLElement | null>(null)
@@ -29,11 +31,12 @@ export default function SizeConverterLayout() {
       <PageHeader maxWidth="max-w-4xl">
         <h1 className="text-xl font-semibold text-gray-900">ไซส์ไหนคือฉัน</h1>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <div className="sm:hidden">
-            <TabMenu tabs={TABS} label="เมนูย่อยไซส์ไหนคือฉัน" />
-          </div>
-          {/* จอ sm ขึ้นไป: แสดงปุ่มแยกทุกหน้า; จอแคบใช้ TabMenu รวมปุ่มเดียว */}
-          <nav className="hidden min-w-0 gap-2 overflow-x-auto sm:flex" aria-label="เมนูย่อยไซส์ไหนคือฉัน">
+          {compactTabs && (
+            <div className="sm:hidden">
+              <TabMenu tabs={TABS} label="เมนูย่อยไซส์ไหนคือฉัน" />
+            </div>
+          )}
+          <nav className={`min-w-0 gap-2 overflow-x-auto ${compactTabs ? 'hidden sm:flex' : 'flex'}`} aria-label="เมนูย่อยไซส์ไหนคือฉัน">
             {TABS.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
