@@ -13,9 +13,17 @@ interface MeasureFieldsProps {
   onChange: (key: MeasureKey, value: string) => void
 }
 
+/** รอบนิ้ว (ข้อความ) -> เส้นผ่านศูนย์กลาง (ข้อความ) ว่างถ้ายังไม่มีค่าที่ใช้ได้ */
+function diameterText(circumference: string): string {
+  const text = circumference.trim()
+  const value = Number(text)
+  return text !== '' && Number.isFinite(value) && value > 0 ? String(round1(diameterFromCircumference(value))) : ''
+}
+
 /** ช่องกรอกสัดส่วน (ใช้ทั้งในฟอร์มโปรไฟล์และโหมดกรอกเองของตัวแปลง) */
 export function MeasureFields({ keys, unit, values, errors, onChange }: MeasureFieldsProps) {
-  const [diameter, setDiameter] = useState('')
+  // เปิดแก้ไขโปรไฟล์ที่มีรอบนิ้วอยู่แล้ว ต้องเห็นเส้นผ่านศูนย์กลางที่ตรงกันด้วย
+  const [diameter, setDiameter] = useState(() => diameterText(values.finger_circumference_mm))
   const [diameterError, setDiameterError] = useState<string>()
 
   const changeDiameter = (raw: string) => {
@@ -36,9 +44,8 @@ export function MeasureFields({ keys, unit, values, errors, onChange }: MeasureF
 
   const changeCircumference = (raw: string) => {
     onChange('finger_circumference_mm', raw)
-    const value = Number(raw.trim())
     setDiameterError(undefined)
-    setDiameter(raw.trim() !== '' && Number.isFinite(value) && value > 0 ? String(round1(diameterFromCircumference(value))) : '')
+    setDiameter(diameterText(raw))
   }
 
   return (

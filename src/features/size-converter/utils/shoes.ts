@@ -1,4 +1,12 @@
-import { CM_PER_INCH, SHOE_ALLOWANCE_CM } from '../constants.ts'
+import {
+  BARLEYCORNS_PER_INCH,
+  CM_PER_INCH,
+  EU_POINTS_PER_CM,
+  SHOE_ALLOWANCE_CM,
+  UK_SIZE_OFFSET,
+  US_MEN_OVER_UK,
+  US_WOMEN_OVER_UK,
+} from '../constants.ts'
 import type { ConvRow } from '../types/size'
 import { formatNumber } from './format.ts'
 import { ambiguousRange, ceilToStep, roundToStep } from './rounding.ts'
@@ -20,7 +28,7 @@ export interface ShoeSizes {
 
 /** ความยาวเท้า (cm) -> ไซส์รองเท้าผู้ใหญ่ทุกมาตรฐาน (สูตรตาม docs/features/size-converter.md) */
 export function convertShoeSize(footCm: number): ShoeSizes {
-  const ukRaw = (footCm / CM_PER_INCH) * 3 - 23
+  const ukRaw = (footCm / CM_PER_INCH) * BARLEYCORNS_PER_INCH - UK_SIZE_OFFSET
   const base = {
     jpCm: roundToStep(footCm, 0.5),
     cnMm: roundToStep(footCm * 10, 5),
@@ -29,7 +37,7 @@ export function convertShoeSize(footCm: number): ShoeSizes {
   // UK ผู้ใหญ่เริ่มที่ 1
   if (ukRaw < 1 - 1e-9) return { ...base, adult: null }
 
-  const euRaw = (footCm + SHOE_ALLOWANCE_CM) * 1.5
+  const euRaw = (footCm + SHOE_ALLOWANCE_CM) * EU_POINTS_PER_CM
   const uk = roundToStep(ukRaw, 0.5)
   return {
     ...base,
@@ -38,8 +46,8 @@ export function convertShoeSize(footCm: number): ShoeSizes {
       euRaw,
       uk,
       ukRaw,
-      usMen: uk + 1,
-      usWomen: uk + 2.5,
+      usMen: uk + US_MEN_OVER_UK,
+      usWomen: uk + US_WOMEN_OVER_UK,
     },
   }
 }
@@ -60,8 +68,8 @@ function rowsOf(sizes: ShoeSizes): ConvRow[] {
     rows.push(
       { label: 'EU', value: withRange(a.eu, a.euRaw, 0.5) },
       { label: 'UK', value: withRange(a.uk, a.ukRaw, 0.5) },
-      { label: 'US (ชาย)', value: withRange(a.usMen, a.ukRaw + 1, 0.5) },
-      { label: 'US (หญิง)', value: withRange(a.usWomen, a.ukRaw + 2.5, 0.5) },
+      { label: 'US (ชาย)', value: withRange(a.usMen, a.ukRaw + US_MEN_OVER_UK, 0.5) },
+      { label: 'US (หญิง)', value: withRange(a.usWomen, a.ukRaw + US_WOMEN_OVER_UK, 0.5) },
     )
   }
   return rows

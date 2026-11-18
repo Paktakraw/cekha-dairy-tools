@@ -10,6 +10,15 @@ export const DUPLICATE_PROFILE_MESSAGE = 'มีโปรไฟล์ชื่�
 export const CM_PER_INCH = 2.54
 /** ส่วนเผื่อหัวรองเท้า (cm) = 2 barleycorn ใช้ค่าเดียวกับทุกมาตรฐาน */
 export const SHOE_ALLOWANCE_CM = 1.7
+/** Barleycorn ต่อนิ้ว (หน่วยของไซส์ UK) */
+export const BARLEYCORNS_PER_INCH = 3
+/** UK ผู้ใหญ่ = (เท้านิ้ว × 3) − ค่านี้ (รวมส่วนเผื่อหัวรองเท้า 2 barleycorn) */
+export const UK_SIZE_OFFSET = 23
+/** Paris point ต่อ cm (1 จุด = ⅔ cm) ใช้กับไซส์ EU */
+export const EU_POINTS_PER_CM = 1.5
+/** ส่วนต่างของ US เทียบกับ UK: ผู้ชาย +1, ผู้หญิง +2.5 (ห่างกัน 1.5 ไซส์) */
+export const US_MEN_OVER_UK = 1
+export const US_WOMEN_OVER_UK = 2.5
 /** หน้าเท้ากว้าง: เผื่อความยาวเพิ่มราวครึ่งไซส์ (cm) */
 export const WIDE_FOOT_EXTRA_CM = 0.5
 /** เสื้อผ้า Oversize: ขยับขึ้นกี่ไซส์ */
