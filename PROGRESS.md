@@ -4,7 +4,7 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 13 (ตัวฉันวันนี้) — spec ยืนยันแล้ว กำลังทำโค้ด (Phase 12 ปิดแล้ว)
+- **Current Phase:** Phase 13 (ตัวฉันวันนี้) — โค้ดเสร็จ รอรีวิว/ผู้ใช้ยืนยัน (Phase 12 ปิดแล้ว)
 - **Status:** Phase 12 (ไซส์ไหนคือฉัน) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-18 — รอ merge PR จาก `feature/size-converter` แล้ว tag `v0.4.0` (เลขใน package.json ปรับเป็น 0.4.0 แล้ว); Phase 11 ปิดแล้ว (merge แล้ว)
 - **Last Updated:** 2026-11-19
 
@@ -31,7 +31,7 @@
   - [x] Migration → Types → Service → Hook → UI
   - [x] Pure utils + เทสต์ (วันที่/รอบ/สถานะสี/ตามระยะ/เตือน/สรุปเดือนหน้า/validation)
 - [x] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-18)
-- [ ] Phase 13: Feature — ตัวฉันวันนี้ / Daily Vibe Check (`docs/features/mood.md`) — spec ยืนยันแล้ว (2026-11-19) กำลังทำโค้ดบน `feature/mood`
+- [ ] Phase 13: Feature — ตัวฉันวันนี้ / Daily Vibe Check (`docs/features/mood.md`) — spec ยืนยันแล้ว (2026-11-19) โค้ดเสร็จบน `feature/mood` (lint/build/เทสต์ 143 ผ่าน, migration ทดสอบบน Postgres ชั่วคราวผ่าน) รอรีวิวโค้ด (OCR) และผู้ใช้ทดสอบ/ยืนยัน Phase
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -101,6 +101,7 @@
 - Phase 8 (โค้ด): migration `20261110000200_calorie.sql` (3 ตาราง + RLS + trigger + RPC seed 102 เมนู จาก `docs/features/calorie-foods-seed.csv`), `types/calorie.ts`, `constants.ts`, utils (`bmr`, `summary`, `dates`, `format` — pure), services (`profileService`, `foodService`, `entryService`), hooks (`useBmrProfile`, `useFoods`, `useFoodEntries`), components (BmrForm, BmrResultCards, FoodPicker, FoodEntryForm, MealSection, DaySummaryCard, DateNavigator, CalorieBar, FoodForm), pages 4 หน้า (`/calorie/food|summary|foods|bmr`), ลงทะเบียนใน Registry; เทสต์ใหม่ 21 เคส (รวม 39); lint/build/test ผ่าน ยังไม่ได้ทดสอบกับ Supabase จริง
 
 ## Migrations Applied
+- `20261119000100_mood.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase จริง** (ทดสอบบน Postgres ชั่วคราว: เพิ่ม/upsert ได้, RLS แยกผู้ใช้, CHECK/UNIQUE ปฏิเสธค่าผิด) ต้องรันหลัง core migration
 - `20261109000000_core.sql` — ต้องรันก่อน (ผู้ใช้เป็นผู้รัน)
 - `20261109000100_todo.sql` — ผู้ใช้รันแล้ว/ต้องรันก่อน
 - `20261109000200_todo_status_unique_limits.sql` — ผู้ใช้รันแล้ว
@@ -113,6 +114,7 @@
 - `20261116000100_expiry_tracker.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase จริง** (ผมทดสอบกับ PostgreSQL 14 ชั่วคราวในเครื่องที่จำลอง `auth.uid()`: สร้างได้, RPC ทั้งเลื่อนวัน/เก็บถาวรถูกต้อง, CHECK ปฏิเสธค่าผิด, RLS แยกผู้ใช้, anon เรียก RPC ไม่ได้, ลบรายการแล้วประวัติหายตาม)
 
 ## Known Issues / TODO
+- ตัวฉันวันนี้: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive/โหมดมืด (สีพื้นระดับอารมณ์ 5 ระดับ) ด้วยตา และยังไม่ได้ทดสอบกับ Supabase จริง; ข้อความให้กำลังใจ/ปลอบใจเป็นร่างภาษาวัยรุ่นของ Claude ผู้ใช้ปรับเองได้ที่ `src/features/mood/utils/messages.ts`; เบอร์สายด่วน 1323 (กรมสุขภาพจิต) ผู้ใช้สั่งให้ใส่ — ควรตรวจเบอร์ล่าสุดกับแหล่งทางการก่อนปล่อยจริง (ยังไม่ได้ตรวจออนไลน์ใน session นี้)
 - ยังไม่ได้ตรวจ Responsive ด้วยตาจริงบนอุปกรณ์/เบราว์เซอร์ (ตรวจจากโค้ดเท่านั้น) และยังไม่ได้รันรายการตรวจด้วยมือใน `docs/testing.md` กับข้อมูลจริง (ผู้ใช้ต้องทำ)
 - ไม่มีเทสต์ระดับ UI/E2E (ต้องเพิ่มไลบรารี เช่น Vitest + Testing Library หรือ Playwright — รอผู้ใช้ยืนยัน)
 - ผู้ใช้จะขอปรับเพิ่มเติมหลังเห็นหน้าซอฟต์แวร์จริง (หลัง Phase 2 เป็นต้นไป)
@@ -125,5 +127,6 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
+- Phase 13 (ตัวฉันวันนี้): ผู้ใช้ตัดสินผลรีวิวโค้ด → แก้ → commit/push `feature/mood` → รัน `20261119000100_mood.sql` ใน SQL Editor → ทดสอบตามเช็กลิสต์ใน `docs/testing.md` → ยืนยัน Phase → ปรับเลขเวอร์ชัน (เสนอ 0.5.0) → เปิด PR
 - ผู้ใช้: merge PR จาก `feature/size-converter` (label `feature`) → สร้าง tag/release `v0.4.0` จาก `main` (เลขใน `package.json` เป็น 0.4.0 แล้ว) → รัน `20261118000100_size_converter.sql` ใน SQL Editor ถ้ายังไม่ได้รัน
 - ยังไม่เริ่ม Phase ถัดไป จนกว่าผู้ใช้สั่ง; Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
