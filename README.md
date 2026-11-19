@@ -74,6 +74,8 @@ npm run dev              # เปิด http://localhost:5173
 ```
 docs/
 ├── features/            spec ของแต่ละฟีเจอร์ (+ _template.md)
+├── spec/                PRD และ System Design ของทั้งแอป
+├── testing/             test case และผลการทดสอบ
 ├── adding-a-feature.md  คู่มือเพิ่มฟีเจอร์ใหม่
 ├── future-login.md      แนวทางเพิ่ม Login จริงในอนาคต
 └── testing.md           การทดสอบ และรายการตรวจด้วยมือ
@@ -124,4 +126,6 @@ Release owner ของ repo ดูที่ [.github/CODEOWNERS](.github/CODEOW
 - [docs/adding-a-feature.md](docs/adding-a-feature.md): เพิ่มฟีเจอร์ใหม่ทีละขั้น
 - [docs/future-login.md](docs/future-login.md): เพิ่ม Login จริงโดยไม่ทำให้ข้อมูลเดิมหาย
 - [docs/testing.md](docs/testing.md): การทดสอบและรายการตรวจด้วยมือ
+- [docs/spec/](docs/spec/README.md): PRD (ภาษาธุรกิจ) และ System Design (สถาปัตยกรรม ฐานข้อมูล workflow)
+- [docs/testing/](docs/testing/README.md): test case และผลการทดสอบ
 - [CLAUDE.md](CLAUDE.md) และ [PROGRESS.md](PROGRESS.md): กฎของโปรเจกต์และบันทึกความคืบหน้า

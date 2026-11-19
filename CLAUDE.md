@@ -83,9 +83,11 @@
 ```
 docs/
 ├── features/            (spec ของแต่ละฟีเจอร์ + _template.md)
+├── spec/                (PRD.md, system-design.md — เอกสารภาพรวมของทั้งแอป)
+├── testing/             (test-cases.md, test-results.md — test case และผลการทดสอบ)
 ├── adding-a-feature.md  (คู่มือเพิ่มฟีเจอร์)
 ├── future-login.md      (แนวทางเพิ่ม Login จริง)
-└── testing.md           (เทสต์ + รายการตรวจด้วยมือ)
+└── testing.md           (วิธีรันเทสต์ + เช็กลิสต์ตรวจด้วยมือ + ขั้นตอนรีวิวโค้ดก่อน commit)
 tests/                   (เทสต์ของ pure functions รันด้วย `npm test` ใช้ node:test ไม่ต้องติดตั้งไลบรารี)
 src/
 ├── app/
@@ -160,6 +162,7 @@ supabase/
 - logic ล้วน ๆ (คำนวณ สุ่ม จัดกลุ่ม) แยกเป็น pure function ใน `utils/` และมีเทสต์ใน `tests/`
 - ก่อนส่งงานรัน `npm run lint`, `npm run build`, `npm test` ให้ผ่านทั้งหมด
 - **ก่อน commit ทุกครั้งต้องรีวิวโค้ดด้วย OpenCodeReview แบบ delegate** (ดูข้อ 10.10 และ `docs/testing.md` หัวข้อ "รีวิวโค้ดก่อน commit")
+- **ก่อนเปิด Pull Request ทุกครั้งต้องอัปเดตเอกสาร spec และ testing ให้ตรงกับโค้ด** (ดูข้อ 10.11)
 
 ## 8. Development Phases
 Phase 0: Architecture Review
@@ -218,3 +221,12 @@ Phase 7: Refactoring, Testing & Documentation
     4. แก้ตามที่ผู้ใช้สั่ง รัน `npm run lint`, `npm run build`, `npm test` ให้ผ่าน แล้วจึง commit และ push ได้
     - ถ้า `ocr delegate preview` ไม่มีไฟล์ให้รีวิว (เช่น แก้เฉพาะเอกสาร `.md`) ให้แจ้งผู้ใช้ว่าไม่มีไฟล์ให้รีวิวแล้วไปต่อได้ ไม่ต้องรอ
     - ถ้ารีวิวหลัง commit แล้ว (เช่น ตรวจทั้ง branch) ใช้ `ocr delegate preview --from <base> --to HEAD`
+11. **ก่อนเปิด Pull Request ต้องอัปเดตเอกสารเหล่านี้ให้ตรงกับโค้ดที่เปลี่ยนก่อนเสมอ** (อัปเดตและ commit ลง branch เดียวกับโค้ด)
+    1. `docs/spec/PRD.md` — requirement/ตารางเครื่องมือ/ข้อจำกัด/ประวัติ Phase และเลขเวอร์ชัน (เขียนภาษาธุรกิจ หัวข้อเรียบง่าย)
+    2. `docs/spec/system-design.md` — โครงสร้างโค้ดและ Registry, ER diagram, schema รายตาราง, ฟังก์ชัน/RPC, ลำดับ migration, sequence diagram ของ workflow ที่เปลี่ยน, เลขเวอร์ชัน
+    3. `docs/testing/test-cases.md` — เพิ่ม/แก้ test case ให้ตรงกับ `tests/*.test.ts` และเช็กลิสต์ใน `docs/testing.md` (ไม่เปลี่ยนเลขของเคสเดิม)
+    4. `docs/testing/test-results.md` — บันทึกผลรอบล่าสุดที่รันจริง (lint, build, `npm test`, ผลฐานข้อมูล, ผลตรวจโค้ด) ห้ามเขียนว่า "ผ่าน" ในสิ่งที่ไม่ได้รันจริง
+    5. ที่เกี่ยวข้อง: spec รายฟีเจอร์ใน `docs/features/`, `README.md`, `PROGRESS.md`
+    - เลขเวอร์ชันและวันที่ในหัวเอกสารต้องตรงกับ `package.json` และวันที่อัปเดต
+    - ถ้าการเปลี่ยนแปลงไม่กระทบเอกสารไฟล์ใด ให้เขียนในคำอธิบาย PR ว่าไฟล์นั้นไม่ต้องแก้เพราะอะไร
+    - ผู้ช่วย AI ต้องแจ้งผู้ใช้ว่าอัปเดตเอกสารครบแล้ว (พร้อมรายการไฟล์) **ก่อน**บอกให้เปิด PR ห้ามบอกให้เปิด PR ถ้ายังไม่ได้อัปเดต
