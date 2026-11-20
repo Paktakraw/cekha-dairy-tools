@@ -104,7 +104,7 @@ flowchart LR
 | `unit-price` | อันไหนถูกกว่า บอกมา | `/unit-price` | — |
 | `expiry-tracker` | อย่าลืมฉัน | `/expiry-tracker` | — |
 | `size-converter` | ไซส์ไหนคือฉัน | `/size-converter` | `converter`, `profiles`, `notes` |
-| `mood` | ตัวฉันวันนี้ | `/mood` | `today`, `calendar`, `summary` |
+| `mood` | ตัวฉันวันนี้ | `/mood` | `today`, `calendar`, `summary`, `settings` |
 
 ```mermaid
 flowchart TD
@@ -157,6 +157,7 @@ erDiagram
   AUTH_USERS ||--o{ REMINDER_ITEMS : owns
   AUTH_USERS ||--o{ SIZE_PROFILES : owns
   AUTH_USERS ||--o{ MOOD_ENTRIES : owns
+  AUTH_USERS ||--o{ MOOD_TAGS : owns
 
   RANDOM_GROUPS ||--o{ RANDOM_ITEMS : "group_id (cascade)"
   CATEGORIES ||--o{ TRANSACTIONS : "(category_id, type) restrict"
@@ -164,7 +165,7 @@ erDiagram
   REMINDER_ITEMS ||--o{ REMINDER_LOGS : "item_id (cascade)"
   SIZE_PROFILES ||--o{ SIZE_NOTES : "(profile_id, user_id) cascade"
 ```
-ตารางทั้งหมดมี `user_id → auth.users(id)` (ลบผู้ใช้ = ลบข้อมูลทั้งหมดตาม) เส้นจาก AUTH_USERS ที่วาดไว้แสดงเฉพาะตารางหลักเพื่อให้อ่านง่าย (`random_items`, `transactions`, `food_entries`, `reminder_logs`, `size_notes`, `mood_entries` ก็มี `user_id` เช่นกัน)
+ตารางทั้งหมดมี `user_id → auth.users(id)` (ลบผู้ใช้ = ลบข้อมูลทั้งหมดตาม) เส้นจาก AUTH_USERS ที่วาดไว้แสดงเฉพาะตารางหลักเพื่อให้อ่านง่าย (`random_items`, `transactions`, `food_entries`, `reminder_logs`, `size_notes`, `mood_entries`, `mood_tags` ก็มี `user_id` เช่นกัน)
 
 ### 7.3 Schema รายตาราง
 **`tasks`** (To-do) — migration `…000100_todo`, `…000200_todo_status_unique_limits`
@@ -253,14 +254,24 @@ Index: `size_profiles(user_id)`; `size_notes(user_id)`, `(profile_id, created_at
 |---|---|---|
 | entry_date | date | NOT NULL; CHECK `<= current_date + 1` (เผื่อ timezone; ฝั่ง client ตรวจเข้มงวดว่าไม่เกินวันนี้) |
 | mood | smallint | NOT NULL, CHECK 1–5 (1 = ดิ่ง … 5 = ปังสุด) |
-| tags | text[] | NOT NULL default `{}`; CHECK เป็นสับเซตของ 11 แท็กที่กำหนดและไม่ซ้ำ (`mood_tags_unique()`) |
+| tags | text[] | NOT NULL default `{}` เก็บ id ของ `mood_tags` (ในรูปข้อความ); CHECK ไม่ซ้ำ (`mood_tags_unique()`) และ ≤ 30; trigger `mood_entries_validate_tags` ตรวจว่าทุก id เป็นแท็กของผู้ใช้เองที่ยังมีอยู่ (ข้ามเมื่อถูกเรียกจาก trigger อื่น เช่น cascade) |
 | note | text | NULL; CHECK ความยาว 1–100 |
 UNIQUE `(user_id, entry_date)` (วันละ 1 รายการ ใช้เป็นเป้าของ upsert `on conflict (user_id, entry_date)`); Index `user_id`; RLS 4 policies + trigger `set_updated_at`
+
+**`mood_tags`** (แท็กที่ผู้ใช้ตั้งค่าเอง) — `20261119000200_mood_custom_tags`
+| ตาราง.คอลัมน์ | ชนิด | กฎ |
+|---|---|---|
+| group_kind | text | NOT NULL, CHECK ∈ (`story`, `activity`) |
+| name | text | NOT NULL, ตัดช่องว่างแล้วไม่ว่าง, ≤ 20 ตัวอักษร; UNIQUE `(user_id, group_kind, lower(btrim(name)))` |
+| sort_order | integer | NOT NULL ตั้งอัตโนมัติโดย trigger (ลำดับถัดไปในกลุ่ม) |
+Index `user_id`; RLS 4 policies; trigger `set_updated_at`, `mood_tags_before_insert` (จำกัด 30 แท็กต่อผู้ใช้ + ตั้ง `sort_order`; error `23514`), `mood_tags_after_delete` (ถอด id ออกจาก `mood_entries.tags`)
 
 ### 7.4 ฟังก์ชัน, Trigger และ RPC
 | ชื่อ | ชนิด | หน้าที่ |
 |---|---|---|
 | `set_updated_at()` | trigger function | ตั้ง `updated_at = now()` ก่อน UPDATE (ใช้ทุกตาราง) |
+| `seed_default_mood_tags()` | RPC (security invoker) | ใส่แท็กเริ่มต้น 11 อันให้ผู้ใช้ที่ยังไม่มีแท็กเลย (idempotent; revoke จาก public/anon) |
+| `mood_tags_before_insert()`, `mood_tags_after_delete()`, `mood_entries_validate_tags()` | trigger functions (security invoker) | จำกัด 30 แท็ก + ตั้งลำดับ / ถอดแท็กที่ถูกลบออกจากการเช็กอินเก่า / ตรวจ id แท็กของรายการเช็กอิน (ดู 7.3) |
 | `mood_tags_unique(text[])` | ฟังก์ชัน immutable (`search_path=''`) | ใช้ใน CHECK ของ `mood_entries.tags` ให้แท็กไม่ซ้ำกัน (CHECK ใช้ subquery ตรง ๆ ไม่ได้) |
 | `tasks_set_completed_at()` | trigger function | ตั้ง `completed_at = now()` เมื่อสถานะเป็น `done` ครั้งแรก, ล้างเป็น NULL เมื่อไม่ใช่ `done` |
 | `seed_default_categories()` | RPC (security invoker) | ใส่หมวดรายรับ/รายจ่ายเริ่มต้นให้ผู้ใช้ที่ยังไม่มีหมวดเลย (idempotent, `on conflict do nothing`); ฟังก์ชันสร้างชื่ออังกฤษ แล้ว migration `…finance_thai_categories` แปลงเป็นภาษาไทย |
@@ -282,6 +293,7 @@ UNIQUE `(user_id, entry_date)` (วันละ 1 รายการ ใช้�
 | 10 | `20261116000200_expiry_tracker_medical.sql` | เพิ่มหมวด `medical` |
 | 11 | `20261118000100_size_converter.sql` | `size_profiles`, `size_notes` |
 | 12 | `20261119000100_mood.sql` | `mood_entries`, `mood_tags_unique()` |
+| 13 | `20261119000200_mood_custom_tags.sql` | `mood_tags`, triggers, `seed_default_mood_tags()`; แปลงแท็กแบบ id คงที่เดิมของ `mood_entries` เป็นแท็กของผู้ใช้ |
 
 กฎ: migration ใหม่ = ไฟล์ใหม่ ไม่แก้ไฟล์เดิม; ข้อมูลสำคัญบังคับที่ระดับ DB เสมอ ไม่พึ่งแค่ UI
 
@@ -456,9 +468,10 @@ sequenceDiagram
   H->>H: โหลดช่วงวันที่ซ้ำ
   H-->>TP: entries
   TP->>TP: ถ้าคะแนน ≤ 2 แสดง VibeBoostCard (ดิ่ง 3 วันติด = + ข้อความดูแลใจ/1323)
-  U->>TP: เลือกแท็ก + พิมพ์ข้อความ → บันทึก
-  TP->>H: saveDetails (normalizeDetails ตรวจ ≤100 ตัวอักษร ตัดแท็กซ้ำ)
+  U->>TP: เลือกแท็ก (จากแท็กของผู้ใช้ที่ MoodLayout โหลด/seed ไว้) + พิมพ์ข้อความ → บันทึก
+  TP->>H: saveDetails (normalizeDetails ตรวจ ≤100 ตัวอักษร ตัดแท็กซ้ำ/แท็กที่ไม่มีอยู่)
   H->>S: saveDetails → upsert {entry_date, mood, tags, note}
+  H-->>TP: สำเร็จ → navigate ไป /mood/calendar
 ```
 ปฏิทินและสรุปเดือนโหลดทีละเดือน (`monthRange`) แล้วคำนวณสัดส่วน/อารมณ์เด่น/แท็กยอดนิยมที่ฝั่ง client (`utils/stats.ts`); ปุ่มลิงก์ "สุ่มเมนูฮีลใจ" เป็นแค่ลิงก์ไป `/randomizer` ไม่ import โค้ดข้ามฟีเจอร์
 
@@ -489,7 +502,7 @@ sequenceDiagram
 | unit-price | `utils/unitPrice.ts`, `units.ts`, `format.ts` | แปลงหน่วยฐาน, ราคาต่อหน่วย, จัดอันดับ, % ที่แพงกว่า, ตรวจกลุ่มหน่วย/ราคาเท่ากัน |
 | expiry-tracker | `utils/dates.ts`, `schedule.ts`, `urgency.ts`, `usage.ts`, `reminders.ts`, `costSummary.ts`, `sort.ts`, `validation.ts` | `addMonths` (ปัดสิ้นเดือน), `nextDueAfterDone` (คำนวณจากวันตั้งต้นไม่สะสมคลาด), `getUrgency`, `reminderStage`, `dueDateFromDaysAhead`, `summarizeNextMonth`, `validateItem` |
 | size-converter | `utils/shoes.ts`, `rings.ts`, `hats.ts`, `jeans.ts`, `clothing.ts`, `converter.ts` (รวมตัวเลือกเผื่อไซส์), `rounding.ts`, `units.ts`, `validation.ts` + `data/clothingCharts.ts` | ดูสูตรด้านล่าง |
-| mood | `utils/calendar.ts`, `stats.ts`, `messages.ts`, `validation.ts` | `buildMonthGrid` (เริ่มวันอาทิตย์), `monthRange`, `shiftMonth`, `moodShares` (รวม 100% ด้วย largest remainder), `dominantMood`, `topTags`, `consecutiveDaysWithMood`, `pickMessage`, `normalizeDetails`, `validateEntryDate` |
+| mood | `utils/calendar.ts`, `stats.ts`, `messages.ts`, `validation.ts`, `tagValidation.ts` | `buildMonthGrid` (เริ่มวันอาทิตย์), `monthRange`, `shiftMonth`, `moodShares` (รวม 100% ด้วย largest remainder), `dominantMood`, `topTags`, `consecutiveDaysWithMood`, `pickMessage`, `normalizeDetails`, `validateEntryDate`, `validateTagName` (ไม่ว่าง ≤ 20 ไม่ซ้ำในกลุ่ม), `canAddTag` (≤ 30) |
 | shared | `utils/theme.ts`, `formatCurrency.ts`, `formatDate.ts` | `resolveTheme`, รูปแบบเงิน/วันที่ไทย |
 
 ### สูตรของ size-converter
@@ -530,7 +543,7 @@ sequenceDiagram
 ## 12. กลยุทธ์การทดสอบ
 | ระดับ | วิธี | เครื่องมือ |
 |---|---|---|
-| Unit (pure function) | เทสต์อัตโนมัติ 143 เคส | `node:test` (`npm test`) |
+| Unit (pure function) | เทสต์อัตโนมัติ 148 เคส | `node:test` (`npm test`) |
 | ฐานข้อมูล | ทดสอบ migration/RLS/CHECK/RPC บน PostgreSQL ชั่วคราว (จำลอง `auth.uid()`) และตรวจบน Supabase จริงแบบอ่านอย่างเดียว | psql |
 | ทำงานจริง (CRUD, edge case, Responsive, โหมดมืด) | เช็กลิสต์ด้วยมือโดยผู้ใช้ | [docs/testing.md](../testing.md) |
 | คุณภาพโค้ด | lint, TypeScript strict, ตรวจโค้ดด้วย OpenCodeReview ก่อน commit | oxlint, `tsc`, `ocr` |
@@ -543,6 +556,6 @@ sequenceDiagram
 - การเตือนของ "อย่าลืมฉัน" เกิดตอนเปิดแอปเท่านั้น (ไม่มี server-side job)
 - ปุ่ม "ฉัน": โปรไฟล์แรกตั้ง `is_self` อัตโนมัติ ยังไม่มีทางย้ายไปโปรไฟล์อื่น (ไม่มีป้ายใน UI)
 - แถบเมนูย่อยของฟีเจอร์ finance ยังเลื่อนซ้าย-ขวาเมื่อจอแคบ (ต่างจาก size-converter ที่ตกบรรทัด)
-- ตัวฉันวันนี้: สีตามระดับอารมณ์เป็นตัวแปร `--mood-1..5` ใน `index.css` (ขยายข้อยกเว้นสีตามผู้ใช้อนุมัติ); ชุดแท็กอยู่ทั้งใน `constants.ts` และ CHECK ของ `mood_entries.tags` ต้องแก้ทั้งสองที่; DB ปฏิเสธวันที่เกินพรุ่งนี้ ส่วนการห้ามเกินวันนี้เป๊ะตรวจที่ฝั่ง client
+- ตัวฉันวันนี้: สีตามระดับอารมณ์เป็นตัวแปร `--mood-1..5` ใน `index.css` (ขยายข้อยกเว้นสีตามผู้ใช้อนุมัติ); แท็กเป็นข้อมูลของผู้ใช้ (`mood_tags`) แล้ว ขีดจำกัด 30 แท็ก/20 ตัวอักษรอยู่ทั้งใน `constants.ts` และ DB (trigger/CHECK) ต้องแก้ให้ตรงกัน; ลบแท็กแล้วฐานข้อมูลถอดออกจากการเช็กอินเก่าเอง (ย้อนคืนไม่ได้); DB ปฏิเสธวันที่เกินพรุ่งนี้ ส่วนการห้ามเกินวันนี้เป๊ะตรวจที่ฝั่ง client
 - ตัวคูณ/ข้อมูลที่ผูกกับ DB และโค้ด (ความยาวสูงสุดของช่อง) ต้องแก้ทั้งสองที่ให้ตรงกัน (`constants.ts` ↔ CHECK)
 - ฐานข้อมูลที่ติดตั้งจริงของผู้ใช้อาจรัน migration ไม่ครบ: ตรวจสถานะรายไฟล์ใน [PROGRESS.md](../../PROGRESS.md) หัวข้อ Migrations Applied

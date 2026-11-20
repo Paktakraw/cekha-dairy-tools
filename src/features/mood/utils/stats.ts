@@ -1,4 +1,4 @@
-import type { MoodEntry, MoodScore, MoodShare, MoodTagId } from '../types/mood'
+import type { MoodEntry, MoodScore, MoodShare } from '../types/mood'
 import { addDays } from './calendar.ts'
 
 const SCORES: MoodScore[] = [5, 4, 3, 2, 1]
@@ -35,10 +35,10 @@ export function dominantMood(shares: MoodShare[]): MoodScore | null {
   return best?.score ?? null
 }
 
-/** แท็กที่พบบ่อยสุด n อันดับ (เท่ากันเรียงตามลำดับในชุดแท็ก ผู้เรียกส่ง order มา) */
-export function topTags(entries: Pick<MoodEntry, 'tags'>[], n: number, order: MoodTagId[]): { tag: MoodTagId; count: number }[] {
-  const counts = new Map<MoodTagId, number>()
-  for (const entry of entries) for (const tag of entry.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1)
+/** แท็ก (id) ที่พบบ่อยสุด n อันดับ เท่ากันเรียงตามลำดับ order (ผู้เรียกส่งลำดับแท็กของผู้ใช้มา) แท็กที่ไม่อยู่ใน order ถูกข้าม */
+export function topTags(entries: Pick<MoodEntry, 'tags'>[], n: number, order: string[]): { tag: string; count: number }[] {
+  const counts = new Map<string, number>()
+  for (const entry of entries) for (const tag of entry.tags) if (order.includes(tag)) counts.set(tag, (counts.get(tag) ?? 0) + 1)
   return [...counts.entries()]
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count || order.indexOf(a.tag) - order.indexOf(b.tag))

@@ -84,6 +84,7 @@
 - 2026-11-18 — Phase 12 ระหว่างทำ — เสื้อผ้ามีตัวเลือกแค่ พอดีตัว/Oversize (+1 ไซส์), รองเท้า ปกติ/หน้าเท้ากว้าง (+0.5 cm), ตัดกระโปรงออกจาก v1 (ไม่มีแหล่งอ้างอิง), ตารางเสื้อผ้าเป็นค่าประมาณจากหลายแหล่ง; โปรไฟล์แรกตั้ง is_self อัตโนมัติ (ใช้เป็นค่าเริ่มต้นที่เลือก) แต่ไม่แสดงป้าย "ฉัน" ตามที่ผู้ใช้สั่ง
 - 2026-11-19 — ฟีเจอร์ใหม่ ตัวฉันวันนี้ (Daily Vibe Check) — ผู้ใช้ขอโมดูลเช็กอารมณ์ด้วยอิโมจิ 5 ระดับ + แท็กบริบท + ปฏิทิน/การ์ดสรุปแชร์ภาพ + การ์ดปลอบใจ; ร่าง `docs/features/mood.md` เป็น Phase 13 บน branch `docs/mood-spec`; ชี้ว่าส่วน "เทียบกับการดื่มน้ำ" และ "เสียงฝนโหมด Focus" อ้างฟีเจอร์ที่ยังไม่มีในแอป จึงตั้งเป็น Open Questions/Out of Scope แทนการสร้างเอง — รอผู้ใช้ตอบและยืนยัน spec ตามข้อ 2.2
 - 2026-11-19 — ตัวฉันวันนี้ ผู้ใช้ยืนยัน spec — ตัดน้ำและปุ่มแชร์ออก, ขยายข้อยกเว้นสีเป็นโทนหม่น 5 ระดับ (เฉพาะฟีเจอร์นี้), ปฏิทินเริ่มวันอาทิตย์, ใส่เบอร์ 1323, แจ้งเตือนเช็กอินแสดงในหน้าฟีเจอร์เอง
+- 2026-11-19 — ตัวฉันวันนี้ เพิ่มเมนู "ตั้งค่า" ให้ผู้ใช้เพิ่ม/แก้/ลบแท็กเรื่องราว-กิจกรรมเอง (ผู้ขอเพิ่มหลังโค้ดแรกเสร็จ; เดิมอยู่ใน Out of Scope) — ผู้ใช้ตอบ: ลบแท็กแล้วถอดออกจากเช็กอินเก่าด้วย, แก้/ลบได้ทุกแท็กรวมแท็กเริ่มต้น, ชื่อ ≤ 20 ตัวอักษร รวม ≤ 30 แท็ก ห้ามซ้ำในกลุ่ม; ออกแบบ: ตาราง `mood_tags` + `mood_entries.tags` เก็บ id เป็นข้อความ (ไม่ใช้ตารางเชื่อม เพื่อคงโค้ด upsert เดิม) + trigger ถอดแท็กตอนลบ/ตรวจ id ตอนเขียน, migration ใหม่ `…000200_mood_custom_tags.sql` (ไม่แก้ไฟล์แรก) พร้อมแปลงข้อมูลเดิม; อัปเดต spec `docs/features/mood.md` หัวข้อ 6
 - 2026-11-19 — เอกสารระดับระบบ — ผู้ใช้สั่งสร้างโฟลเดอร์ `docs/spec/` (PRD แบบเรียบง่ายเน้นฝั่งธุรกิจ + System Design: สถาปัตยกรรม ER/schema ฐานข้อมูล workflow sequence diagram) และ `docs/testing/` (test case พร้อมรหัสเคส + ผลทดสอบรอบล่าสุด) อัปเดตถึงโค้ดปัจจุบัน (v0.4.1) และเพิ่มกฎใน CLAUDE.md ข้อ 10.11: ก่อนเปิด PR ต้องอัปเดตเอกสารเหล่านี้ให้ตรงกับโค้ดก่อนเสมอ; test-cases.md สร้างจากชื่อเทสต์ใน `tests/` และเช็กลิสต์ใน `docs/testing.md` (ผลรายข้อของการทดสอบด้วยมือไม่เคยถูกบันทึก ระบุไว้ตรง ๆ ใน test-results.md)
 
 ## Completed Work
@@ -101,6 +102,7 @@
 - Phase 8 (โค้ด): migration `20261110000200_calorie.sql` (3 ตาราง + RLS + trigger + RPC seed 102 เมนู จาก `docs/features/calorie-foods-seed.csv`), `types/calorie.ts`, `constants.ts`, utils (`bmr`, `summary`, `dates`, `format` — pure), services (`profileService`, `foodService`, `entryService`), hooks (`useBmrProfile`, `useFoods`, `useFoodEntries`), components (BmrForm, BmrResultCards, FoodPicker, FoodEntryForm, MealSection, DaySummaryCard, DateNavigator, CalorieBar, FoodForm), pages 4 หน้า (`/calorie/food|summary|foods|bmr`), ลงทะเบียนใน Registry; เทสต์ใหม่ 21 เคส (รวม 39); lint/build/test ผ่าน ยังไม่ได้ทดสอบกับ Supabase จริง
 
 ## Migrations Applied
+- `20261119000200_mood_custom_tags.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase จริง** (ทดสอบบน Postgres ชั่วคราวผ่าน: แปลงข้อมูลเดิม, seed, trigger จำกัด 30/ถอดแท็กตอนลบ, RLS) ต้องรันหลัง `…000100_mood.sql`
 - `20261119000100_mood.sql` — เขียนแล้ว **ยังไม่ได้รันบน Supabase จริง** (ทดสอบบน Postgres ชั่วคราว: เพิ่ม/upsert ได้, RLS แยกผู้ใช้, CHECK/UNIQUE ปฏิเสธค่าผิด) ต้องรันหลัง core migration
 - `20261109000000_core.sql` — ต้องรันก่อน (ผู้ใช้เป็นผู้รัน)
 - `20261109000100_todo.sql` — ผู้ใช้รันแล้ว/ต้องรันก่อน
@@ -127,6 +129,6 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- Phase 13 (ตัวฉันวันนี้): ผู้ใช้ตัดสินผลรีวิวโค้ด → แก้ → commit/push `feature/mood` → รัน `20261119000100_mood.sql` ใน SQL Editor → ทดสอบตามเช็กลิสต์ใน `docs/testing.md` → ยืนยัน Phase → ปรับเลขเวอร์ชัน (เสนอ 0.5.0) → เปิด PR
+- Phase 13 (ตัวฉันวันนี้): ผู้ใช้ตัดสินผลรีวิวโค้ด → แก้ → commit/push `feature/mood` → รัน `20261119000100_mood.sql` แล้ว `20261119000200_mood_custom_tags.sql` ตามลำดับใน SQL Editor → ทดสอบตามเช็กลิสต์ใน `docs/testing.md` → ยืนยัน Phase → ปรับเลขเวอร์ชัน (เสนอ 0.5.0) → เปิด PR
 - ผู้ใช้: merge PR จาก `feature/size-converter` (label `feature`) → สร้าง tag/release `v0.4.0` จาก `main` (เลขใน `package.json` เป็น 0.4.0 แล้ว) → รัน `20261118000100_size_converter.sql` ใน SQL Editor ถ้ายังไม่ได้รัน
 - ยังไม่เริ่ม Phase ถัดไป จนกว่าผู้ใช้สั่ง; Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2

@@ -4,9 +4,10 @@ import { addDays, buildMonthGrid, daysInMonth, monthRange, shiftMonth } from '..
 import { BOOST_MESSAGES, ENCOURAGEMENTS, pickMessage } from '../src/features/mood/utils/messages.ts'
 import { consecutiveDaysWithMood, dominantMood, moodShares, topTags } from '../src/features/mood/utils/stats.ts'
 import { normalizeDetails, validateEntryDate } from '../src/features/mood/utils/validation.ts'
-import type { MoodEntry, MoodScore, MoodTagId } from '../src/features/mood/types/mood'
+import { validateTagName, canAddTag } from '../src/features/mood/utils/tagValidation.ts'
+import type { MoodEntry, MoodScore, MoodTag } from '../src/features/mood/types/mood'
 
-const entry = (date: string, mood: MoodScore, tags: MoodTagId[] = []): MoodEntry => ({
+const entry = (date: string, mood: MoodScore, tags: string[] = []): MoodEntry => ({
   id: date,
   entry_date: date,
   mood,
@@ -64,13 +65,16 @@ describe('mood stats', () => {
     assert.equal(dominantMood(moodShares([])), null)
   })
   it('topTags เรียงตามจำนวน เท่ากันตามลำดับชุดแท็ก', () => {
-    const order: MoodTagId[] = ['study', 'money', 'friends', 'love']
+    const order = ['study', 'money', 'friends', 'love']
     const top = topTags([entry('a', 3, ['money', 'study']), entry('b', 3, ['money']), entry('c', 3, ['love'])], 3, order)
     assert.deepEqual(top, [
       { tag: 'money', count: 2 },
       { tag: 'study', count: 1 },
       { tag: 'love', count: 1 },
     ])
+  })
+  it('topTags ข้ามแท็กที่ไม่อยู่ใน order (เช่น แท็กที่ถูกลบแล้ว)', () => {
+    assert.deepEqual(topTags([entry('a', 3, ['gone', 'money'])], 3, ['money']), [{ tag: 'money', count: 1 }])
   })
   it('consecutiveDaysWithMood นับถอยหลัง วันที่ขาดตัดสาย', () => {
     const list = [entry('2026-11-17', 1), entry('2026-11-18', 1), entry('2026-11-19', 1)]
@@ -101,11 +105,38 @@ describe('mood validation', () => {
     assert.ok(validateEntryDate('19/11/2026', '2026-11-19'))
   })
   it('normalizeDetails ตัดแท็กซ้ำ/นอกชุด จัดเรียง และข้อความว่าง = null', () => {
-    const r = normalizeDetails(['money', 'study', 'money', 'bogus'], '   ')
+    const r = normalizeDetails(['money', 'study', 'money', 'bogus'], '   ', ['study', 'money', 'friends'])
     assert.deepEqual(r, { values: { tags: ['study', 'money'], note: null }, error: null })
   })
   it('normalizeDetails ข้อความยาวเกิน 100 ตัวอักษร', () => {
-    assert.ok(normalizeDetails([], 'ก'.repeat(101)).error)
-    assert.equal(normalizeDetails([], ' ' + 'ก'.repeat(100) + ' ').values?.note?.length, 100)
+    assert.ok(normalizeDetails([], 'ก'.repeat(101), []).error)
+    assert.equal(normalizeDetails([], ' ' + 'ก'.repeat(100) + ' ', []).values?.note?.length, 100)
+  })
+})
+
+describe('mood tag validation', () => {
+  const tag = (id: string, group: MoodTag['group_kind'], name: string): MoodTag => ({ id, group_kind: group, name, sort_order: 1 })
+  const existing = [tag('1', 'story', 'เพื่อน'), tag('2', 'activity', 'Gaming')]
+
+  it('validateTagName ตัดช่องว่างและตรวจความยาว', () => {
+    assert.deepEqual(validateTagName('  ใหม่  ', 'story', existing), { name: 'ใหม่', error: null })
+    assert.ok(validateTagName('   ', 'story', existing).error)
+    assert.ok(validateTagName('ก'.repeat(21), 'story', existing).error)
+    assert.equal(validateTagName('ก'.repeat(20), 'story', existing).error, null)
+  })
+  it('ชื่อซ้ำในกลุ่มเดียวกันไม่ได้ (ไม่สนตัวพิมพ์/ช่องว่างหัวท้าย) แต่ต่างกลุ่มได้', () => {
+    assert.ok(validateTagName(' เพื่อน ', 'story', existing).error)
+    assert.ok(validateTagName('gaming', 'activity', existing).error)
+    assert.equal(validateTagName('เพื่อน', 'activity', existing).error, null)
+  })
+  it('แก้ชื่อ: ชื่อเดิมของตัวเองไม่นับว่าซ้ำ', () => {
+    assert.equal(validateTagName('เพื่อน', 'story', existing, '1').error, null)
+    // แท็กอื่นที่ชื่อชนกัน (แก้แท็ก 2 ให้ชื่อเท่าแท็ก 1 ในกลุ่มเดียวกัน) ยังซ้ำ
+    assert.ok(validateTagName('เพื่อน', 'story', existing, '2').error)
+  })
+  it('canAddTag จำกัด 30 แท็ก', () => {
+    const many = Array.from({ length: 30 }, (_, i) => tag(String(i), 'story', `t${i}`))
+    assert.equal(canAddTag(many.slice(0, 29)), true)
+    assert.equal(canAddTag(many), false)
   })
 })

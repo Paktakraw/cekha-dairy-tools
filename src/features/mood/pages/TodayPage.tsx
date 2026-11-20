@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import { BellRing } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { ConfirmDialog, ErrorState, Spinner } from '../../../shared/components/ui'
 import { formatDateLong, todayISO } from '../../../shared/utils/formatDate'
 import { EntryPanel } from '../components/EntryPanel'
 import { VibeBoostCard } from '../components/VibeBoostCard'
-import { LOW_STREAK_DAYS, OVERWHELMED_SCORE, isLowMood } from '../constants'
+import { CALENDAR_PATH, LOW_STREAK_DAYS, OVERWHELMED_SCORE, isLowMood } from '../constants'
+import { useMoodContext } from '../hooks/useMoodContext'
 import { useMoodEntries } from '../hooks/useMoodEntries'
+import type { DetailValues, MoodScore } from '../types/mood'
 import { addDays } from '../utils/calendar'
 import { consecutiveDaysWithMood } from '../utils/stats'
 
 export default function TodayPage() {
+  const navigate = useNavigate()
+  const { tags } = useMoodContext()
   const today = todayISO()
   // ดึงย้อนหลังพอสำหรับนับวันดิ่งต่อเนื่อง
   const { entries, loading, firstLoad, error, reload, setMood, saveDetails, removeEntry } = useMoodEntries(addDays(today, -(LOW_STREAK_DAYS - 1)), today)
@@ -21,6 +26,13 @@ export default function TodayPage() {
 
   const entry = entries.find((e) => e.entry_date === today)
   const lowStreak = consecutiveDaysWithMood(entries, OVERWHELMED_SCORE, today) >= LOW_STREAK_DAYS
+
+  // บันทึกแท็ก/ข้อความสำเร็จแล้วไปดูผลที่ปฏิทิน (ถ้าล้มเหลว ค้างไว้ที่ฟอร์มพร้อมข้อความ error)
+  const handleSaveDetails = async (mood: MoodScore, details: DetailValues): Promise<string | null> => {
+    const failure = await saveDetails(today, mood, details)
+    if (failure === null) navigate(CALENDAR_PATH)
+    return failure
+  }
 
   const handleDelete = async () => {
     if (!entry) return
@@ -42,8 +54,9 @@ export default function TodayPage() {
       <EntryPanel
         date={today}
         entry={entry}
+        tags={tags}
         onPickMood={(score) => setMood(today, score)}
-        onSaveDetails={(mood, details) => saveDetails(today, mood, details)}
+        onSaveDetails={handleSaveDetails}
         onDelete={() => setConfirmDelete(true)}
       />
       {entry && isLowMood(entry.mood) && <VibeBoostCard key={entry.mood} level={entry.mood} showCare={entry.mood === OVERWHELMED_SCORE && lowStreak} />}

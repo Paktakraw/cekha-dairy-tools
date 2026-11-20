@@ -1,4 +1,4 @@
-import type { MoodScore, MoodTagId } from './types/mood'
+import type { MoodScore, MoodTagGroup } from './types/mood'
 
 export const NOTE_MAX_LENGTH = 100
 /** คะแนนของอารมณ์ "ดิ่ง" และ "เหนื่อย" (ระดับที่แสดงการ์ดปลอบใจ) */
@@ -13,6 +13,9 @@ export const TOP_TAGS_COUNT = 3
 export const HOTLINE_NUMBER = '1323'
 /** ลิงก์ไปฟีเจอร์ที่มีอยู่แล้ว (เป็นเพียง path ไม่ import โค้ดข้ามฟีเจอร์) */
 export const RANDOMIZER_PATH = '/randomizer'
+/** หน้าปฏิทินของฟีเจอร์เอง (ไปที่นี่หลังบันทึกจากหน้า "วันนี้") */
+export const CALENDAR_PATH = '/mood/calendar'
+export const SETTINGS_PATH = '/mood/settings'
 
 export interface MoodMeta {
   score: MoodScore
@@ -44,30 +47,10 @@ export function moodMeta(score: MoodScore): MoodMeta {
   return MOODS.find((m) => m.score === score) ?? MOODS[2]
 }
 
-export interface TagMeta {
-  id: MoodTagId
-  label: string
-  group: 'story' | 'activity'
-}
-
-export const TAGS: TagMeta[] = [
-  { id: 'study', label: 'การเรียน/สอบ', group: 'story' },
-  { id: 'money', label: 'การเงิน', group: 'story' },
-  { id: 'friends', label: 'เพื่อน', group: 'story' },
-  { id: 'love', label: 'ความรัก', group: 'story' },
-  { id: 'family', label: 'ครอบครัว', group: 'story' },
-  { id: 'health', label: 'สุขภาพ/การนอน', group: 'story' },
-  { id: 'food', label: 'กินของอร่อย', group: 'activity' },
-  { id: 'music', label: 'ฟังเพลง', group: 'activity' },
-  { id: 'watch', label: 'ดูหนัง/ซีรีส์', group: 'activity' },
-  { id: 'workout', label: 'ออกกำลังกาย', group: 'activity' },
-  { id: 'shopping', label: 'ช้อปปิ้ง', group: 'activity' },
-]
-
-export const TAG_GROUP_LABELS: Record<TagMeta['group'], string> = { story: 'เรื่องราว', activity: 'กิจกรรม' }
-
-export function tagLabel(id: MoodTagId): string {
-  return TAGS.find((t) => t.id === id)?.label ?? id
-}
+export const TAG_GROUPS: MoodTagGroup[] = ['story', 'activity']
+export const TAG_GROUP_LABELS: Record<MoodTagGroup, string> = { story: 'เรื่องราว', activity: 'กิจกรรม' }
+export const TAG_NAME_MAX_LENGTH = 20
+/** จำนวนแท็กสูงสุดต่อผู้ใช้ (ตรงกับ trigger ใน migration `mood_custom_tags`) */
+export const MAX_TAGS = 30
 
 export const WEEKDAY_LABELS = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส']

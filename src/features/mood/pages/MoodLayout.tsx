@@ -1,15 +1,19 @@
-import { CalendarDays, ChartPie, Smile } from 'lucide-react'
+import { CalendarDays, ChartPie, Settings, Smile } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { PageHeader } from '../../../shared/components/layout/PageHeader'
+import { ErrorState, Spinner } from '../../../shared/components/ui'
+import { useMoodTags } from '../hooks/useMoodTags'
 
 const TABS = [
   { to: 'today', label: 'วันนี้', icon: Smile },
   { to: 'calendar', label: 'ปฏิทิน', icon: CalendarDays },
   { to: 'summary', label: 'สรุปเดือน', icon: ChartPie },
+  { to: 'settings', label: 'ตั้งค่า', icon: Settings },
 ]
 
-/** โครงของฟีเจอร์: Header + เมนูย่อย แล้วแสดงหน้าย่อยด้วย Outlet */
+/** โครงของฟีเจอร์: Header + เมนูย่อย แล้วแสดงหน้าย่อยด้วย Outlet โหลดแท็กครั้งเดียวและแชร์ให้ทุกหน้า */
 export default function MoodLayout() {
+  const state = useMoodTags()
   return (
     <>
       <PageHeader maxWidth="max-w-2xl">
@@ -32,7 +36,13 @@ export default function MoodLayout() {
         </nav>
       </PageHeader>
       <div className="mx-auto mt-4 max-w-2xl">
-        <Outlet />
+        {state.firstLoad && state.loading ? (
+          <Spinner />
+        ) : state.error ? (
+          <ErrorState title="โหลดแท็กไม่สำเร็จ" description={state.error} onRetry={state.reload} />
+        ) : (
+          <Outlet context={state} />
+        )}
       </div>
     </>
   )

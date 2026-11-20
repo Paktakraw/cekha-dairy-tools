@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { ErrorState, ConfirmDialog, Modal, Spinner } from '../../../shared/components/ui'
 import { formatDateLong, todayISO } from '../../../shared/utils/formatDate'
+import type { DetailValues, MoodScore } from '../types/mood'
 import { EntryPanel } from '../components/EntryPanel'
 import { MonthNav } from '../components/MonthNav'
 import { MoodCalendar } from '../components/MoodCalendar'
+import { useMoodContext } from '../hooks/useMoodContext'
 import { useMoodEntries } from '../hooks/useMoodEntries'
 import { monthKeyOf, monthRange } from '../utils/calendar'
 
 export default function CalendarPage() {
+  const { tags } = useMoodContext()
   const today = todayISO()
   const currentMonth = monthKeyOf(today)
   const [month, setMonth] = useState(currentMonth)
@@ -18,6 +21,13 @@ export default function CalendarPage() {
   const { entries, loading, firstLoad, error, reload, setMood, saveDetails, removeEntry } = useMoodEntries(from, to)
 
   const entry = picked ? entries.find((e) => e.entry_date === picked) : undefined
+
+  // บันทึกสำเร็จแล้วปิด Popup กลับมาที่ปฏิทิน (ถ้าล้มเหลวค้างไว้พร้อมข้อความ error)
+  const handleSaveDetails = async (date: string, mood: MoodScore, details: DetailValues): Promise<string | null> => {
+    const failure = await saveDetails(date, mood, details)
+    if (failure === null) setPicked(null)
+    return failure
+  }
 
   const handleDelete = async () => {
     if (!entry) return
@@ -46,8 +56,9 @@ export default function CalendarPage() {
           <EntryPanel
             date={picked}
             entry={entry}
+            tags={tags}
             onPickMood={(score) => setMood(picked, score)}
-            onSaveDetails={(mood, details) => saveDetails(picked, mood, details)}
+            onSaveDetails={(mood, details) => handleSaveDetails(picked, mood, details)}
             onDelete={() => setConfirmDelete(true)}
           />
         )}

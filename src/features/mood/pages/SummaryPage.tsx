@@ -3,10 +3,12 @@ import { EmptyState, ErrorState, Spinner } from '../../../shared/components/ui'
 import { todayISO } from '../../../shared/utils/formatDate'
 import { MonthNav } from '../components/MonthNav'
 import { MonthSummaryCard } from '../components/MonthSummaryCard'
+import { useMoodContext } from '../hooks/useMoodContext'
 import { useMoodEntries } from '../hooks/useMoodEntries'
 import { monthKeyOf, monthRange } from '../utils/calendar'
 
 export default function SummaryPage() {
+  const { tags } = useMoodContext()
   const currentMonth = monthKeyOf(todayISO())
   const [month, setMonth] = useState(currentMonth)
   const { from, to } = monthRange(month)
@@ -22,7 +24,7 @@ export default function SummaryPage() {
       ) : entries.length === 0 ? (
         <EmptyState title="เดือนนี้ยังไม่มีการเช็กอิน" description="ไปที่แท็บ “วันนี้” แล้วแตะอิโมจิเพื่อเริ่มเช็กอิน" />
       ) : (
-        <MonthSummaryCard month={month} entries={entries} />
+        <MonthSummaryCard month={month} entries={entries} tags={tags} />
       )}
     </div>
   )

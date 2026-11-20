@@ -1,7 +1,7 @@
 import { Smile } from 'lucide-react'
 import { Navigate } from 'react-router-dom'
 import type { FeatureConfig } from '../../shared/types/feature'
-import { CalendarPage, MoodLayout, SummaryPage, TodayPage } from './lazyPages'
+import { CalendarPage, MoodLayout, SettingsPage, SummaryPage, TodayPage } from './lazyPages'
 
 export const moodFeature: FeatureConfig = {
   id: 'mood',
@@ -17,6 +17,7 @@ export const moodFeature: FeatureConfig = {
         { path: 'today', element: <TodayPage /> },
         { path: 'calendar', element: <CalendarPage /> },
         { path: 'summary', element: <SummaryPage /> },
+        { path: 'settings', element: <SettingsPage /> },
       ],
     },
   ],

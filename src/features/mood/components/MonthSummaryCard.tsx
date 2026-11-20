@@ -1,14 +1,18 @@
-import { MIN_DAYS_FOR_SUMMARY, MOODS, TAGS, TOP_TAGS_COUNT, moodMeta, tagLabel } from '../constants'
-import type { MoodEntry } from '../types/mood'
+import { MIN_DAYS_FOR_SUMMARY, MOODS, TOP_TAGS_COUNT, moodMeta } from '../constants'
+import type { MoodEntry, MoodTag } from '../types/mood'
 import { parseMonthKey } from '../utils/calendar'
 import { ENCOURAGEMENTS, pickMessage } from '../utils/messages'
 import { dominantMood, moodShares, topTags } from '../utils/stats'
 
 /** การ์ดสรุปรายเดือน: สัดส่วนอารมณ์ อารมณ์เด่น แท็กยอดนิยม และข้อความให้กำลังใจ */
-export function MonthSummaryCard({ month, entries }: { month: string; entries: MoodEntry[] }) {
+export function MonthSummaryCard({ month, entries, tags: allTags }: { month: string; entries: MoodEntry[]; tags: MoodTag[] }) {
   const shares = moodShares(entries)
   const dominant = dominantMood(shares)
-  const tags = topTags(entries, TOP_TAGS_COUNT, TAGS.map((t) => t.id))
+  const tags = topTags(
+    entries,
+    TOP_TAGS_COUNT,
+    allTags.map((t) => t.id),
+  )
   const { year, month: m } = parseMonthKey(month)
 
   return (
@@ -56,7 +60,7 @@ export function MonthSummaryCard({ month, entries }: { month: string; entries: M
           <div className="mt-1 flex flex-wrap gap-2">
             {tags.map(({ tag, count }) => (
               <span key={tag} className="rounded-full border border-gray-300 bg-white px-3 py-1 text-sm text-gray-700">
-                {tagLabel(tag)} · {count.toLocaleString('th-TH')}
+                {allTags.find((t) => t.id === tag)?.name ?? ''} · {count.toLocaleString('th-TH')}
               </span>
             ))}
           </div>
