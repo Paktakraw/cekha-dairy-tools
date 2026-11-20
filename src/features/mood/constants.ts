@@ -29,11 +29,11 @@ export interface MoodMeta {
 
 /** เรียงจากดีไปไม่ดี */
 export const MOODS: MoodMeta[] = [
-  { score: 5, id: 'hype', emoji: '🤩', label: 'ตัวท็อป / ปังสุด', meaning: 'วันที่อะไรก็เป็นใจ เจอเรื่องดี ๆ', bgClass: 'bg-[var(--mood-5)]' },
-  { score: 4, id: 'chill', emoji: '😊', label: 'เรื่อย ๆ / ชิลล์', meaning: 'สบายใจ ไม่เครียด สุขเล็ก ๆ', bgClass: 'bg-[var(--mood-4)]' },
-  { score: 3, id: 'meh', emoji: '😐', label: 'เฉย ๆ / เนือย', meaning: 'วันปกติ แค่ผ่านไปอีกวัน', bgClass: 'bg-[var(--mood-3)]' },
-  { score: 2, id: 'drained', emoji: '😩', label: 'เหนื่อย / หมดแบต', meaning: 'เรียนหนัก งานเยอะ นอนน้อย หมดพลัง', bgClass: 'bg-[var(--mood-2)]' },
-  { score: 1, id: 'overwhelmed', emoji: '😭', label: 'ดิ่ง / ไม่ไหว', meaning: 'เครียดจัด เศร้า กดดัน อยากพักจากทุกอย่าง', bgClass: 'bg-[var(--mood-1)]' },
+  { score: 5, id: 'hype', emoji: '🤩', label: 'เยี่ยมยอด', meaning: 'วันที่อะไรก็เป็นใจ เจอเรื่องดี ๆ', bgClass: 'bg-[var(--mood-5)]' },
+  { score: 4, id: 'chill', emoji: '😊', label: 'สวยงาม', meaning: 'สบายใจ ไม่เครียด สุขเล็ก ๆ', bgClass: 'bg-[var(--mood-4)]' },
+  { score: 3, id: 'meh', emoji: '😐', label: 'เฉย ๆ', meaning: 'วันปกติ แค่ผ่านไปอีกวัน', bgClass: 'bg-[var(--mood-3)]' },
+  { score: 2, id: 'drained', emoji: '😩', label: 'แบตหมด', meaning: 'เรียนหนัก งานเยอะ นอนน้อย หมดพลัง', bgClass: 'bg-[var(--mood-2)]' },
+  { score: 1, id: 'overwhelmed', emoji: '😭', label: 'ลงเหว', meaning: 'เครียดจัด เศร้า กดดัน อยากพักจากทุกอย่าง', bgClass: 'bg-[var(--mood-1)]' },
 ]
 
 /** อารมณ์ฝั่งลบที่ต้องมีการ์ดปลอบใจ */

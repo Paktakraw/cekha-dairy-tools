@@ -4,9 +4,9 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 13 (ตัวฉันวันนี้) — โค้ดเสร็จ รอรีวิว/ผู้ใช้ยืนยัน (Phase 12 ปิดแล้ว)
+- **Current Phase:** Phase 13 ปิดแล้ว — ยังไม่เริ่ม Phase ถัดไป (รอผู้ใช้สั่ง)
 - **Status:** Phase 12 (ไซส์ไหนคือฉัน) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-18 — รอ merge PR จาก `feature/size-converter` แล้ว tag `v0.4.0` (เลขใน package.json ปรับเป็น 0.4.0 แล้ว); Phase 11 ปิดแล้ว (merge แล้ว)
-- **Last Updated:** 2026-11-19
+- **Last Updated:** 2026-11-20
 
 ## Phase Checklist
 - [x] Phase 0: Architecture Review (อ่าน spec ทุกไฟล์ใน `docs/features/` + ตอบ Open Questions)
@@ -31,7 +31,7 @@
   - [x] Migration → Types → Service → Hook → UI
   - [x] Pure utils + เทสต์ (วันที่/รอบ/สถานะสี/ตามระยะ/เตือน/สรุปเดือนหน้า/validation)
 - [x] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-18)
-- [ ] Phase 13: Feature — ตัวฉันวันนี้ / Daily Vibe Check (`docs/features/mood.md`) — spec ยืนยันแล้ว (2026-11-19) โค้ดเสร็จบน `feature/mood` (lint/build/เทสต์ 143 ผ่าน, migration ทดสอบบน Postgres ชั่วคราวผ่าน) รอรีวิวโค้ด (OCR) และผู้ใช้ทดสอบ/ยืนยัน Phase
+- [x] Phase 13: Feature — ตัวฉันวันนี้ / Daily Vibe Check (`docs/features/mood.md`) — spec ยืนยันแล้ว (2026-11-19) โค้ดเสร็จบน `feature/mood` ผู้ใช้ยืนยัน Phase และสั่งปรับเลขเป็น 0.5.0 (2026-11-20) (lint/build/เทสต์ 148 ผ่าน, migration ทดสอบบน Postgres ชั่วคราวผ่าน; รีวิว OCR แล้ว)
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -129,6 +129,6 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- Phase 13 (ตัวฉันวันนี้): ผู้ใช้ตัดสินผลรีวิวโค้ด → แก้ → commit/push `feature/mood` → รัน `20261119000100_mood.sql` แล้ว `20261119000200_mood_custom_tags.sql` ตามลำดับใน SQL Editor → ทดสอบตามเช็กลิสต์ใน `docs/testing.md` → ยืนยัน Phase → ปรับเลขเวอร์ชัน (เสนอ 0.5.0) → เปิด PR
+- Phase 13 (ตัวฉันวันนี้): ผู้ใช้เปิด PR จาก `feature/mood` (label `feature`) → merge → tag `v0.5.0` → รัน `20261119000100_mood.sql` แล้ว `20261119000200_mood_custom_tags.sql` ตามลำดับใน SQL Editor (ถ้ายังไม่ได้รัน) → ทดสอบตามเช็กลิสต์ใน `docs/testing.md` (ยังไม่มีบันทึกผลรายข้อ)
 - ผู้ใช้: merge PR จาก `feature/size-converter` (label `feature`) → สร้าง tag/release `v0.4.0` จาก `main` (เลขใน `package.json` เป็น 0.4.0 แล้ว) → รัน `20261118000100_size_converter.sql` ใน SQL Editor ถ้ายังไม่ได้รัน
 - ยังไม่เริ่ม Phase ถัดไป จนกว่าผู้ใช้สั่ง; Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
