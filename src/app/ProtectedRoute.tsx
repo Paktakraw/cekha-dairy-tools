@@ -1,23 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { LOGIN_PATH } from '../shared/constants/routes'
 import { useAuth } from '../shared/hooks/useAuth'
-import { ErrorState, Spinner } from '../shared/components/ui'
+import { AuthStatusGate } from './AuthStatusGate'
 
-/** ครอบ route ที่ต้องมี user — ตอนนี้ user มาจาก anonymous sign-in อัตโนมัติ */
+/** ครอบ route ที่ต้องล็อกอิน — ยังไม่ล็อกอินให้ไปหน้าเข้าสู่ระบบ */
 export function ProtectedRoute() {
-  const { user, loading, error, retry } = useAuth()
+  const { user } = useAuth()
 
-  if (loading) return <Spinner label="กำลังเข้าสู่ระบบ..." />
-
-  if (error) {
-    return (
-      <div className="mx-auto max-w-md p-6">
-        <ErrorState title="เริ่มต้นระบบไม่สำเร็จ" description={error} onRetry={retry} />
-      </div>
-    )
-  }
-
-  // อนาคต: เมื่อเลิกใช้ anonymous จะ redirect ไปหน้า Login
-  if (!user) return <Navigate to="/login" replace />
-
-  return <Outlet />
+  return <AuthStatusGate>{user ? <Outlet /> : <Navigate to={LOGIN_PATH} replace />}</AuthStatusGate>
 }

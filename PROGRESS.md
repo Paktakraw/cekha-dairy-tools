@@ -32,6 +32,7 @@
   - [x] Pure utils + เทสต์ (วันที่/รอบ/สถานะสี/ตามระยะ/เตือน/สรุปเดือนหน้า/validation)
 - [x] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-18)
 - [x] Phase 13: Feature — ตัวฉันวันนี้ / Daily Vibe Check (`docs/features/mood.md`) — spec ยืนยันแล้ว (2026-11-19) โค้ดเสร็จบน `feature/mood` ผู้ใช้ยืนยัน Phase และสั่งปรับเลขเป็น 0.5.0 (2026-11-20) (lint/build/เทสต์ 148 ผ่าน, migration ทดสอบบน Postgres ชั่วคราวผ่าน; รีวิว OCR แล้ว)
+- [ ] Phase 14: Feature — Auth สมัคร/เข้าสู่ระบบ/ออกจากระบบ (`docs/features/auth.md`) — spec ยืนยันแล้ว (2026-11-21) โค้ดเสร็จบน `feature/auth` และแก้ตามผลรีวิว ocr ข้อ 1–7 แล้ว (lint/build/เทสต์ 163 ผ่าน) รอผู้ใช้ทดสอบกับ Supabase จริง + เลือกแนวทางกู้รหัสผ่าน; ยังไม่ commit; เอกสาร PRD/system-design/test-cases/test-results อัปเดตแล้ว
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล

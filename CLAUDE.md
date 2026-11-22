@@ -38,6 +38,7 @@
 | Expiry & Maintenance Tracker (เอกสารหมดอายุ/ซ่อมบำรุง/ค่าสมาชิก) | In scope (Phase 11, รอยืนยัน spec) | `docs/features/expiry-tracker.md` | `src/features/expiry-tracker/` |
 | Global Size Converter (ไซส์ไหนคือฉัน — แปลงไซส์เสื้อผ้า/รองเท้าจากสัดส่วนจริง) | In scope (Phase 12) | `docs/features/size-converter.md` | `src/features/size-converter/` |
 | Daily Vibe Check (ตัวฉันวันนี้ — เช็กอารมณ์ด้วยอิโมจิ ปฏิทิน การ์ดสรุปแชร์ได้) | In scope (Phase 13) | `docs/features/mood.md` | `src/features/mood/` |
+| Auth (สมัคร/เข้าสู่ระบบ/ออกจากระบบด้วย username) | In scope (Phase 14, รอยืนยัน spec) | `docs/features/auth.md` | `src/features/auth/` |
 | Subscription Management | รวมเข้ากับ Expiry Tracker (หมวด `subscription`) ห้ามสร้างแยก | - | - |
 | Debtor Management (คนที่ยืมเงิน) | Future (ห้ามสร้าง) | - | - |
 | Appointment Management | Future (ห้ามสร้าง) | - | - |
@@ -73,10 +74,10 @@
 - ฟีเจอร์ห้าม import โค้ดภายในของฟีเจอร์อื่นโดยตรง ของที่ใช้ร่วมกันให้อยู่ใน `src/shared/`
 
 ### 4.2 Auth-ready Design
-- ใช้ Supabase Anonymous Sign-in ในเวอร์ชันแรก: เมื่อเปิดแอปครั้งแรก ระบบ sign in แบบ anonymous อัตโนมัติ
+- ตั้งแต่ Phase 14 ใช้บัญชีผู้ใช้จริง (สมัคร/เข้าสู่ระบบด้วย username + password, ดู `docs/features/auth.md`) แทน Anonymous Sign-in ที่ใช้ใน Phase 3–13; ผู้ใช้ที่ยังไม่ล็อกอินถูกส่งไป `/login`
 - สร้าง AuthProvider + useAuth hook เป็นจุดเดียวที่จัดการ session/user
-- เตรียม ProtectedRoute และโครงสำหรับหน้า Login ไว้ แต่ยังไม่ต้องทำ UI Login
-- ออกแบบให้ในอนาคตเปลี่ยนเป็น Email/OAuth Login และผูก anonymous user เดิมเข้ากับบัญชีจริงได้
+- ProtectedRoute ครอบหน้าที่ต้องล็อกอิน, PublicOnlyRoute ครอบหน้า `/login` `/register`
+- ออกแบบให้ในอนาคตเพิ่มรีเซ็ตรหัสผ่านทางอีเมล/OAuth ได้ (ดู `docs/future-login.md`); ลืมรหัสผ่านตอนนี้ให้ผู้ดูแลตั้งรหัสใหม่ตาม `docs/admin-password-reset.md`
 - ห้ามเปิด RLS แบบ public/allow all เพื่อให้ทำงานง่ายขึ้น
 - ห้ามใช้หรือขอ service_role key ใช้เฉพาะ anon/publishable key ผ่าน Environment Variables
 

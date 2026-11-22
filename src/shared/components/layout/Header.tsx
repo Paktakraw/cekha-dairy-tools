@@ -2,6 +2,7 @@ import { Home, Menu } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { IconButton } from '../ui'
 import { ThemeToggle } from './ThemeToggle'
+import { UserMenu } from './UserMenu'
 
 /**
  * แถบด้านบนสำหรับมือถือ/แท็บเล็ต (ซ่อนที่ lg ขึ้นไป) ตรึงที่ขอบบนของจอ (fixed) ไม่เลื่อนตามเนื้อหา
@@ -13,6 +14,7 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
       <IconButton icon={Menu} label="เปิดเมนู" onClick={onMenuClick} />
       <span className="font-semibold text-gray-900">เสขาประจำวัน</span>
       <ThemeToggle className="ml-auto" />
+      <UserMenu showName={false} />
       <Link
         to="/"
         title="หน้าหลัก"

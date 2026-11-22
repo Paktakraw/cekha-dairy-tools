@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | เวอร์ชัน | 0.5.0 (ตรงกับ `package.json`) |
-| อัปเดตล่าสุด | 2026-11-20 |
+| อัปเดตล่าสุด | 2026-11-21 |
 | ผู้อ่าน | นักพัฒนา |
 | คู่กับ | [PRD.md](PRD.md) · [docs/testing/](../testing/) · spec รายฟีเจอร์ใน [docs/features/](../features/) |
 
@@ -31,7 +31,7 @@
 flowchart LR
   U[ผู้ใช้ - เบราว์เซอร์] -->|HTTPS| V[Vercel<br/>static hosting + rewrite เป็น index.html]
   V --> SPA[React SPA]
-  SPA -->|supabase-js<br/>publishable key| AUTH[Supabase Auth<br/>Anonymous sign-in]
+  SPA -->|supabase-js<br/>publishable key| AUTH[Supabase Auth<br/>อีเมลสังเคราะห์ + password]
   SPA -->|supabase-js<br/>JWT ของผู้ใช้| DB[(PostgreSQL<br/>RLS: auth.uid = user_id)]
   SPA -.->|แคชธีม| LS[(localStorage)]
 ```
@@ -59,12 +59,13 @@ flowchart LR
 ## 3. โครงสร้างโค้ดและชั้นข้อมูล
 ```
 src/
-├── app/                     App, router, featureRegistry, ProtectedRoute
+├── app/                     App, router, featureRegistry, ProtectedRoute, PublicOnlyRoute, AuthStatusGate
 │   └── providers/           AuthProvider, ThemeProvider (+ Context)
 ├── shared/
 │   ├── components/ui/       Button, IconButton, Input/Select/Textarea, Modal, ConfirmDialog,
 │   │                        EmptyState, ErrorState, Spinner, Toast, Pagination, CollapsibleSection ...
-│   ├── components/layout/   MainLayout, Sidebar, Header, PageHeader, ThemeToggle
+│   ├── components/layout/   MainLayout, Sidebar, Header, PageHeader, ThemeToggle, UserMenu
+│   ├── constants/           routes.ts (HOME_PATH, LOGIN_PATH, REGISTER_PATH)
 │   ├── hooks/               useAuth, useToast, useTheme
 │   ├── lib/                 supabase.ts, serviceError.ts, themeStorage.ts
 │   ├── services/            preferenceService
@@ -72,9 +73,11 @@ src/
 │   └── utils/               formatCurrency, formatDate, theme
 ├── features/<ชื่อ>/         components, hooks, services, types, utils, pages, constants, index.tsx, lazyPages.ts
 │   ├── todo  randomizer  finance  calorie  unit-price  expiry-tracker  size-converter  mood
-├── pages/                   PortalHomePage, NotFoundPage, LoginPage (โครงเปล่า)
+│   └── auth                 (หน้า Login/Register สาธารณะ ไม่อยู่ใน Registry/Sidebar)
+├── pages/                   PortalHomePage, NotFoundPage
 └── styles/index.css         Tailwind + ตัวแปรสีธีม
 supabase/migrations/         SQL แยกไฟล์ตามลำดับ (core ก่อน แล้วแยกตามฟีเจอร์)
+supabase/scripts/            สคริปต์ที่ผู้ดูแลรันเอง ไม่ใช่ migration (ล้างข้อมูลผู้ใช้ทั้งหมด)
 tests/                       เทสต์ของ pure function (node:test)
 docs/                        spec, testing, คู่มือ
 ```
@@ -108,8 +111,9 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-  R[createBrowserRouter] --> L["/login → LoginPage (โครงเปล่า)"]
-  R --> PR[ProtectedRoute<br/>รอ session / แสดง Error+ลองใหม่]
+  R[createBrowserRouter] --> PO["PublicOnlyRoute<br/>ล็อกอินแล้วส่งกลับ /"]
+  PO --> L["/login → LoginPage<br/>/register → RegisterPage"]
+  R --> PR[ProtectedRoute<br/>รอ session / ไม่มี user → /login]
   PR --> ML[MainLayout<br/>Sidebar + Header + Outlet]
   ML --> H["/ → PortalHomePage"]
   ML --> F["featureRegistry.map → path + routes<br/>(lazy-loaded ต่อหน้า)"]
@@ -122,10 +126,18 @@ flowchart TD
 การเพิ่มฟีเจอร์ใหม่ = สร้างโฟลเดอร์ใน `src/features/` + ลงทะเบียนในไฟล์ Registry + (ถ้ามีข้อมูล) migration ใหม่ ดูคู่มือ [adding-a-feature.md](../adding-a-feature.md)
 
 ## 5. Authentication
-- `AuthProvider` (`src/app/providers/`) เป็นจุดเดียวที่จัดการ session/user; ผู้ใช้เข้าถึงผ่าน `useAuth()`
-- เปิดแอป: `getSession()` → ถ้ามี session ใช้เลย ถ้าไม่มี `signInAnonymously()` อัตโนมัติ; ล้มเหลวแสดง Error พร้อมปุ่มลองใหม่ (เช่น ยังไม่เปิด Anonymous Sign-ins หรือยังไม่ตั้ง `.env`)
-- `ProtectedRoute` ครอบทุก route ยกเว้น `/login`; อนาคตเมื่อเลิก anonymous จะ redirect ไป Login
-- การเปลี่ยนเป็น Email/OAuth ในอนาคต: ผูก anonymous user เดิมกับบัญชีจริงด้วย `updateUser`/`linkIdentity` เพื่อให้ `user_id` เดิม (และข้อมูล) ไม่เปลี่ยน — ดู [future-login.md](../future-login.md)
+ฟีเจอร์ `auth` ([docs/features/auth.md](../features/auth.md)) — สมัคร/เข้าสู่ระบบด้วย username + password
+
+- **ตัวตนใน Supabase Auth:** Supabase ล็อกอินได้ด้วยอีเมล/เบอร์เท่านั้น จึงใช้ **อีเมลสังเคราะห์** `<username>@<โดเมนจาก VITE_AUTH_EMAIL_DOMAIN>` (`toAuthEmail()` ใน `features/auth/utils/auth.ts`, โดเมนอ่านจาก env `VITE_AUTH_EMAIL_DOMAIN` ผ่าน `features/auth/config.ts`; ต้องเป็นโดเมนจริงที่มีอยู่ เพราะ Supabase ปฏิเสธโดเมนที่ไม่มีจริง เช่น `.invalid` และห้ามเปลี่ยนหลังมีผู้ใช้แล้ว) เป็นตัวตน → username ซ้ำไม่ได้โดยธรรมชาติ และล็อกอินด้วย username ได้โดยไม่ต้อง lookup ก่อนล็อกอิน ต้องปิด “Confirm email” ใน Supabase
+- **ข้อมูลโปรไฟล์:** ชื่อจริง/นามสกุล/username/อีเมลจริง/เบอร์ อยู่ในตาราง `profiles` (§7.3) สร้างโดย trigger `handle_new_user` จาก `raw_user_meta_data` ตอนสมัคร (atomic) ไม่มี policy เขียนจากแอป
+- `AuthProvider` (`src/app/providers/`) เป็นจุดเดียวที่จัดการ session/user; เปิดเผย `user`, `session`, `username` (จาก `user_metadata.username` = ชื่อที่แสดง), `loading`, `error`, `retry`, `signOut`; ผู้ใช้เข้าถึงผ่าน `useAuth()`
+- **การสมัคร/ล็อกอิน** ทำใน `authService` (feature auth) แล้ว session เข้ามาทาง `onAuthStateChange` ของ `AuthProvider` จึงไม่ต้องส่ง session กลับข้ามชั้น; `signOut` ใช้ `scope: 'local'` (ไม่ออกจากเครื่องอื่น)
+- **คงสถานะ:** supabase-js `persistSession` + `autoRefreshToken` (ค่าเริ่มต้น) เก็บ session ใน localStorage จนกว่าผู้ใช้ออกจากระบบเอง
+- เปิดแอป: `getSession()` → มี session ที่ไม่ใช่ anonymous ใช้เลย; session anonymous จากเวอร์ชันเก่าถูก `signOut` ล้างทิ้ง; ไม่มี session → `ProtectedRoute` ส่งไป `/login`; ตรวจ session ไม่ได้ (error หรือ exception)/ไม่ได้ตั้ง `.env` แสดง Error พร้อมปุ่มลองใหม่
+- `ProtectedRoute` ครอบหน้าแอปทั้งหมด; `PublicOnlyRoute` ครอบ `/login` `/register` (ล็อกอินแล้วส่งกลับ `/`); ทั้งสองใช้ `AuthStatusGate` แสดง Spinner/Error ระหว่างตรวจ session และอ่าน path จาก `shared/constants/routes.ts`
+- `UserMenu` (ชื่อผู้ใช้ + ปุ่มออกจากระบบ) render กล่องยืนยันผ่าน portal ไป `document.body` เพราะ Sidebar มี transform ที่ทำให้ Dialog แบบ fixed ถูกจำกัดในกรอบ Sidebar
+- รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษรและไม่เกิน 72 **ไบต์** UTF-8 (ข้อจำกัดของ bcrypt; ภาษาไทยตัวละ 3 ไบต์)
+- **ลืมรหัสผ่าน:** ยังไม่มีในแอป ผู้ดูแลตั้งรหัสใหม่ให้ตาม [admin-password-reset.md](../admin-password-reset.md) (รหัสเดิมเป็นแฮช bcrypt ดูไม่ได้); แนวทางต่อยอดอยู่ที่ [future-login.md](../future-login.md)
 - Env: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (มี `.env.example` ไม่มีค่าจริง); `.env` อยู่ใน `.gitignore`
 
 ## 6. Theme
@@ -158,6 +170,7 @@ erDiagram
   AUTH_USERS ||--o{ SIZE_PROFILES : owns
   AUTH_USERS ||--o{ MOOD_ENTRIES : owns
   AUTH_USERS ||--o{ MOOD_TAGS : owns
+  AUTH_USERS ||--o| PROFILES : has
 
   RANDOM_GROUPS ||--o{ RANDOM_ITEMS : "group_id (cascade)"
   CATEGORIES ||--o{ TRANSACTIONS : "(category_id, type) restrict"
@@ -258,6 +271,16 @@ Index: `size_profiles(user_id)`; `size_notes(user_id)`, `(profile_id, created_at
 | note | text | NULL; CHECK ความยาว 1–100 |
 UNIQUE `(user_id, entry_date)` (วันละ 1 รายการ ใช้เป็นเป้าของ upsert `on conflict (user_id, entry_date)`); Index `user_id`; RLS 4 policies + trigger `set_updated_at`
 
+**`profiles`** (โปรไฟล์ผู้ใช้ 1 แถวต่อบัญชี) — `20261121000100_auth_profiles`
+| ตาราง.คอลัมน์ | ชนิด | กฎ |
+|---|---|---|
+| user_id | uuid | UNIQUE (1 โปรไฟล์ต่อผู้ใช้) |
+| username | text | NOT NULL, CHECK `^[a-z0-9_.]{3,30}$`; UNIQUE `lower(username)` |
+| first_name, last_name | text | NOT NULL, ตัดช่องว่างแล้วยาว 1–100 |
+| email | text | NOT NULL, CHECK รูปแบบ + ≤ 254; UNIQUE `lower(email)` |
+| phone | text | NOT NULL, CHECK `^0[0-9]{9}$` (เก็บเฉพาะตัวเลข); UNIQUE |
+Index `user_id` (จาก UNIQUE) + 3 unique index ข้างต้น; RLS เปิดและมี **policy SELECT เท่านั้น** (`auth.uid() = user_id`) — แถวถูกเขียนโดย trigger `handle_new_user` เท่านั้น การแก้โปรไฟล์ต้องเพิ่ม policy ใน migration ใหม่; trigger `set_updated_at`
+
 **`mood_tags`** (แท็กที่ผู้ใช้ตั้งค่าเอง) — `20261119000200_mood_custom_tags`
 | ตาราง.คอลัมน์ | ชนิด | กฎ |
 |---|---|---|
@@ -270,6 +293,8 @@ Index `user_id`; RLS 4 policies; trigger `set_updated_at`, `mood_tags_before_ins
 | ชื่อ | ชนิด | หน้าที่ |
 |---|---|---|
 | `set_updated_at()` | trigger function | ตั้ง `updated_at = now()` ก่อน UPDATE (ใช้ทุกตาราง) |
+| `handle_new_user()` | trigger function (security definer, `search_path=public`) บน `auth.users` after insert | สร้างแถว `profiles` จาก `raw_user_meta_data` (username, first_name, last_name, email, phone); ข้ามผู้ใช้ anonymous หรือที่ไม่มี username; ปฏิเสธถ้าส่วนหน้าอีเมลสังเคราะห์ไม่ตรงกับ username (`search_path=''`); ถ้าละเมิด unique/CHECK การสมัครทั้งก้อนล้มเหลว (atomic) |
+| `check_register_available(p_username, p_email, p_phone)` | RPC (security definer, stable, `search_path=''`) | คืน `text[]` ของฟิลด์ที่ถูกใช้แล้ว (`username`/`email`/`phone`) เพื่อแจ้งใต้ช่องตอนสมัคร; revoke จาก public แล้ว grant ให้ `anon`, `authenticated` (เรียกก่อนล็อกอินได้) |
 | `seed_default_mood_tags()` | RPC (security invoker) | ใส่แท็กเริ่มต้น 11 อันให้ผู้ใช้ที่ยังไม่มีแท็กเลย (idempotent; revoke จาก public/anon) |
 | `mood_tags_before_insert()`, `mood_tags_after_delete()`, `mood_entries_validate_tags()` | trigger functions (security invoker) | จำกัด 30 แท็ก + ตั้งลำดับ / ถอดแท็กที่ถูกลบออกจากการเช็กอินเก่า / ตรวจ id แท็กของรายการเช็กอิน (ดู 7.3) |
 | `mood_tags_unique(text[])` | ฟังก์ชัน immutable (`search_path=''`) | ใช้ใน CHECK ของ `mood_entries.tags` ให้แท็กไม่ซ้ำกัน (CHECK ใช้ subquery ตรง ๆ ไม่ได้) |
@@ -294,6 +319,9 @@ Index `user_id`; RLS 4 policies; trigger `set_updated_at`, `mood_tags_before_ins
 | 11 | `20261118000100_size_converter.sql` | `size_profiles`, `size_notes` |
 | 12 | `20261119000100_mood.sql` | `mood_entries`, `mood_tags_unique()` |
 | 13 | `20261119000200_mood_custom_tags.sql` | `mood_tags`, triggers, `seed_default_mood_tags()`; แปลงแท็กแบบ id คงที่เดิมของ `mood_entries` เป็นแท็กของผู้ใช้ |
+| 14 | `20261121000100_auth_profiles.sql` | `profiles` (unique username/อีเมล/เบอร์), trigger `handle_new_user`, RPC `check_register_available()` |
+
+สคริปต์ที่ไม่ใช่ migration: `supabase/scripts/reset_all_user_data.sql` (`delete from auth.users` ลบผู้ใช้และข้อมูลทุกตารางตาม cascade) ผู้ดูแลรันเองครั้งเดียวตอนเริ่มระบบบัญชีจริง ห้ามรันอัตโนมัติ
 
 กฎ: migration ใหม่ = ไฟล์ใหม่ ไม่แก้ไฟล์เดิม; ข้อมูลสำคัญบังคับที่ระดับ DB เสมอ ไม่พึ่งแค่ UI
 
@@ -303,16 +331,29 @@ Index `user_id`; RLS 4 policies; trigger `set_updated_at`, `mood_tags_before_ins
 sequenceDiagram
   actor U as ผู้ใช้
   participant App as AuthProvider
+  participant Svc as authService
   participant SB as Supabase Auth
+  participant DB as Postgres (profiles)
   U->>App: เปิดแอป
   App->>SB: getSession()
-  alt มี session
-    SB-->>App: session
-  else ไม่มี
-    App->>SB: signInAnonymously()
-    SB-->>App: session ใหม่ (user_id ใหม่)
+  alt มี session (ไม่ใช่ anonymous)
+    SB-->>App: session → ProtectedRoute แสดงแอป
+  else session anonymous เก่า
+    App->>SB: signOut(local) → ไป /login
+  else ไม่มี session
+    App-->>U: ProtectedRoute ส่งไป /login
   end
-  App-->>U: ProtectedRoute แสดงแอป (หรือ Error + ปุ่มลองใหม่)
+  U->>Svc: สมัคร (ฟอร์มผ่าน validate)
+  Svc->>DB: rpc check_register_available
+  DB-->>Svc: ฟิลด์ที่ซ้ำ (ถ้ามี → แจ้งใต้ช่อง จบ)
+  Svc->>SB: signUp(อีเมลสังเคราะห์, password, metadata)
+  SB->>DB: trigger handle_new_user → insert profiles (unique/CHECK; ซ้ำ = ล้มทั้งก้อน)
+  SB-->>App: session ผ่าน onAuthStateChange
+  App-->>U: PublicOnlyRoute ส่งกลับ /
+  U->>Svc: เข้าสู่ระบบ (username + password)
+  Svc->>SB: signInWithPassword(อีเมลสังเคราะห์)
+  SB-->>App: session (คงใน localStorage จนกว่าจะออกจากระบบ)
+  U->>App: ออกจากระบบ (ConfirmDialog) → signOut(local) → /login
 ```
 
 ### 8.2 CRUD ทั่วไป (ใช้กับทุกฟีเจอร์)
@@ -503,6 +544,7 @@ sequenceDiagram
 | expiry-tracker | `utils/dates.ts`, `schedule.ts`, `urgency.ts`, `usage.ts`, `reminders.ts`, `costSummary.ts`, `sort.ts`, `validation.ts` | `addMonths` (ปัดสิ้นเดือน), `nextDueAfterDone` (คำนวณจากวันตั้งต้นไม่สะสมคลาด), `getUrgency`, `reminderStage`, `dueDateFromDaysAhead`, `summarizeNextMonth`, `validateItem` |
 | size-converter | `utils/shoes.ts`, `rings.ts`, `hats.ts`, `jeans.ts`, `clothing.ts`, `converter.ts` (รวมตัวเลือกเผื่อไซส์), `rounding.ts`, `units.ts`, `validation.ts` + `data/clothingCharts.ts` | ดูสูตรด้านล่าง |
 | mood | `utils/calendar.ts`, `stats.ts`, `messages.ts`, `validation.ts`, `tagValidation.ts` | `buildMonthGrid` (เริ่มวันอาทิตย์), `monthRange`, `shiftMonth`, `moodShares` (รวม 100% ด้วย largest remainder), `dominantMood`, `topTags`, `consecutiveDaysWithMood`, `pickMessage`, `normalizeDetails`, `validateEntryDate`, `validateTagName` (ไม่ว่าง ≤ 20 ไม่ซ้ำในกลุ่ม), `canAddTag` (≤ 30) |
+| auth | `utils/auth.ts` | `normalizeUsername`/`normalizeEmail`/`normalizePhone` (+66 → 0), `toAuthEmail`, `validateRegister`, `validateLogin`, `takenFieldsToErrors` |
 | shared | `utils/theme.ts`, `formatCurrency.ts`, `formatDate.ts` | `resolveTheme`, รูปแบบเงิน/วันที่ไทย |
 
 ### สูตรของ size-converter
@@ -543,14 +585,14 @@ sequenceDiagram
 ## 12. กลยุทธ์การทดสอบ
 | ระดับ | วิธี | เครื่องมือ |
 |---|---|---|
-| Unit (pure function) | เทสต์อัตโนมัติ 148 เคส | `node:test` (`npm test`) |
+| Unit (pure function) | เทสต์อัตโนมัติ 163 เคส | `node:test` (`npm test`) |
 | ฐานข้อมูล | ทดสอบ migration/RLS/CHECK/RPC บน PostgreSQL ชั่วคราว (จำลอง `auth.uid()`) และตรวจบน Supabase จริงแบบอ่านอย่างเดียว | psql |
 | ทำงานจริง (CRUD, edge case, Responsive, โหมดมืด) | เช็กลิสต์ด้วยมือโดยผู้ใช้ | [docs/testing.md](../testing.md) |
 | คุณภาพโค้ด | lint, TypeScript strict, ตรวจโค้ดด้วย OpenCodeReview ก่อน commit | oxlint, `tsc`, `ocr` |
 ไม่มี UI/E2E test (ต้องเพิ่มไลบรารี รอผู้ใช้ยืนยัน) รายละเอียด: [test-cases.md](../testing/test-cases.md), [test-results.md](../testing/test-results.md)
 
 ## 13. ข้อจำกัดและหนี้ทางเทคนิค
-- บัญชี anonymous: ล้างข้อมูลเบราว์เซอร์ = เสียสิทธิ์เข้าถึงข้อมูลเดิม จนกว่าจะมี Login จริง
+- Auth: ไม่มีรีเซ็ต/เปลี่ยนรหัสผ่านในแอป (ผู้ดูแลตั้งให้ตาม [admin-password-reset.md](../admin-password-reset.md)); ตัวตนเป็นอีเมลสังเคราะห์ที่ผูกกับค่า `VITE_AUTH_EMAIL_DOMAIN` (ต้องเป็นโดเมนจริง และเปลี่ยนภายหลังไม่ได้โดยไม่ย้ายบัญชีเดิม); `check_register_available` เปิดให้ anon จึงเดาได้ว่า username/อีเมล/เบอร์ใดมีอยู่; ชื่อที่แสดงอ่านจาก `user_metadata.username` (ผู้ใช้แก้ metadata ของตัวเองได้ผ่าน client) ไม่ใช่จาก `profiles` — ใช้แสดงผลเท่านั้น ห้ามใช้ตัดสินสิทธิ์
 - ไม่มี UI/E2E test, ไม่มีเทสต์ของ service/hook (ครอบเฉพาะ pure function)
 - ข้อมูลอ้างอิงเป็นค่าประมาณ: แคลอรี่อาหาร 102 เมนู, ตารางไซส์เสื้อผ้า (ไซส์ JP ไม่ชัด), ตัวคูณกิจกรรม TDEE
 - การเตือนของ "อย่าลืมฉัน" เกิดตอนเปิดแอปเท่านั้น (ไม่มี server-side job)

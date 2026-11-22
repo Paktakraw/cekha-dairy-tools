@@ -8,8 +8,9 @@ const NOT_CONFIGURED_MESSAGE =
 
 /**
  * จุดเดียวที่จัดการ session/user
- * V1: sign in แบบ anonymous อัตโนมัติ — อนาคตเปลี่ยนเป็น Email/OAuth ได้โดยแก้ที่ไฟล์นี้
- * (ผูก anonymous user เดิมกับบัญชีจริงด้วย supabase.auth.updateUser / linkIdentity)
+ * - session เก็บใน localStorage และต่ออายุเองโดย supabase-js จึงคงอยู่จนกว่าผู้ใช้ออกจากระบบ
+ * - การสมัคร/ล็อกอิน/ล็อกเอาต์ทำที่ service แล้ว session เปลี่ยนเข้ามาทาง onAuthStateChange
+ * - session แบบ anonymous จากเวอร์ชันเก่าไม่นับเป็นผู้ใช้: ล้างทิ้งแล้วให้ไปหน้าเข้าสู่ระบบ
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
@@ -23,28 +24,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false
 
     const { data } = supabase.auth.onAuthStateChange((_event, next) => {
-      if (!cancelled) setSession(next)
+      if (cancelled) return
+      setSession(next?.user.is_anonymous ? null : next)
     })
 
     const init = async () => {
-      const { data: existing, error: sessionError } = await supabase.auth.getSession()
-      if (cancelled) return
-      if (sessionError) {
+      try {
+        const { data: existing, error: sessionError } = await supabase.auth.getSession()
+        if (cancelled) return
+        if (sessionError) throw sessionError
+        if (existing.session?.user.is_anonymous) {
+          await supabase.auth.signOut({ scope: 'local' })
+          if (cancelled) return
+          setSession(null)
+        } else {
+          setSession(existing.session)
+        }
+      } catch (cause) {
+        if (cancelled) return
+        console.error('[AuthProvider] ตรวจสอบเซสชัน:', cause)
         setError('ไม่สามารถตรวจสอบเซสชันได้ กรุณาลองใหม่')
-        setLoading(false)
-        return
-      }
-      if (existing.session) {
-        setSession(existing.session)
-        setLoading(false)
-        return
-      }
-      const { data: created, error: signInError } = await supabase.auth.signInAnonymously()
-      if (cancelled) return
-      if (signInError) {
-        setError('เข้าสู่ระบบแบบไม่ระบุตัวตนไม่สำเร็จ ตรวจสอบว่าเปิด “Anonymous Sign-ins” ในหน้า Authentication ของ Supabase แล้ว')
-      } else {
-        setSession(created.session)
       }
       setLoading(false)
     }
@@ -63,10 +62,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAttempt((n) => n + 1)
   }, [])
 
-  const value = useMemo<AuthContextValue>(
-    () => ({ user: session?.user ?? null, session, loading, error, retry }),
-    [session, loading, error, retry],
-  )
+  const signOut = useCallback(async (): Promise<string | null> => {
+    const { error: signOutError } = await supabase.auth.signOut({ scope: 'local' })
+    if (signOutError) {
+      console.error('[AuthProvider] ออกจากระบบ:', signOutError.message)
+      return 'ออกจากระบบไม่สำเร็จ กรุณาลองใหม่'
+    }
+    return null
+  }, [])
+
+  const value = useMemo<AuthContextValue>(() => {
+    const user = session?.user ?? null
+    const rawUsername: unknown = user?.user_metadata?.username
+    return {
+      user,
+      session,
+      username: typeof rawUsername === 'string' ? rawUsername : null,
+      loading,
+      error,
+      retry,
+      signOut,
+    }
+  }, [session, loading, error, retry, signOut])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
