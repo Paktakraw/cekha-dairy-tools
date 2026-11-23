@@ -85,6 +85,7 @@ docs/
 ├── adding-a-feature.md  คู่มือเพิ่มฟีเจอร์ใหม่
 ├── future-login.md      สถานะ Login ปัจจุบันและแนวทางต่อยอด (รีเซ็ตรหัสทางอีเมล ฯลฯ)
 ├── admin-password-reset.md  คู่มือผู้ดูแล: ตั้งรหัสผ่านใหม่ให้ผู้ใช้ที่ลืม
+├── user-manual.md       คู่มือการใช้งานระบบ (ผู้ใช้ทั่วไป / ต้นทางเอกสารฝึกอบรม)
 └── testing.md           การทดสอบ และรายการตรวจด้วยมือ
 src/
 ├── app/                 App, router, featureRegistry, AuthProvider, ProtectedRoute
@@ -133,6 +134,7 @@ Release owner ของ repo ดูที่ [.github/CODEOWNERS](.github/CODEOW
 
 - [docs/adding-a-feature.md](docs/adding-a-feature.md): เพิ่มฟีเจอร์ใหม่ทีละขั้น
 - [docs/future-login.md](docs/future-login.md): สถานะ Login ปัจจุบันและแนวทางต่อยอด
+- [docs/user-manual.md](docs/user-manual.md): คู่มือการใช้งานระบบ อัปเดตทุกครั้งที่เลขเวอร์ชันใน package.json เปลี่ยน
 - [docs/admin-password-reset.md](docs/admin-password-reset.md): คู่มือผู้ดูแลตั้งรหัสผ่านใหม่ให้ผู้ใช้ที่ลืม
 - [docs/testing.md](docs/testing.md): การทดสอบและรายการตรวจด้วยมือ
 - [docs/spec/](docs/spec/README.md): PRD (ภาษาธุรกิจ) และ System Design (สถาปัตยกรรม ฐานข้อมูล workflow)
