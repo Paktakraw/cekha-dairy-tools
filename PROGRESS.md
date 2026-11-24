@@ -5,7 +5,7 @@
 
 ## Current Status
 - **Current Phase:** Phase 15 (ภาพรวมวันนี้) — โค้ดเสร็จ รอผู้ใช้ทดสอบและยืนยัน
-- **Status:** Phase 14 (บัญชีผู้ใช้) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-22 — รอ push + เปิด PR จาก `feature/auth` แล้ว tag `v0.6.0` (เลขใน package.json ปรับเป็น 0.6.0 แล้ว); Phase 12 (ไซส์ไหนคือฉัน) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-18 — รอ merge PR จาก `feature/size-converter` แล้ว tag `v0.4.0` (เลขใน package.json ปรับเป็น 0.4.0 แล้ว); Phase 11 ปิดแล้ว (merge แล้ว)
+- **Status:** Phase 15 (ภาพรวมวันนี้, เลข 0.6.1) merge แล้ว (PR #15) ยังไม่มี tag `v0.6.1` และ `TC-DASH-M01–M13` ยังไม่มีผลทดสอบ; Phase 11–14 merge แล้ว (tag `v0.4.0`–`v0.6.0` มีอยู่ใน repo)
 - **Last Updated:** 2026-11-24
 
 ## Phase Checklist
@@ -91,6 +91,7 @@
 - 2026-11-23 — คู่มือการใช้งานระบบ — ผู้ใช้สั่งแตก branch `docs/user-manual` เขียน `docs/user-manual.md` (ภาษาผู้ใช้ ใช้เป็นข้อมูลต้นทางทำเอกสารฝึกอบรมต่อ) และกำหนดให้ **ทุกครั้งที่แก้เลข version ใน package.json ต้องอัปเดตคู่มือนี้ด้วย** — บันทึกเป็นข้อ 10.12 ใน CLAUDE.md; ฉบับแรกตรงกับ v0.6.0 (เขียนจาก spec และโค้ดชื่อแท็บ ยังไม่ได้เทียบกับหน้าจอจริงทีละหน้า)
 - 2026-11-24 — ฟีเจอร์ใหม่ ภาพรวมวันนี้ — ผู้ใช้ขอหน้าสรุปรวมเป็นเรื่องแรกของการเชื่อมข้อมูลข้ามโมดูล; ร่าง `docs/features/dashboard.md` เป็น Phase 15: v1 อ่านอย่างเดียว ไม่มีตาราง/migration, ใช้รูปแบบให้แต่ละฟีเจอร์ส่งการ์ด (`todayWidget` ใน FeatureConfig) เพื่อไม่ import ข้ามฟีเจอร์ — ผู้ใช้ยืนยัน spec 2026-11-24 (Open Questions ตามที่เสนอทุกข้อ: วางบนหน้า Portal เดิม, การ์ดว่างแสดงข้อความชวนจด, ไม่มีปุ่มซ่อนตัวเลข, การ์ดอารมณ์ไม่มีข้อความพิเศษ, การ์ดงานแสดงจำนวนอย่างเดียว, ไม่ให้ผู้ใช้จัดการ์ดเอง)
 - 2026-11-24 — ภาพรวมวันนี้ ปรับตามคำขอผู้ใช้ — จอกว้าง (≥1024px) 3 คอลัมน์, เพิ่มลูกศรย่อ/ขยายอยู่แถวเดียวกับวันที่ ค่าเริ่มต้นย่อไว้ (ไม่จำสถานะ, การ์ดเริ่มโหลดเมื่อกางครั้งแรก); แก้ผลรีวิวครบ 3 ข้อ (เอา aria-label ที่ทับเนื้อหาการ์ดออก, ย้าย path เป็นค่าคงที่ใน constants.ts ของฟีเจอร์, ข้อความ "กดเพื่อไปคำนวณ" ของการ์ดแคลอรี่ตรงกับปลายทาง); อัปเดต dashboard.md แล้ว
+- 2026-11-24 — สถานะ merge — ผู้ใช้แจ้งว่า Phase 14 merge แล้ว; repo แสดง PR #15 (Phase 15) merge แล้วเช่นกัน และมี tag v0.4.0, v0.5.0, v0.6.0 (ยังไม่มี v0.6.1) ปรับสถานะใน PROGRESS ให้ตรง
 - 2026-11-24 — เลขเวอร์ชัน 0.6.1 — ผู้ใช้สั่งปรับเป็น 0.6.1 (แดชบอร์ด ไม่ใช่ฟีเจอร์หลัก จึงเพิ่มเลขแก้ไขย่อยไม่ใช่ 0.7.0); อัปเดต package.json/lock, PRD, system-design, test-cases, test-results, user-manual (เพิ่มหัวข้อ 3.1 ภาพรวมวันนี้ + ประวัติคู่มือ) และสั่ง commit/push
 
 ## Completed Work
@@ -135,8 +136,8 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- Phase 15 (ภาพรวมวันนี้): ผู้ใช้ตรวจตาม `docs/testing.md` หัวข้อ "ภาพรวมวันนี้" → ตอบผลรีวิว OCR → commit/push `feature/dashboard` → เปิด PR (label `feature`); เลขใน package.json เป็น 0.6.1 และ `docs/user-manual.md` อัปเดตแล้ว (ข้อ 10.12) — หลัง merge ให้ tag `v0.6.1`
-- Phase 14 (บัญชีผู้ใช้): push `feature/auth` → เปิด PR (label `feature`) → merge → tag `v0.6.0`; ตั้ง `VITE_AUTH_EMAIL_DOMAIN` ใน Vercel (ค่า `VITE_*` ฝังตอน build ต้อง Redeploy) และปิด Confirm email บน Supabase ของ production; รัน `20261121000100_auth_profiles.sql` บน production; เลขเวอร์ชันใน package.json เป็น 0.6.0 แล้ว (ยังไม่ได้ tag)
-- Phase 13 (ตัวฉันวันนี้): ผู้ใช้เปิด PR จาก `feature/mood` (label `feature`) → merge → tag `v0.5.0` → รัน `20261119000100_mood.sql` แล้ว `20261119000200_mood_custom_tags.sql` ตามลำดับใน SQL Editor (ถ้ายังไม่ได้รัน) → ทดสอบตามเช็กลิสต์ใน `docs/testing.md` (ยังไม่มีบันทึกผลรายข้อ)
-- ผู้ใช้: merge PR จาก `feature/size-converter` (label `feature`) → สร้าง tag/release `v0.4.0` จาก `main` (เลขใน `package.json` เป็น 0.4.0 แล้ว) → รัน `20261118000100_size_converter.sql` ใน SQL Editor ถ้ายังไม่ได้รัน
+- Phase 15 (ภาพรวมวันนี้): merge แล้ว (PR #15) — เหลือ tag `v0.6.1` และให้ผู้ใช้ตรวจตาม `docs/testing.md` หัวข้อ "ภาพรวมวันนี้" (TC-DASH-M01–M13) แล้วบันทึกผล; `docs/user-manual.md` อัปเดตตามเลข 0.6.1 แล้ว
+- Phase 14 (บัญชีผู้ใช้): merge และ tag `v0.6.0` แล้ว (ผู้ใช้ยืนยัน 2026-11-24) — ที่ยังไม่มีบันทึกว่าทำบน production: ตั้ง `VITE_AUTH_EMAIL_DOMAIN` ใน Vercel (ต้อง Redeploy), ปิด Confirm email บน Supabase, รัน `20261121000100_auth_profiles.sql`
+- Phase 13 (ตัวฉันวันนี้): merge และ tag `v0.5.0` แล้ว — ที่ยังไม่มีบันทึกว่าทำบน production: รัน `20261119000100_mood.sql` แล้ว `20261119000200_mood_custom_tags.sql` และทดสอบตามเช็กลิสต์ใน `docs/testing.md` (ยังไม่มีบันทึกผลรายข้อ)
+- Phase 12 (ไซส์ไหนคือฉัน): merge และ tag `v0.4.0` แล้ว — ที่ยังไม่มีบันทึก: รัน `20261118000100_size_converter.sql` บน production
 - ยังไม่เริ่ม Phase ถัดไป จนกว่าผู้ใช้สั่ง; Login จริงดู `docs/future-login.md`; ฟีเจอร์ Debtor / Appointment ต้องเริ่มจาก spec ตามข้อ 2.2
