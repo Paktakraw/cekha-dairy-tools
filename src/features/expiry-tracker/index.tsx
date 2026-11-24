@@ -1,6 +1,6 @@
 import { CalendarClock } from 'lucide-react'
 import type { FeatureConfig } from '../../shared/types/feature'
-import { ExpiryTrackerPage } from './lazyPages'
+import { ExpiryTodayWidget, ExpiryTrackerPage } from './lazyPages'
 
 export const expiryTrackerFeature: FeatureConfig = {
   id: 'expiry-tracker',
@@ -9,4 +9,5 @@ export const expiryTrackerFeature: FeatureConfig = {
   icon: CalendarClock,
   path: '/expiry-tracker',
   routes: [{ index: true, element: <ExpiryTrackerPage /> }],
+  todayWidget: ExpiryTodayWidget,
 }

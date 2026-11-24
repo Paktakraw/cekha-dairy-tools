@@ -1,7 +1,7 @@
 import { Smile } from 'lucide-react'
 import { Navigate } from 'react-router-dom'
 import type { FeatureConfig } from '../../shared/types/feature'
-import { CalendarPage, MoodLayout, SettingsPage, SummaryPage, TodayPage } from './lazyPages'
+import { CalendarPage, MoodLayout, MoodTodayWidget, SettingsPage, SummaryPage, TodayPage } from './lazyPages'
 
 export const moodFeature: FeatureConfig = {
   id: 'mood',
@@ -9,6 +9,7 @@ export const moodFeature: FeatureConfig = {
   description: 'เช็กอารมณ์ประจำวันด้วยอิโมจิ ดูปฏิทินและสรุปรายเดือน',
   icon: Smile,
   path: '/mood',
+  todayWidget: MoodTodayWidget,
   routes: [
     {
       element: <MoodLayout />,

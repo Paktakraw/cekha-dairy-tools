@@ -103,6 +103,7 @@ tests/                   เทสต์ของ pure functions
 - **ชั้นข้อมูล:** UI Component → Custom Hook → Service → Supabase (Component ไม่เรียก Supabase ตรง)
 - **เพิ่มฟีเจอร์ได้โดยไม่แก้ฟีเจอร์เดิม:** ฟีเจอร์แต่ละตัวลงทะเบียนใน `src/app/featureRegistry.ts` แล้ว Sidebar, หน้าหลัก และ Router สร้างจาก Registry อัตโนมัติ
 - **ข้อมูลแยกตามผู้ใช้:** ทุกตารางมี `user_id` และเปิด RLS (`auth.uid() = user_id`) ความถูกต้องของข้อมูลสำคัญ (ชื่อซ้ำ ความยาว จำนวนเงิน > 0 ฯลฯ) บังคับที่ระดับฐานข้อมูล ไม่ใช่แค่หน้าจอ
+- **ภาพรวมวันนี้:** หน้าหลักมีการ์ดสรุปของวันนี้ (งานค้าง, รายการอย่าลืมฉัน, รายจ่าย, แคลอรี่, เช็กอินอารมณ์) แต่ละฟีเจอร์ส่งการ์ดของตัวเองผ่าน `todayWidget` ใน `FeatureConfig` ดู [docs/features/dashboard.md](docs/features/dashboard.md)
 - **บัญชีผู้ใช้:** สมัคร/เข้าสู่ระบบด้วย username + password (session คงอยู่จนกว่าจะออกจากระบบ) ลืมรหัสผ่านให้ผู้ดูแลตั้งใหม่ ดู [docs/admin-password-reset.md](docs/admin-password-reset.md) และแนวทางต่อยอดที่ [docs/future-login.md](docs/future-login.md)
 
 ## Deploy บน Vercel

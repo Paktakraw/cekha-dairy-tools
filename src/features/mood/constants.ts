@@ -16,6 +16,8 @@ export const RANDOMIZER_PATH = '/randomizer'
 /** หน้าปฏิทินของฟีเจอร์เอง (ไปที่นี่หลังบันทึกจากหน้า "วันนี้") */
 export const CALENDAR_PATH = '/mood/calendar'
 export const SETTINGS_PATH = '/mood/settings'
+/** หน้าเช็กอินวันนี้ (ปลายทางของการ์ดภาพรวมวันนี้) */
+export const TODAY_PATH = '/mood/today'
 
 export interface MoodMeta {
   score: MoodScore

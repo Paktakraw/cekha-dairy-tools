@@ -132,6 +132,8 @@ export const featureRegistry: FeatureConfig[] = [todoFeature, randomizerFeature,
 ```
 เท่านี้ Sidebar, การ์ดหน้าหลัก และ Route `/notes` จะปรากฏเอง ถ้าฟีเจอร์มีหน้าย่อยหลายหน้า (เหมือนรายรับ-รายจ่าย) ให้ใส่ `routes` เป็น Layout + children ดู `src/features/finance/index.tsx`
 
+**(ไม่บังคับ) การ์ดในส่วน "ภาพรวมวันนี้" ของหน้าหลัก:** ถ้าฟีเจอร์มีข้อมูลรายวันที่ควรสรุป ให้สร้างการ์ดในโฟลเดอร์ของฟีเจอร์เอง (`widgets/<Feature>TodayWidget.tsx`) ใช้ `useWidgetData` + `WidgetFrame` จาก `src/shared/` แล้วใส่ `todayWidget` (โหลดแบบ lazy ใน `lazyPages.ts`) ใน `FeatureConfig` ดูตัวอย่างที่ `src/features/todo/widgets/` และ [dashboard.md](features/dashboard.md) ห้ามให้การ์ดอ่านโค้ดของฟีเจอร์อื่น การ์ดต้องอ่านอย่างเดียวและไม่แสดงข้อความอ่อนไหวของผู้ใช้
+
 ### 6. ทดสอบและปิดงาน
 1. ถ้ามี logic ล้วน ๆ (คำนวณ สุ่ม จัดกลุ่ม) แยกเป็น pure function ใน `utils/` แล้วเขียนเทสต์ใน `tests/` ดู [testing.md](testing.md)
 2. รัน `npm run lint && npm run build && npm test`

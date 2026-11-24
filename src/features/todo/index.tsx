@@ -1,7 +1,6 @@
 import { ListChecks } from 'lucide-react'
 import type { FeatureConfig } from '../../shared/types/feature'
-import { TodoPage } from './lazyPages'
-
+import { TodoPage, TodoTodayWidget } from './lazyPages'
 
 export const todoFeature: FeatureConfig = {
   id: 'todo',
@@ -10,4 +9,5 @@ export const todoFeature: FeatureConfig = {
   icon: ListChecks,
   path: '/todo',
   routes: [{ index: true, element: <TodoPage /> }],
+  todayWidget: TodoTodayWidget,
 }

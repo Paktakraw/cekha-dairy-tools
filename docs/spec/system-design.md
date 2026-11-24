@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| เวอร์ชัน | 0.6.0 (ตรงกับ `package.json`) |
-| อัปเดตล่าสุด | 2026-11-22 |
+| เวอร์ชัน | 0.6.1 (ตรงกับ `package.json`) |
+| อัปเดตล่าสุด | 2026-11-24 |
 | ผู้อ่าน | นักพัฒนา |
 | คู่กับ | [PRD.md](PRD.md) · [docs/testing/](../testing/) · spec รายฟีเจอร์ใน [docs/features/](../features/) |
 
@@ -96,7 +96,7 @@ flowchart LR
 - **ลำดับสร้างในแต่ละฟีเจอร์:** Migration → Types → Service → Hook → UI
 
 ## 4. Feature Registry, Routing และ Provider
-`FeatureConfig` (`src/shared/types/feature.ts`): `id`, `name`, `description`, `icon`, `path`, `routes` แต่ละฟีเจอร์ export ค่านี้จาก `index.tsx` แล้วลงทะเบียนใน `src/app/featureRegistry.ts` — Sidebar, หน้า Portal และ Router สร้างจากรายการนี้อัตโนมัติ
+`FeatureConfig` (`src/shared/types/feature.ts`): `id`, `name`, `description`, `icon`, `path`, `routes` และ `todayWidget` (ไม่บังคับ: การ์ดสรุป "ภาพรวมวันนี้" แบบ lazy ที่รับ `TodayWidgetProps` = name/icon/path) แต่ละฟีเจอร์ export ค่านี้จาก `index.tsx` แล้วลงทะเบียนใน `src/app/featureRegistry.ts` — Sidebar, หน้า Portal และ Router สร้างจากรายการนี้อัตโนมัติ
 
 | id | ชื่อเมนู | path | หน้าย่อย |
 |---|---|---|---|
@@ -516,6 +516,42 @@ sequenceDiagram
 ```
 ปฏิทินและสรุปเดือนโหลดทีละเดือน (`monthRange`) แล้วคำนวณสัดส่วน/อารมณ์เด่น/แท็กยอดนิยมที่ฝั่ง client (`utils/stats.ts`); ปุ่มลิงก์ "สุ่มเมนูฮีลใจ" เป็นแค่ลิงก์ไป `/randomizer` ไม่ import โค้ดข้ามฟีเจอร์
 
+### 8.11 ภาพรวมวันนี้ (หน้า Portal)
+```mermaid
+sequenceDiagram
+  actor U as ผู้ใช้
+  participant P as PortalHomePage
+  participant T as TodayOverview
+  participant W as การ์ดของฟีเจอร์ (lazy)
+  participant H as useWidgetData
+  participant S as service ของฟีเจอร์นั้น
+  participant DB as Supabase (RLS เดิม)
+  U->>P: เปิดหน้าหลัก
+  P->>T: features จาก Registry
+  T->>T: กรองเฉพาะฟีเจอร์ที่มี todayWidget (ย่อไว้ก่อน ยังไม่ render การ์ด)
+  U->>T: กดลูกศรขยาย (ครั้งแรก)
+  loop ทุกการ์ด (ขนานกัน แยกกัน)
+    T->>W: render ใน Suspense (ส่ง name/icon/path)
+    W->>H: useWidgetData(fetcher)
+    H->>S: เรียก service ของฟีเจอร์ตัวเอง
+    S->>DB: SELECT ตามตารางเดิม
+    DB-->>S: ข้อมูลของผู้ใช้
+    S-->>H: ServiceResult
+    H-->>W: data / error
+    W->>W: WidgetFrame แสดงโครงเทา → ข้อมูล หรือ "โหลดข้อมูลไม่สำเร็จ + ลองใหม่"
+  end
+  U->>W: กดการ์ด → ไปหน้าของฟีเจอร์ (Link)
+```
+ส่วนภาพรวมย่อไว้เมื่อเปิดหน้า (state ใน `TodayOverview` ไม่จำข้ามการเปิดหน้า) การ์ดจึงเริ่มโหลดเมื่อกางครั้งแรก และถูกเก็บไว้ใน DOM (`hidden`) เมื่อย่อ; หน้า Portal ไม่รู้จักข้อมูลของฟีเจอร์ใดและไม่ import ข้ามฟีเจอร์ (กฎ 4.1); การ์ดใบหนึ่งล้มเหลวไม่กระทบใบอื่น; ไม่มีตารางหรือ migration ใหม่ (อ่านตารางเดิมผ่าน RLS เดิม); ผลที่มาช้าหลังออกจากหน้าถูกทิ้ง (ignore flag ใน `useWidgetData`)
+
+| การ์ด | แหล่งข้อมูล | การคำนวณ |
+|---|---|---|
+| todo | `taskService.countToday` (นับที่ DB แบบ `head: true` ไม่ดึงรายการ) | งานค้าง = สถานะ pending/in_progress; เสร็จวันนี้ = `completed_at` ใน [00:00 วันนี้, 00:00 พรุ่งนี้) เวลาท้องถิ่น |
+| expiry-tracker | `reminderItemService.list` | `summarizeExpiryToday` นับเฉพาะรายการที่ใช้งานอยู่ |
+| finance | `transactionService.list` ช่วงต้นเดือน–วันนี้ | `summarizeFinanceToday` (รวมเป็นสตางค์) |
+| calorie | `entryService.listByRange` วันนี้ + `profileService.get` | `summarizeCalorieToday` เทียบ TDEE |
+| mood | `moodService.listRange` วันนี้ | แสดงเฉพาะอิโมจิ/ชื่อ ไม่แสดงแท็ก/ข้อความ |
+
 ### 8.9 เปลี่ยนธีม
 ```mermaid
 sequenceDiagram
@@ -545,6 +581,7 @@ sequenceDiagram
 | size-converter | `utils/shoes.ts`, `rings.ts`, `hats.ts`, `jeans.ts`, `clothing.ts`, `converter.ts` (รวมตัวเลือกเผื่อไซส์), `rounding.ts`, `units.ts`, `validation.ts` + `data/clothingCharts.ts` | ดูสูตรด้านล่าง |
 | mood | `utils/calendar.ts`, `stats.ts`, `messages.ts`, `validation.ts`, `tagValidation.ts` | `buildMonthGrid` (เริ่มวันอาทิตย์), `monthRange`, `shiftMonth`, `moodShares` (รวม 100% ด้วย largest remainder), `dominantMood`, `topTags`, `consecutiveDaysWithMood`, `pickMessage`, `normalizeDetails`, `validateEntryDate`, `validateTagName` (ไม่ว่าง ≤ 20 ไม่ซ้ำในกลุ่ม), `canAddTag` (≤ 30) |
 | auth | `utils/auth.ts` | `normalizeUsername`/`normalizeEmail`/`normalizePhone` (+66 → 0), `toAuthEmail`, `validateRegister`, `validateLogin`, `takenFieldsToErrors` |
+| ภาพรวมวันนี้ (ใน todo, expiry-tracker, finance, calorie) | `todo/utils/today.ts`, `expiry-tracker/utils/todayOverview.ts`, `finance/utils/todayOverview.ts`, `calorie/utils/todayOverview.ts` | `localDayBounds`, `summarizeExpiryToday`, `summarizeFinanceToday`, `monthStartOf`, `summarizeCalorieToday`, `differenceFromTdee` (ใช้ `compareItems`/`isReminding`/`summarize`/`summarizeDay` เดิมซ้ำ) |
 | shared | `utils/theme.ts`, `formatCurrency.ts`, `formatDate.ts` | `resolveTheme`, รูปแบบเงิน/วันที่ไทย |
 
 ### สูตรของ size-converter
@@ -594,6 +631,7 @@ sequenceDiagram
 ## 13. ข้อจำกัดและหนี้ทางเทคนิค
 - Auth: ไม่มีรีเซ็ต/เปลี่ยนรหัสผ่านในแอป (ผู้ดูแลตั้งให้ตาม [admin-password-reset.md](../admin-password-reset.md)); ตัวตนเป็นอีเมลสังเคราะห์ที่ผูกกับค่า `VITE_AUTH_EMAIL_DOMAIN` (ต้องเป็นโดเมนจริง และเปลี่ยนภายหลังไม่ได้โดยไม่ย้ายบัญชีเดิม); `check_register_available` เปิดให้ anon จึงเดาได้ว่า username/อีเมล/เบอร์ใดมีอยู่; ชื่อที่แสดงอ่านจาก `user_metadata.username` (ผู้ใช้แก้ metadata ของตัวเองได้ผ่าน client) ไม่ใช่จาก `profiles` — ใช้แสดงผลเท่านั้น ห้ามใช้ตัดสินสิทธิ์
 - ไม่มี UI/E2E test, ไม่มีเทสต์ของ service/hook (ครอบเฉพาะ pure function)
+- ภาพรวมวันนี้: เมื่อกางส่วนนี้ หน้าหลักยิงคำขอ 6–7 รายการพร้อมกัน (ย่อไว้ไม่ยิง) (todo 2 คำขอนับ, expiry/finance/mood 1, calorie 2) และการ์ด expiry/finance ดึงรายการทั้งหมดของช่วงมาคำนวณฝั่ง client (ยังไม่มีการแคชข้ามการเปิดหน้า); ถ้าข้อมูลมากขึ้นมากควรย้ายการนับไป RPC ของฟีเจอร์นั้นเอง
 - ข้อมูลอ้างอิงเป็นค่าประมาณ: แคลอรี่อาหาร 102 เมนู, ตารางไซส์เสื้อผ้า (ไซส์ JP ไม่ชัด), ตัวคูณกิจกรรม TDEE
 - การเตือนของ "อย่าลืมฉัน" เกิดตอนเปิดแอปเท่านั้น (ไม่มี server-side job)
 - ปุ่ม "ฉัน": โปรไฟล์แรกตั้ง `is_self` อัตโนมัติ ยังไม่มีทางย้ายไปโปรไฟล์อื่น (ไม่มีป้ายใน UI)

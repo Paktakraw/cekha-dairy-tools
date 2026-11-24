@@ -39,6 +39,7 @@
 | Global Size Converter (ไซส์ไหนคือฉัน — แปลงไซส์เสื้อผ้า/รองเท้าจากสัดส่วนจริง) | In scope (Phase 12) | `docs/features/size-converter.md` | `src/features/size-converter/` |
 | Daily Vibe Check (ตัวฉันวันนี้ — เช็กอารมณ์ด้วยอิโมจิ ปฏิทิน การ์ดสรุปแชร์ได้) | In scope (Phase 13) | `docs/features/mood.md` | `src/features/mood/` |
 | Auth (สมัคร/เข้าสู่ระบบ/ออกจากระบบด้วย username) | In scope (Phase 14, รอยืนยัน spec) | `docs/features/auth.md` | `src/features/auth/` |
+| Today Overview (ภาพรวมวันนี้ — การ์ดสรุปบนหน้า Portal อ่านอย่างเดียว) | In scope (Phase 15, รอยืนยัน spec) | `docs/features/dashboard.md` | `src/pages/`, `src/shared/components/dashboard/`, `src/features/<feature>/widgets/` |
 | Subscription Management | รวมเข้ากับ Expiry Tracker (หมวด `subscription`) ห้ามสร้างแยก | - | - |
 | Debtor Management (คนที่ยืมเงิน) | Future (ห้ามสร้าง) | - | - |
 | Appointment Management | Future (ห้ามสร้าง) | - | - |
