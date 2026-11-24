@@ -19,3 +19,6 @@ export const TYPE_LABELS: Record<TransactionType, string> = {
 export const DUPLICATE_CATEGORY_MESSAGE = 'มีหมวดหมู่ชื่อนี้ในประเภทเดียวกันอยู่แล้ว กรุณาใช้ชื่ออื่น'
 export const CATEGORY_IN_USE_MESSAGE =
   'ลบไม่ได้ เพราะมีรายการรายรับ-รายจ่ายใช้หมวดหมู่นี้อยู่ กรุณาลบหรือย้ายรายการเหล่านั้นไปหมวดอื่นก่อน'
+
+/** หน้าบันทึกรายการของฟีเจอร์เอง (ใช้เป็นปลายทางของการ์ดภาพรวมวันนี้) */
+export const TRANSACTIONS_PATH = '/finance/transactions'

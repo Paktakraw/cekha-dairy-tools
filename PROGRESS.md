@@ -4,9 +4,9 @@
 > อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
 
 ## Current Status
-- **Current Phase:** Phase 14 ปิดแล้ว — ยังไม่เริ่ม Phase ถัดไป (รอผู้ใช้สั่ง)
+- **Current Phase:** Phase 15 (ภาพรวมวันนี้) — โค้ดเสร็จ รอผู้ใช้ทดสอบและยืนยัน
 - **Status:** Phase 14 (บัญชีผู้ใช้) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-22 — รอ push + เปิด PR จาก `feature/auth` แล้ว tag `v0.6.0` (เลขใน package.json ปรับเป็น 0.6.0 แล้ว); Phase 12 (ไซส์ไหนคือฉัน) ผู้ใช้ยืนยันเสร็จแล้ว 2026-11-18 — รอ merge PR จาก `feature/size-converter` แล้ว tag `v0.4.0` (เลขใน package.json ปรับเป็น 0.4.0 แล้ว); Phase 11 ปิดแล้ว (merge แล้ว)
-- **Last Updated:** 2026-11-22
+- **Last Updated:** 2026-11-24
 
 ## Phase Checklist
 - [x] Phase 0: Architecture Review (อ่าน spec ทุกไฟล์ใน `docs/features/` + ตอบ Open Questions)
@@ -33,6 +33,7 @@
 - [x] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-18)
 - [x] Phase 13: Feature — ตัวฉันวันนี้ / Daily Vibe Check (`docs/features/mood.md`) — spec ยืนยันแล้ว (2026-11-19) โค้ดเสร็จบน `feature/mood` ผู้ใช้ยืนยัน Phase และสั่งปรับเลขเป็น 0.5.0 (2026-11-20) (lint/build/เทสต์ 148 ผ่าน, migration ทดสอบบน Postgres ชั่วคราวผ่าน; รีวิว OCR แล้ว)
 - [x] Phase 14: Feature — Auth สมัคร/เข้าสู่ระบบ/ออกจากระบบ (`docs/features/auth.md`) — spec ยืนยันแล้ว (2026-11-21) โค้ดเสร็จบน `feature/auth` แก้ตามผลรีวิว ocr ข้อ 1–7 แล้ว (lint/build/เทสต์ 163 ผ่าน) ผู้ใช้ทดสอบ TC-AUTH-M01–M13 ผ่านบน Supabase จริงและยืนยัน Phase เสร็จ (2026-11-22) เลขเวอร์ชันปรับเป็น 0.6.0; ลืมรหัสผ่าน = ผู้ดูแลตั้งใหม่ให้ตาม `docs/admin-password-reset.md`
+- [x] Phase 15: Feature — ภาพรวมวันนี้ / Today Overview (`docs/features/dashboard.md`) — spec ยืนยันแล้ว (2026-11-24 ผู้ใช้ตอบ Open Questions ตามที่เสนอทุกข้อ) โค้ดเสร็จบน `feature/dashboard` (lint/build/เทสต์ 175 ผ่าน) **รอผู้ใช้ทดสอบ TC-DASH-M01–M13 และยืนยัน Phase** เลขเวอร์ชันปรับเป็น 0.6.1 (ผู้ใช้จัดเป็นแดชบอร์ด ไม่ใช่ฟีเจอร์หลัก) อัปเดตเอกสารครบแล้ว
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -88,6 +89,9 @@
 - 2026-11-19 — ตัวฉันวันนี้ เพิ่มเมนู "ตั้งค่า" ให้ผู้ใช้เพิ่ม/แก้/ลบแท็กเรื่องราว-กิจกรรมเอง (ผู้ขอเพิ่มหลังโค้ดแรกเสร็จ; เดิมอยู่ใน Out of Scope) — ผู้ใช้ตอบ: ลบแท็กแล้วถอดออกจากเช็กอินเก่าด้วย, แก้/ลบได้ทุกแท็กรวมแท็กเริ่มต้น, ชื่อ ≤ 20 ตัวอักษร รวม ≤ 30 แท็ก ห้ามซ้ำในกลุ่ม; ออกแบบ: ตาราง `mood_tags` + `mood_entries.tags` เก็บ id เป็นข้อความ (ไม่ใช้ตารางเชื่อม เพื่อคงโค้ด upsert เดิม) + trigger ถอดแท็กตอนลบ/ตรวจ id ตอนเขียน, migration ใหม่ `…000200_mood_custom_tags.sql` (ไม่แก้ไฟล์แรก) พร้อมแปลงข้อมูลเดิม; อัปเดต spec `docs/features/mood.md` หัวข้อ 6
 - 2026-11-19 — เอกสารระดับระบบ — ผู้ใช้สั่งสร้างโฟลเดอร์ `docs/spec/` (PRD แบบเรียบง่ายเน้นฝั่งธุรกิจ + System Design: สถาปัตยกรรม ER/schema ฐานข้อมูล workflow sequence diagram) และ `docs/testing/` (test case พร้อมรหัสเคส + ผลทดสอบรอบล่าสุด) อัปเดตถึงโค้ดปัจจุบัน (v0.4.1) และเพิ่มกฎใน CLAUDE.md ข้อ 10.11: ก่อนเปิด PR ต้องอัปเดตเอกสารเหล่านี้ให้ตรงกับโค้ดก่อนเสมอ; test-cases.md สร้างจากชื่อเทสต์ใน `tests/` และเช็กลิสต์ใน `docs/testing.md` (ผลรายข้อของการทดสอบด้วยมือไม่เคยถูกบันทึก ระบุไว้ตรง ๆ ใน test-results.md)
 - 2026-11-23 — คู่มือการใช้งานระบบ — ผู้ใช้สั่งแตก branch `docs/user-manual` เขียน `docs/user-manual.md` (ภาษาผู้ใช้ ใช้เป็นข้อมูลต้นทางทำเอกสารฝึกอบรมต่อ) และกำหนดให้ **ทุกครั้งที่แก้เลข version ใน package.json ต้องอัปเดตคู่มือนี้ด้วย** — บันทึกเป็นข้อ 10.12 ใน CLAUDE.md; ฉบับแรกตรงกับ v0.6.0 (เขียนจาก spec และโค้ดชื่อแท็บ ยังไม่ได้เทียบกับหน้าจอจริงทีละหน้า)
+- 2026-11-24 — ฟีเจอร์ใหม่ ภาพรวมวันนี้ — ผู้ใช้ขอหน้าสรุปรวมเป็นเรื่องแรกของการเชื่อมข้อมูลข้ามโมดูล; ร่าง `docs/features/dashboard.md` เป็น Phase 15: v1 อ่านอย่างเดียว ไม่มีตาราง/migration, ใช้รูปแบบให้แต่ละฟีเจอร์ส่งการ์ด (`todayWidget` ใน FeatureConfig) เพื่อไม่ import ข้ามฟีเจอร์ — ผู้ใช้ยืนยัน spec 2026-11-24 (Open Questions ตามที่เสนอทุกข้อ: วางบนหน้า Portal เดิม, การ์ดว่างแสดงข้อความชวนจด, ไม่มีปุ่มซ่อนตัวเลข, การ์ดอารมณ์ไม่มีข้อความพิเศษ, การ์ดงานแสดงจำนวนอย่างเดียว, ไม่ให้ผู้ใช้จัดการ์ดเอง)
+- 2026-11-24 — ภาพรวมวันนี้ ปรับตามคำขอผู้ใช้ — จอกว้าง (≥1024px) 3 คอลัมน์, เพิ่มลูกศรย่อ/ขยายอยู่แถวเดียวกับวันที่ ค่าเริ่มต้นย่อไว้ (ไม่จำสถานะ, การ์ดเริ่มโหลดเมื่อกางครั้งแรก); แก้ผลรีวิวครบ 3 ข้อ (เอา aria-label ที่ทับเนื้อหาการ์ดออก, ย้าย path เป็นค่าคงที่ใน constants.ts ของฟีเจอร์, ข้อความ "กดเพื่อไปคำนวณ" ของการ์ดแคลอรี่ตรงกับปลายทาง); อัปเดต dashboard.md แล้ว
+- 2026-11-24 — เลขเวอร์ชัน 0.6.1 — ผู้ใช้สั่งปรับเป็น 0.6.1 (แดชบอร์ด ไม่ใช่ฟีเจอร์หลัก จึงเพิ่มเลขแก้ไขย่อยไม่ใช่ 0.7.0); อัปเดต package.json/lock, PRD, system-design, test-cases, test-results, user-manual (เพิ่มหัวข้อ 3.1 ภาพรวมวันนี้ + ประวัติคู่มือ) และสั่ง commit/push
 
 ## Completed Work
 - Phase 0: อ่าน spec, ตัดสิน Open Questions, อัปเดต spec ใน `docs/features/`
@@ -131,6 +135,7 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
+- Phase 15 (ภาพรวมวันนี้): ผู้ใช้ตรวจตาม `docs/testing.md` หัวข้อ "ภาพรวมวันนี้" → ตอบผลรีวิว OCR → commit/push `feature/dashboard` → เปิด PR (label `feature`); เลขใน package.json เป็น 0.6.1 และ `docs/user-manual.md` อัปเดตแล้ว (ข้อ 10.12) — หลัง merge ให้ tag `v0.6.1`
 - Phase 14 (บัญชีผู้ใช้): push `feature/auth` → เปิด PR (label `feature`) → merge → tag `v0.6.0`; ตั้ง `VITE_AUTH_EMAIL_DOMAIN` ใน Vercel (ค่า `VITE_*` ฝังตอน build ต้อง Redeploy) และปิด Confirm email บน Supabase ของ production; รัน `20261121000100_auth_profiles.sql` บน production; เลขเวอร์ชันใน package.json เป็น 0.6.0 แล้ว (ยังไม่ได้ tag)
 - Phase 13 (ตัวฉันวันนี้): ผู้ใช้เปิด PR จาก `feature/mood` (label `feature`) → merge → tag `v0.5.0` → รัน `20261119000100_mood.sql` แล้ว `20261119000200_mood_custom_tags.sql` ตามลำดับใน SQL Editor (ถ้ายังไม่ได้รัน) → ทดสอบตามเช็กลิสต์ใน `docs/testing.md` (ยังไม่มีบันทึกผลรายข้อ)
 - ผู้ใช้: merge PR จาก `feature/size-converter` (label `feature`) → สร้าง tag/release `v0.4.0` จาก `main` (เลขใน `package.json` เป็น 0.4.0 แล้ว) → รัน `20261118000100_size_converter.sql` ใน SQL Editor ถ้ายังไม่ได้รัน

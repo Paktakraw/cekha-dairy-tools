@@ -1,8 +1,7 @@
 import { Wallet } from 'lucide-react'
 import { Navigate } from 'react-router-dom'
 import type { FeatureConfig } from '../../shared/types/feature'
-import { FinanceLayout, TransactionPage, SummaryPage, CategoryPage } from './lazyPages'
-
+import { FinanceLayout, FinanceTodayWidget, TransactionPage, SummaryPage, CategoryPage } from './lazyPages'
 
 export const financeFeature: FeatureConfig = {
   id: 'finance',
@@ -10,6 +9,7 @@ export const financeFeature: FeatureConfig = {
   description: 'บันทึกรายรับ รายจ่าย และดูสรุปภาพรวม',
   icon: Wallet,
   path: '/finance',
+  todayWidget: FinanceTodayWidget,
   routes: [
     {
       element: <FinanceLayout />,

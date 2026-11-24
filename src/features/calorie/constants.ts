@@ -36,3 +36,7 @@ export const ACTIVITY_LEVELS: Record<ActivityLevel, { label: string; multiplier:
 
 export const DUPLICATE_FOOD_MESSAGE = 'มีอาหารชื่อนี้อยู่แล้ว กรุณาใช้ชื่ออื่น'
 export const ESTIMATE_LABEL = 'ค่าโดยประมาณ'
+
+/** หน้าของฟีเจอร์เอง (ใช้เป็นปลายทางของการ์ดภาพรวมวันนี้) */
+export const FOOD_PATH = '/calorie/food'
+export const BMR_PATH = '/calorie/bmr'

@@ -1,7 +1,7 @@
 import { Flame } from 'lucide-react'
 import { Navigate } from 'react-router-dom'
 import type { FeatureConfig } from '../../shared/types/feature'
-import { BmrPage, CalorieLayout, FoodListPage, FoodPage, SummaryPage } from './lazyPages'
+import { BmrPage, CalorieLayout, CalorieTodayWidget, FoodListPage, FoodPage, SummaryPage } from './lazyPages'
 
 export const calorieFeature: FeatureConfig = {
   id: 'calorie',
@@ -9,6 +9,7 @@ export const calorieFeature: FeatureConfig = {
   description: 'คำนวณ BMR/TDEE และบันทึกแคลอรี่จากอาหารที่กิน',
   icon: Flame,
   path: '/calorie',
+  todayWidget: CalorieTodayWidget,
   routes: [
     {
       element: <CalorieLayout />,

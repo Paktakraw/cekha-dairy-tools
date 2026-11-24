@@ -3,6 +3,7 @@ import { supabase } from '../../../shared/lib/supabase'
 import type { ServiceResult } from '../../../shared/types/result'
 import { DUPLICATE_TITLE_MESSAGE, PAGE_SIZE } from '../constants'
 import type { Task, TaskInput, TaskPage, TaskStatus } from '../types/task'
+import type { DayBounds, TodoToday } from '../utils/today'
 
 const TABLE = 'tasks'
 const COLUMNS = 'id, title, description, status, completed_at, created_at, updated_at'
@@ -30,6 +31,22 @@ export const taskService = {
     const { data, error, count } = await query.overrideTypes<Task[]>()
     if (error) return fail('โหลดรายการงาน', error)
     return { data: { tasks: data, total: count ?? 0 }, error: null }
+  },
+
+  /** จำนวนงานค้างและงานที่เสร็จวันนี้ (นับที่ Database ไม่ดึงรายการมา) สำหรับการ์ดภาพรวมวันนี้ */
+  async countToday(bounds: DayBounds): Promise<ServiceResult<TodoToday>> {
+    const [open, done] = await Promise.all([
+      supabase.from(TABLE).select('id', { count: 'exact', head: true }).in('status', ['pending', 'in_progress']),
+      supabase
+        .from(TABLE)
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'done')
+        .gte('completed_at', bounds.start)
+        .lt('completed_at', bounds.end),
+    ])
+    if (open.error) return fail('นับงานค้าง', open.error)
+    if (done.error) return fail('นับงานที่เสร็จวันนี้', done.error)
+    return { data: { open: open.count ?? 0, doneToday: done.count ?? 0 }, error: null }
   },
 
   async create(input: TaskInput): Promise<ServiceResult<Task>> {
