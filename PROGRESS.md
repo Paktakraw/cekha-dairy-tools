@@ -5,7 +5,7 @@
 
 ## Current Status
 - **Current Phase:** Phase 15 (ภาพรวมวันนี้) — โค้ดเสร็จ รอผู้ใช้ทดสอบและยืนยัน
-- **Status:** Phase 15 (ภาพรวมวันนี้, เลข 0.6.1) merge แล้ว (PR #15) ยังไม่มี tag `v0.6.1` และ `TC-DASH-M01–M13` ยังไม่มีผลทดสอบ; Phase 11–14 merge แล้ว (tag `v0.4.0`–`v0.6.0` มีอยู่ใน repo)
+- **Status:** Phase 15 (ภาพรวมวันนี้, เลข 0.6.1) merge แล้ว (PR #15) มี tag `V0.6.1` แล้ว ผู้ใช้ยืนยัน Phase เสร็จและ `TC-DASH-M01–M13` ผ่าน (2026-11-25); Phase 11–14 merge แล้ว (tag `v0.4.0`–`v0.6.0` มีอยู่ใน repo)
 - **Last Updated:** 2026-11-24
 
 ## Phase Checklist
@@ -33,7 +33,7 @@
 - [x] Phase 12: Feature — Global Size Converter (`docs/features/size-converter.md`) — spec ยืนยันแล้ว (2026-11-18) โค้ดเสร็จ ผู้ใช้ยืนยัน Phase เสร็จแล้ว (2026-11-18)
 - [x] Phase 13: Feature — ตัวฉันวันนี้ / Daily Vibe Check (`docs/features/mood.md`) — spec ยืนยันแล้ว (2026-11-19) โค้ดเสร็จบน `feature/mood` ผู้ใช้ยืนยัน Phase และสั่งปรับเลขเป็น 0.5.0 (2026-11-20) (lint/build/เทสต์ 148 ผ่าน, migration ทดสอบบน Postgres ชั่วคราวผ่าน; รีวิว OCR แล้ว)
 - [x] Phase 14: Feature — Auth สมัคร/เข้าสู่ระบบ/ออกจากระบบ (`docs/features/auth.md`) — spec ยืนยันแล้ว (2026-11-21) โค้ดเสร็จบน `feature/auth` แก้ตามผลรีวิว ocr ข้อ 1–7 แล้ว (lint/build/เทสต์ 163 ผ่าน) ผู้ใช้ทดสอบ TC-AUTH-M01–M13 ผ่านบน Supabase จริงและยืนยัน Phase เสร็จ (2026-11-22) เลขเวอร์ชันปรับเป็น 0.6.0; ลืมรหัสผ่าน = ผู้ดูแลตั้งใหม่ให้ตาม `docs/admin-password-reset.md`
-- [x] Phase 15: Feature — ภาพรวมวันนี้ / Today Overview (`docs/features/dashboard.md`) — spec ยืนยันแล้ว (2026-11-24 ผู้ใช้ตอบ Open Questions ตามที่เสนอทุกข้อ) โค้ดเสร็จบน `feature/dashboard` (lint/build/เทสต์ 175 ผ่าน) **รอผู้ใช้ทดสอบ TC-DASH-M01–M13 และยืนยัน Phase** เลขเวอร์ชันปรับเป็น 0.6.1 (ผู้ใช้จัดเป็นแดชบอร์ด ไม่ใช่ฟีเจอร์หลัก) อัปเดตเอกสารครบแล้ว
+- [x] Phase 15: Feature — ภาพรวมวันนี้ / Today Overview (`docs/features/dashboard.md`) — spec ยืนยันแล้ว (2026-11-24 ผู้ใช้ตอบ Open Questions ตามที่เสนอทุกข้อ) โค้ดเสร็จบน `feature/dashboard` (lint/build/เทสต์ 175 ผ่าน) **ผู้ใช้ทดสอบ TC-DASH-M01–M13 ผ่านและยืนยัน Phase เสร็จแล้ว (2026-11-25)** เลขเวอร์ชันปรับเป็น 0.6.1 (ผู้ใช้จัดเป็นแดชบอร์ด ไม่ใช่ฟีเจอร์หลัก) อัปเดตเอกสารครบแล้ว
 
 ## Decisions Log
 > รูปแบบ: วันที่ — หัวข้อ — สิ่งที่ตัดสินใจ — เหตุผล
@@ -136,7 +136,7 @@
 - Unit Price: ยังไม่ได้ทดสอบหน้าจอจริง/Responsive ด้วยตา (ทดสอบเฉพาะ pure function)
 
 ## Next Step
-- Phase 15 (ภาพรวมวันนี้): merge แล้ว (PR #15) — เหลือ tag `v0.6.1` และให้ผู้ใช้ตรวจตาม `docs/testing.md` หัวข้อ "ภาพรวมวันนี้" (TC-DASH-M01–M13) แล้วบันทึกผล; `docs/user-manual.md` อัปเดตตามเลข 0.6.1 แล้ว
+- Phase 15 (ภาพรวมวันนี้): merge แล้ว (PR #15) — tag `V0.6.1` มีแล้ว ผู้ใช้ตรวจ TC-DASH-M01–M13 ผ่านและยืนยัน Phase เสร็จ (2026-11-25); `docs/user-manual.md` อัปเดตตามเลข 0.6.1 แล้ว
 - Phase 14 (บัญชีผู้ใช้): merge และ tag `v0.6.0` แล้ว (ผู้ใช้ยืนยัน 2026-11-24) — ที่ยังไม่มีบันทึกว่าทำบน production: ตั้ง `VITE_AUTH_EMAIL_DOMAIN` ใน Vercel (ต้อง Redeploy), ปิด Confirm email บน Supabase, รัน `20261121000100_auth_profiles.sql`
 - Phase 13 (ตัวฉันวันนี้): merge และ tag `v0.5.0` แล้ว — ที่ยังไม่มีบันทึกว่าทำบน production: รัน `20261119000100_mood.sql` แล้ว `20261119000200_mood_custom_tags.sql` และทดสอบตามเช็กลิสต์ใน `docs/testing.md` (ยังไม่มีบันทึกผลรายข้อ)
 - Phase 12 (ไซส์ไหนคือฉัน): merge และ tag `v0.4.0` แล้ว — ที่ยังไม่มีบันทึก: รัน `20261118000100_size_converter.sql` บน production
