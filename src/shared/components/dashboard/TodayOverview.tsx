@@ -27,11 +27,11 @@ export function TodayOverview({ features }: { features: FeatureConfig[] }) {
 
   return (
     <section aria-labelledby="today-overview-title" className="mb-8">
-      <h2 id="today-overview-title" className="text-base font-semibold text-gray-900">
-        ภาพรวมวันนี้
-      </h2>
+      <p className="text-sm text-gray-500">{formatDateLong(todayISO())}</p>
       <div className="mt-0.5 flex items-center justify-between gap-2">
-        <p className="text-sm text-gray-500">{formatDateLong(todayISO())}</p>
+        <h2 id="today-overview-title" className="text-base font-semibold text-gray-900">
+          ภาพรวมวันนี้
+        </h2>
         <button
           type="button"
           aria-expanded={open}
