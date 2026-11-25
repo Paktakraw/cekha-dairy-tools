@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| เวอร์ชัน | 0.6.1 (ตรงกับ `package.json`) |
-| อัปเดตล่าสุด | 2026-11-24 |
+| เวอร์ชัน | 0.7.0 (ตรงกับ `package.json`) |
+| อัปเดตล่าสุด | 2026-11-25 |
 | ผู้อ่าน | นักพัฒนา |
 | คู่กับ | [PRD.md](PRD.md) · [docs/testing/](../testing/) · spec รายฟีเจอร์ใน [docs/features/](../features/) |
 
@@ -72,7 +72,7 @@ src/
 │   ├── types/               FeatureConfig, ServiceResult
 │   └── utils/               formatCurrency, formatDate, theme
 ├── features/<ชื่อ>/         components, hooks, services, types, utils, pages, constants, index.tsx, lazyPages.ts
-│   ├── todo  randomizer  finance  calorie  unit-price  expiry-tracker  size-converter  mood
+│   ├── todo  randomizer  finance  calorie  unit-price  expiry-tracker  size-converter  mood  lucky-color
 │   └── auth                 (หน้า Login/Register สาธารณะ ไม่อยู่ใน Registry/Sidebar)
 ├── pages/                   PortalHomePage, NotFoundPage
 └── styles/index.css         Tailwind + ตัวแปรสีธีม
@@ -108,6 +108,7 @@ flowchart LR
 | `expiry-tracker` | อย่าลืมฉัน | `/expiry-tracker` | — |
 | `size-converter` | ไซส์ไหนคือฉัน | `/size-converter` | `converter`, `profiles`, `notes` |
 | `mood` | ตัวฉันวันนี้ | `/mood` | `today`, `calendar`, `summary`, `settings` |
+| `lucky-color` | สีที่ใช่ | `/lucky-color` | — |
 
 ```mermaid
 flowchart TD
@@ -170,6 +171,7 @@ erDiagram
   AUTH_USERS ||--o{ SIZE_PROFILES : owns
   AUTH_USERS ||--o{ MOOD_ENTRIES : owns
   AUTH_USERS ||--o{ MOOD_TAGS : owns
+  AUTH_USERS ||--o| LUCKY_COLOR_PROFILES : has
   AUTH_USERS ||--o| PROFILES : has
 
   RANDOM_GROUPS ||--o{ RANDOM_ITEMS : "group_id (cascade)"
@@ -262,6 +264,13 @@ Index: `reminder_items(user_id)`, `(user_id, due_date)`; `reminder_logs(user_id)
 | size_notes.fit | text | NOT NULL default `good`, CHECK ∈ (`good`,`tight`,`loose`) |
 Index: `size_profiles(user_id)`; `size_notes(user_id)`, `(profile_id, created_at desc)`, `(user_id, lower(brand))`
 
+**`lucky_color_profiles`** (สีที่ใช่) — `20261125000100_lucky_color`
+| ตาราง.คอลัมน์ | ชนิด | กฎ |
+|---|---|---|
+| user_id | uuid | UNIQUE (1 แถวต่อผู้ใช้ บันทึกด้วย upsert `on conflict (user_id)`) |
+| birth_day | text | NOT NULL, CHECK ∈ (`sun`,`mon`,`tue`,`wed_day`,`wed_night`,`thu`,`fri`,`sat`) |
+Index: unique index จาก `user_id`; RLS 4 policies (`auth.uid() = user_id`); trigger `set_updated_at` ตารางสี/วงล้อเป็นค่าคงที่ใน `constants.ts` ไม่เก็บใน DB
+
 **`mood_entries`** (ตัวฉันวันนี้) — `20261119000100_mood`
 | ตาราง.คอลัมน์ | ชนิด | กฎ |
 |---|---|---|
@@ -320,6 +329,7 @@ Index `user_id`; RLS 4 policies; trigger `set_updated_at`, `mood_tags_before_ins
 | 12 | `20261119000100_mood.sql` | `mood_entries`, `mood_tags_unique()` |
 | 13 | `20261119000200_mood_custom_tags.sql` | `mood_tags`, triggers, `seed_default_mood_tags()`; แปลงแท็กแบบ id คงที่เดิมของ `mood_entries` เป็นแท็กของผู้ใช้ |
 | 14 | `20261121000100_auth_profiles.sql` | `profiles` (unique username/อีเมล/เบอร์), trigger `handle_new_user`, RPC `check_register_available()` |
+| 15 | `20261125000100_lucky_color.sql` | `lucky_color_profiles` |
 
 สคริปต์ที่ไม่ใช่ migration: `supabase/scripts/reset_all_user_data.sql` (`delete from auth.users` ลบผู้ใช้และข้อมูลทุกตารางตาม cascade) ผู้ดูแลรันเองครั้งเดียวตอนเริ่มระบบบัญชีจริง ห้ามรันอัตโนมัติ
 
@@ -551,6 +561,44 @@ sequenceDiagram
 | finance | `transactionService.list` ช่วงต้นเดือน–วันนี้ | `summarizeFinanceToday` (รวมเป็นสตางค์) |
 | calorie | `entryService.listByRange` วันนี้ + `profileService.get` | `summarizeCalorieToday` เทียบ TDEE |
 | mood | `moodService.listRange` วันนี้ | แสดงเฉพาะอิโมจิ/ชื่อ ไม่แสดงแท็ก/ข้อความ |
+| lucky-color | `luckyColorProfileService.get` | `computeLuckyColors(วันเกิด, เวลาปัจจุบัน)` ที่ fetcher; แสดงสีปังคูณสอง (ไม่มี = สีเสริมการงาน) และสีต้องห้าม; ยังไม่เลือกวันเกิด = ชวนไปเลือก |
+
+### 8.12 สีที่ใช่: เลือกวันเกิดและคำนวณสี
+```mermaid
+sequenceDiagram
+  actor U as ผู้ใช้
+  participant P as LuckyColorPage
+  participant H as useBirthDay
+  participant N as useTaksaNow
+  participant S as luckyColorProfileService
+  participant DB as lucky_color_profiles
+  participant C as computeLuckyColors (pure)
+  U->>P: เปิด /lucky-color
+  P->>H: โหลดวันเกิด
+  H->>S: get()
+  S->>DB: SELECT (RLS: เฉพาะของตัวเอง)
+  DB-->>S: แถวเดียวหรือไม่มี
+  S-->>H: ServiceResult
+  alt ยังไม่มีวันเกิด
+    P-->>U: หน้าเลือกวันเกิด 8 แบบ + คำอธิบายพุธกลางวัน/กลางคืน
+  else มีวันเกิดแล้ว
+    P->>N: เวลาปัจจุบัน (คำนวณใหม่เมื่อกลับมาที่แท็บ)
+    P->>C: (วันเกิด, เวลา)
+    C->>C: getTaksaDay: เลื่อนถอย 6 ชม. แล้วแยกพุธกลางวัน/กลางคืน
+    C->>C: buildWheel ของวันเกิดและของวันนี้ (หมุนอาเรย์ 8 ช่อง)
+    C->>C: ตัดกาลกิณีทั้งสองวง → หาสีที่ดีทั้งสองวง → สีเสริมรายหมวด
+    C-->>P: ปังคูณสอง / สีเสริม / สีต้องห้าม
+    P-->>U: แสดงผล 3 ส่วน
+  end
+  U->>P: เลือกวันเกิดอื่น
+  P->>H: choose(วัน)
+  H-->>P: selected เปลี่ยนทันที → คำนวณและแสดงผลใหม่
+  H->>S: save(วัน) ต่อคิวเบื้องหลัง (upsert on conflict user_id)
+  S->>DB: UPSERT
+  alt บันทึกไม่สำเร็จ
+    H-->>U: Toast ข้อผิดพลาด (ผลบนหน้ายังตรงกับที่เลือก)
+  end
+```
 
 ### 8.9 เปลี่ยนธีม
 ```mermaid
@@ -581,6 +629,7 @@ sequenceDiagram
 | size-converter | `utils/shoes.ts`, `rings.ts`, `hats.ts`, `jeans.ts`, `clothing.ts`, `converter.ts` (รวมตัวเลือกเผื่อไซส์), `rounding.ts`, `units.ts`, `validation.ts` + `data/clothingCharts.ts` | ดูสูตรด้านล่าง |
 | mood | `utils/calendar.ts`, `stats.ts`, `messages.ts`, `validation.ts`, `tagValidation.ts` | `buildMonthGrid` (เริ่มวันอาทิตย์), `monthRange`, `shiftMonth`, `moodShares` (รวม 100% ด้วย largest remainder), `dominantMood`, `topTags`, `consecutiveDaysWithMood`, `pickMessage`, `normalizeDetails`, `validateEntryDate`, `validateTagName` (ไม่ว่าง ≤ 20 ไม่ซ้ำในกลุ่ม), `canAddTag` (≤ 30) |
 | auth | `utils/auth.ts` | `normalizeUsername`/`normalizeEmail`/`normalizePhone` (+66 → 0), `toAuthEmail`, `validateRegister`, `validateLogin`, `takenFieldsToErrors` |
+| lucky-color | `utils/taksa.ts` + `constants.ts` | `getTaksaDay` (เปลี่ยนวัน 06:00, พุธกลางคืนเริ่ม 18:00), `buildWheel` (หมุนอาเรย์วงกลม 8 ช่อง), `computeLuckyColors` (กรอง 2 ชั้น: ตัดกาลกิณีสองวงล้อ → ปังคูณสอง = ดีทั้งสองวง → สีเสริมรายหมวด), `todayLabel`, `birthLabel` |
 | ภาพรวมวันนี้ (ใน todo, expiry-tracker, finance, calorie) | `todo/utils/today.ts`, `expiry-tracker/utils/todayOverview.ts`, `finance/utils/todayOverview.ts`, `calorie/utils/todayOverview.ts` | `localDayBounds`, `summarizeExpiryToday`, `summarizeFinanceToday`, `monthStartOf`, `summarizeCalorieToday`, `differenceFromTdee` (ใช้ `compareItems`/`isReminding`/`summarize`/`summarizeDay` เดิมซ้ำ) |
 | shared | `utils/theme.ts`, `formatCurrency.ts`, `formatDate.ts` | `resolveTheme`, รูปแบบเงิน/วันที่ไทย |
 
@@ -622,7 +671,7 @@ sequenceDiagram
 ## 12. กลยุทธ์การทดสอบ
 | ระดับ | วิธี | เครื่องมือ |
 |---|---|---|
-| Unit (pure function) | เทสต์อัตโนมัติ 163 เคส | `node:test` (`npm test`) |
+| Unit (pure function) | เทสต์อัตโนมัติ 189 เคส | `node:test` (`npm test`) |
 | ฐานข้อมูล | ทดสอบ migration/RLS/CHECK/RPC บน PostgreSQL ชั่วคราว (จำลอง `auth.uid()`) และตรวจบน Supabase จริงแบบอ่านอย่างเดียว | psql |
 | ทำงานจริง (CRUD, edge case, Responsive, โหมดมืด) | เช็กลิสต์ด้วยมือโดยผู้ใช้ | [docs/testing.md](../testing.md) |
 | คุณภาพโค้ด | lint, TypeScript strict, ตรวจโค้ดด้วย OpenCodeReview ก่อน commit | oxlint, `tsc`, `ocr` |
@@ -631,11 +680,12 @@ sequenceDiagram
 ## 13. ข้อจำกัดและหนี้ทางเทคนิค
 - Auth: ไม่มีรีเซ็ต/เปลี่ยนรหัสผ่านในแอป (ผู้ดูแลตั้งให้ตาม [admin-password-reset.md](../admin-password-reset.md)); ตัวตนเป็นอีเมลสังเคราะห์ที่ผูกกับค่า `VITE_AUTH_EMAIL_DOMAIN` (ต้องเป็นโดเมนจริง และเปลี่ยนภายหลังไม่ได้โดยไม่ย้ายบัญชีเดิม); `check_register_available` เปิดให้ anon จึงเดาได้ว่า username/อีเมล/เบอร์ใดมีอยู่; ชื่อที่แสดงอ่านจาก `user_metadata.username` (ผู้ใช้แก้ metadata ของตัวเองได้ผ่าน client) ไม่ใช่จาก `profiles` — ใช้แสดงผลเท่านั้น ห้ามใช้ตัดสินสิทธิ์
 - ไม่มี UI/E2E test, ไม่มีเทสต์ของ service/hook (ครอบเฉพาะ pure function)
-- ภาพรวมวันนี้: เมื่อกางส่วนนี้ หน้าหลักยิงคำขอ 6–7 รายการพร้อมกัน (ย่อไว้ไม่ยิง) (todo 2 คำขอนับ, expiry/finance/mood 1, calorie 2) และการ์ด expiry/finance ดึงรายการทั้งหมดของช่วงมาคำนวณฝั่ง client (ยังไม่มีการแคชข้ามการเปิดหน้า); ถ้าข้อมูลมากขึ้นมากควรย้ายการนับไป RPC ของฟีเจอร์นั้นเอง
+- ภาพรวมวันนี้: เมื่อกางส่วนนี้ หน้าหลักยิงคำขอ 7–8 รายการพร้อมกัน (ย่อไว้ไม่ยิง) (todo 2 คำขอนับ, expiry/finance/mood/lucky-color 1, calorie 2) และการ์ด expiry/finance ดึงรายการทั้งหมดของช่วงมาคำนวณฝั่ง client (ยังไม่มีการแคชข้ามการเปิดหน้า); ถ้าข้อมูลมากขึ้นมากควรย้ายการนับไป RPC ของฟีเจอร์นั้นเอง
 - ข้อมูลอ้างอิงเป็นค่าประมาณ: แคลอรี่อาหาร 102 เมนู, ตารางไซส์เสื้อผ้า (ไซส์ JP ไม่ชัด), ตัวคูณกิจกรรม TDEE
 - การเตือนของ "อย่าลืมฉัน" เกิดตอนเปิดแอปเท่านั้น (ไม่มี server-side job)
 - ปุ่ม "ฉัน": โปรไฟล์แรกตั้ง `is_self` อัตโนมัติ ยังไม่มีทางย้ายไปโปรไฟล์อื่น (ไม่มีป้ายใน UI)
 - แถบเมนูย่อยของฟีเจอร์ finance ยังเลื่อนซ้าย-ขวาเมื่อจอแคบ (ต่างจาก size-converter ที่ตกบรรทัด)
 - ตัวฉันวันนี้: สีตามระดับอารมณ์เป็นตัวแปร `--mood-1..5` ใน `index.css` (ขยายข้อยกเว้นสีตามผู้ใช้อนุมัติ); แท็กเป็นข้อมูลของผู้ใช้ (`mood_tags`) แล้ว ขีดจำกัด 30 แท็ก/20 ตัวอักษรอยู่ทั้งใน `constants.ts` และ DB (trigger/CHECK) ต้องแก้ให้ตรงกัน; ลบแท็กแล้วฐานข้อมูลถอดออกจากการเช็กอินเก่าเอง (ย้อนคืนไม่ได้); DB ปฏิเสธวันที่เกินพรุ่งนี้ ส่วนการห้ามเกินวันนี้เป๊ะตรวจที่ฝั่ง client
+- สีที่ใช่: ตารางสีประจำวันและลำดับวงล้อเป็นค่าคงที่ในโค้ด (ผู้ใช้ยืนยันค่าเริ่มต้น); คำนวณจากเวลาของเครื่องผู้ใช้ (เขตเวลาท้องถิ่น) เวลาเครื่องผิดผลก็ผิดตาม; หน้าที่เปิดค้างคำนวณใหม่เฉพาะเมื่อกลับมาที่แท็บ (ไม่มีตัวจับเวลา); ชิปสีเป็นข้อยกเว้นของกฎขาว-ดำ-เทาเพราะเป็นข้อมูลหลักของฟีเจอร์ (มีชื่อสีกำกับเสมอ); การบันทึกวันเกิดทำเบื้องหลังต่อคิว (ถ้าบันทึกไม่สำเร็จมี Toast แต่ผลบนหน้ายังตรงกับที่เลือก)
 - ตัวคูณ/ข้อมูลที่ผูกกับ DB และโค้ด (ความยาวสูงสุดของช่อง) ต้องแก้ทั้งสองที่ให้ตรงกัน (`constants.ts` ↔ CHECK)
 - ฐานข้อมูลที่ติดตั้งจริงของผู้ใช้อาจรัน migration ไม่ครบ: ตรวจสถานะรายไฟล์ใน [PROGRESS.md](../../PROGRESS.md) หัวข้อ Migrations Applied
