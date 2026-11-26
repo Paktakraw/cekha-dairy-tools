@@ -26,6 +26,22 @@ npm test
 
 คำสั่งตรวจอื่นที่ควรรันก่อนส่งงานทุกครั้ง: `npm run lint` และ `npm run build`
 
+## เทสต์ E2E ด้วย Playwright
+
+```bash
+npm run test:e2e
+```
+
+ไฟล์เทสต์อยู่ใน `e2e/` (ชื่อ `*.spec.ts`) Playwright เปิด `npm run dev` ให้เอง และใช้ Chromium ครั้งแรกบนเครื่องใหม่ต้องรัน `npx playwright install chromium` ก่อน เทสต์ที่ต้องล็อกอิน (ตอนนี้คือ "สีที่ใช่" รหัส `TC-LUCKY-M*`) ใช้บัญชีทดสอบบน project Supabase เดิม ตั้ง `E2E_USERNAME`, `E2E_PASSWORD` และ `E2E_CONFIRM_TEST_ACCOUNT=yes` (ยืนยันว่าเป็นบัญชีทดสอบ ไม่มีค่านี้เทสต์จะไม่เริ่ม) ใน `.env.local` (ไฟล์นี้ไม่ถูก commit และค่าใน `.env.local` ชนะ `.env`) เทสต์จะลบ/เขียนเฉพาะแถววันเกิดของบัญชีทดสอบนี้ผ่าน RLS ด้วยสิทธิ์ผู้ใช้เอง ไม่ใช้ service_role key
+
+เปิดแบบ UI Mode (เลือกรันทีละเทสต์ ดู timeline และ trace ได้):
+
+```bash
+npm run test:e2e:ui
+```
+
+หลังรันจะได้รายงาน HTML ที่ `playwright-report/index.html` (ไม่เปิดเบราว์เซอร์อัตโนมัติ) เปิดดูด้วย `npm run test:e2e:report` รายงานแสดงผลรายเทสต์ ระยะเวลา และ trace เมื่อเทสต์ล้มเหลวและถูกรันซ้ำ (บน CI รันซ้ำ 2 ครั้ง) โฟลเดอร์นี้ไม่ถูก commit
+
 ## การตรวจ Database (RLS)
 
 ตรวจแบบอ่านอย่างเดียวด้วยผู้ใช้ที่ไม่ได้ล็อกอิน (ใช้ publishable key อย่างเดียว) ผลที่ถูกต้องคือ **ได้ `[]` ไม่ใช่ข้อมูลจริง** แม้ในตารางจะมีข้อมูลอยู่:
